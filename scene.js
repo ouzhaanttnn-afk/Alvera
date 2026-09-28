@@ -42,13 +42,13 @@ async function createSculpture() {
   softbox(0, 6, -3, 9, 2, new THREE.Color(6, 4.4, 2.5));
   softbox(-5, -3, -4, 2, 6, new THREE.Color(1.2, 2.1, 2.2));
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const environment = pmrem.fromScene(studio, .05);
+  const environment = pmrem.fromScene(studio, .025);
   scene.environment = environment.texture;
   pmrem.dispose();
   studio.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); });
 
-  const gold = new THREE.MeshPhysicalMaterial({ color: '#dcb66d', metalness: 1, roughness: .25, envMapIntensity: 1.25, clearcoat: .28, clearcoatRoughness: .2 });
-  const goldEdge = new THREE.MeshStandardMaterial({ color: '#ad7b35', metalness: 1, roughness: .3, envMapIntensity: 1.1 });
+  const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .19, envMapIntensity: 1.35, clearcoat: .55, clearcoatRoughness: .16 });
+  const goldEdge = new THREE.MeshStandardMaterial({ color: '#a56e28', metalness: 1, roughness: .23, envMapIntensity: 1.2 });
   const monogram = new THREE.Group();
   world.add(monogram);
   for (const outline of artwork.paths) {
@@ -61,27 +61,37 @@ async function createSculpture() {
     }
     if (outline.fill) {
       for (const shape of path.toShapes(false)) {
-        const geometry = new THREE.ExtrudeGeometry(shape, { depth: .115, bevelEnabled: true, bevelThickness: .014, bevelSize: .009, bevelSegments: 3, curveSegments: 28, steps: 1 });
-        geometry.translate(0, 0, -.0575);
+        const geometry = new THREE.ExtrudeGeometry(shape, { depth: .30, bevelEnabled: true, bevelThickness: .022, bevelSize: .012, bevelSegments: 4, curveSegments: 28, steps: 1 });
+        geometry.translate(0, 0, -.15);
         monogram.add(new THREE.Mesh(geometry, [gold, goldEdge]));
       }
     } else {
       for (const subpath of path.subPaths) {
-        const vertices = subpath.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, .045));
+        const vertices = subpath.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, .15));
         if (vertices.length < 2) continue;
         const curve = new THREE.CurvePath();
         for (let i = 1; i < vertices.length; i++) curve.add(new THREE.LineCurve3(vertices[i - 1], vertices[i]));
-        monogram.add(new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(16, vertices.length * 2), Math.max(.006, outline.width / 2), 6, false), gold));
+        const radius = Math.max(.008, outline.width / 2);
+        const front = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(16, vertices.length * 2), radius, 8, false), gold);
+        const back = front.clone();
+        back.position.z = -.30;
+        monogram.add(front, back);
+        for (const endpoint of [vertices[0], vertices[vertices.length - 1]]) {
+          const edge = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, .30, 8), goldEdge);
+          edge.rotation.x = Math.PI / 2;
+          edge.position.set(endpoint.x, endpoint.y, 0);
+          monogram.add(edge);
+        }
       }
     }
   }
   monogram.position.set(0, .06, .3);
-  monogram.rotation.set(-.07, -.13, -.015);
+  monogram.rotation.set(-.14, -.32, -.015);
 
   scene.add(new THREE.HemisphereLight(0xf8edd4, 0x18383f, 1.25));
   const key = new THREE.DirectionalLight(0xffedc6, 3.3);
   key.position.set(-3, 4, 6); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xbee5e6, 2.1);
+  const rim = new THREE.DirectionalLight(0xbee5e6, 3.4);
   rim.position.set(4, 2, -2); scene.add(rim);
   const pointerLight = new THREE.PointLight(0xffdc99, 12, 12, 2);
   pointerLight.position.set(1, 1.5, 4); scene.add(pointerLight);
@@ -89,12 +99,12 @@ async function createSculpture() {
   const galaxy = new THREE.Group();
   galaxy.rotation.set(.94, -.23, -.32);
   world.add(galaxy);
-  const orbitGold = new THREE.MeshStandardMaterial({ color: '#d2af65', metalness: .9, roughness: .3, envMapIntensity: 1.1, transparent: true, opacity: .7 });
-  const orbit = new THREE.Mesh(new THREE.TorusGeometry(2.45, .012, 8, 220), orbitGold);
+  const orbitGold = new THREE.MeshStandardMaterial({ color: '#d2af65', metalness: .9, roughness: .24, envMapIntensity: 1.3, transparent: true, opacity: .9 });
+  const orbit = new THREE.Mesh(new THREE.TorusGeometry(2.45, .019, 8, 220), orbitGold);
   galaxy.add(orbit);
-  const outer = new THREE.Mesh(new THREE.TorusGeometry(2.98, .006, 6, 240), new THREE.MeshBasicMaterial({ color: '#c6ae76', transparent: true, opacity: .22 }));
+  const outer = new THREE.Mesh(new THREE.TorusGeometry(2.98, .008, 6, 240), new THREE.MeshBasicMaterial({ color: '#c6ae76', transparent: true, opacity: .36 }));
   outer.rotation.set(-.52, .31, -.3); world.add(outer);
-  const inner = new THREE.Mesh(new THREE.TorusGeometry(2.12, .005, 6, 190), new THREE.MeshBasicMaterial({ color: '#c6ae76', transparent: true, opacity: .19 }));
+  const inner = new THREE.Mesh(new THREE.TorusGeometry(2.12, .007, 6, 190), new THREE.MeshBasicMaterial({ color: '#c6ae76', transparent: true, opacity: .28 }));
   inner.rotation.set(.28, .65, .42); world.add(inner);
 
   let seed = 417;
@@ -180,15 +190,17 @@ async function createSculpture() {
     const ease = 1 - Math.exp(-dt * 3.5);
     pointer.x += (target.x - pointer.x) * ease;
     pointer.y += (target.y - pointer.y) * ease;
-    world.rotation.y = pointer.x * .15;
-    world.rotation.x = pointer.y * .07;
-    monogram.rotation.y = -.13 + Math.sin(time * .23) * .12;
-    monogram.position.y = .06 + Math.sin(time * .65) * .055;
-    galaxy.rotation.z = -.32 + time * .032;
-    dust.rotation.z = time * .016;
-    outer.rotation.z = -.3 - time * .019;
-    inner.rotation.y = .65 + Math.sin(time * .16) * .13;
-    travelers.forEach((traveler, i) => { traveler.rotation.z = i * 2.1 + time * (.11 + i * .025); });
+    world.rotation.y = pointer.x * .22;
+    world.rotation.x = pointer.y * .11;
+    // A full turn, rather than the previous barely visible seven-degree sway.
+    monogram.rotation.y = -.32 + (time * Math.PI * 2 / 18) % (Math.PI * 2);
+    monogram.rotation.x = -.14 + Math.sin(time * .45) * .08;
+    monogram.position.y = .06 + Math.sin(time * .8) * .08;
+    galaxy.rotation.z = -.32 + time * .085;
+    dust.rotation.z = time * .045;
+    outer.rotation.z = -.3 - time * .06;
+    inner.rotation.y = .65 + Math.sin(time * .25) * .22;
+    travelers.forEach((traveler, i) => { traveler.rotation.z = i * 2.1 + time * (.32 + i * .045); });
     pointerLight.position.x = 1 + pointer.x * 3;
     pointerLight.position.y = 1.5 - pointer.y * 2;
     dustMaterial.uniforms.uTime.value = time;
@@ -211,7 +223,7 @@ async function createSculpture() {
   }
   function updateButton() {
     motionButton.setAttribute('aria-pressed', String(paused));
-    motionButton.textContent = paused ? 'Hareketi başlat' : 'Hareketi durdur';
+    motionButton.textContent = paused ? '3D dönüşü başlat' : '3D dönüşü durdur';
   }
   motionButton.addEventListener('click', () => { paused = !paused; updateButton(); sync(); });
   reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; target.x = target.y = 0; pointer.x = pointer.y = 0; updateButton(); sync(); });
