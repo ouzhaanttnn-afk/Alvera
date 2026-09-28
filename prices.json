@@ -1,0 +1,12 @@
+{
+  "source": "Altınkaynak",
+  "source_url": "https://static.altinkaynak.com/public/Gold",
+  "source_updated_at": "2026-09-28T13:06:21+03:00",
+  "prices": [
+    { "code": "PGA", "name": "Gram Altın", "buy": "6.475,28", "sell": "6.630,00" },
+    { "code": "PC", "name": "Çeyrek Altın", "buy": "10.416,85", "sell": "11.070,00" },
+    { "code": "PY", "name": "Yarım Altın", "buy": "20.831,61", "sell": "22.140,00" },
+    { "code": "PA", "name": "Ata Cumhuriyet", "buy": "42.797,34", "sell": "46.330,00" },
+    { "code": "PB", "name": "22 Ayar Bilezik", "buy": "5.934,93", "sell": "6.395,00" }
+  ]
+}
