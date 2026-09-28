@@ -14,7 +14,9 @@
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="scene.css" />
     <script src="script.js" defer></script>
+    <script type="module" src="scene.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#icerik">İçeriğe geç</a>
@@ -58,34 +60,25 @@
         <div class="hero-index" aria-hidden="true">A / 01</div>
         <div class="hero-copy">
           <p class="eyebrow hero-kicker">NESİLLER BOYU BİR MİRAS</p>
-          <h1 class="hero-wordmark" id="hero-title"><img src="assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" /></h1>
-          <div class="hero-bottom">
-            <p class="hero-tagline">Değer <em>zamansızdır.</em></p>
-            <p class="hero-description">Altının sıcaklığı ve özenle seçilmiş mücevherler, hayatınızın kıymetli anlarına eşlik etsin.</p>
-          </div>
+          <h1 class="hero-title" id="hero-title">Değer<br /><em>zamansızdır.</em></h1>
+          <p class="hero-description">Bir ışıltıdan fazlası. Size ait bir hikâye.<br />Hayatın en kıymetli anları için, özenle seçilmiş mücevherler.</p>
           <div class="hero-actions">
             <a class="text-link hero-link" href="#koleksiyon">SEÇKİYİ KEŞFET</a>
             <a class="text-link hero-secondary" href="#fiyatlar">CANLI FİYATLAR</a>
           </div>
         </div>
-        <div class="hero-visual" aria-hidden="true">
-          <div class="orbit-scene">
-            <span class="orbit-haze"></span>
-            <span class="orbit-track orbit-track-outer"></span>
-            <span class="orbit-track orbit-track-middle"></span>
-            <span class="orbit-track orbit-track-inner"></span>
-            <span class="orbit-dust"></span>
-            <span class="orbit-spark orbit-spark-one"></span>
-            <span class="orbit-spark orbit-spark-two"></span>
-            <span class="orbit-spark orbit-spark-three"></span>
-            <span class="jewel-ring">
-              <span class="jewel-band"></span>
-              <span class="jewel-monogram"><img src="assets/alvera-logo.png" alt="" width="1010" height="360" /></span>
-            </span>
+        <div class="hero-visual">
+          <div class="sculpture-stage" id="sculpture-stage" role="img" aria-label="Alvera logosunun altın A simgesi ve etrafında dönen ışık yörüngeleri">
+            <div class="sculpture-aura" aria-hidden="true"></div>
+            <div class="sculpture-fallback" aria-hidden="true">
+              <span class="fallback-orbit"></span><span class="fallback-orbit second"></span>
+              <img src="assets/alvera-monogram.svg" alt="" width="480" height="420" />
+            </div>
+            <canvas id="sculpture-canvas" aria-hidden="true"></canvas>
           </div>
-          <span class="hero-visual-caption">IŞIĞIN YÖRÜNGESİNDE</span>
+          <div class="scene-caption"><span><i></i> IŞIĞIN YÖRÜNGESİNDE</span><button class="scene-motion" type="button" aria-pressed="false" hidden>Hareketi durdur</button></div>
         </div>
-        <div class="hero-scroll" aria-hidden="true"><span></span> KAYDIR</div>
+        <div class="hero-meta"><span>ANKARA / MAMAK</span><span>ALTIN · PIRLANTA · MÜCEVHER</span><a href="#koleksiyon">KEŞFETMEYE DEVAM ET <span aria-hidden="true">↓</span></a></div>
       </section>
 
       <section class="intro section-shell" aria-labelledby="intro-title">
@@ -206,4 +199,3 @@
     </footer>
   </body>
 </html>
-
