@@ -79,22 +79,25 @@ button { font: inherit; }
 .hero-link:hover { color: var(--gold-light); }
 .hero-secondary { color: #d2dfd9; }
 .hero-visual { position: relative; z-index: 1; justify-self: end; width: min(100%, 620px); margin-top: 12px; animation: hero-appear 1.2s .38s both; }
-.orbit-scene { position: relative; width: 100%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(215,174,96,.16), rgba(25,58,63,.1) 37%, transparent 69%); }
-.orbit-track { position: absolute; display: block; border: 1px solid rgba(217,185,112,.19); border-radius: 50%; animation: orbit-turn 52s linear infinite; }
+.orbit-scene { position: relative; width: 100%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(215,174,96,.17), rgba(25,58,63,.1) 37%, transparent 69%); transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+.orbit-haze { position: absolute; inset: 9%; border-radius: 50%; background: conic-gradient(from 45deg, transparent 0deg, rgba(211,168,89,.06) 55deg, transparent 110deg, rgba(102,160,155,.13) 190deg, transparent 260deg, rgba(226,193,122,.1) 325deg, transparent 360deg); filter: blur(30px); animation: orbit-turn 18s linear infinite; }
+.orbit-track { position: absolute; display: block; border: 1px solid rgba(217,185,112,.16); border-top-color: rgba(237,207,145,.68); border-right-color: rgba(217,185,112,.32); border-radius: 50%; animation: orbit-turn 30s linear infinite; }
+.orbit-track::before { content: ""; position: absolute; inset: -2px; border: 2px solid transparent; border-top-color: rgba(238,205,139,.32); border-right-color: rgba(238,205,139,.12); border-radius: 50%; filter: blur(3px); }
 .orbit-track::after { content: ""; position: absolute; top: 10%; left: 15%; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-light); box-shadow: 0 0 15px rgba(217,185,112,.8); }
 .orbit-track-outer { inset: 2%; }
-.orbit-track-middle { inset: 13%; border-color: rgba(217,185,112,.14); animation-duration: 38s; animation-direction: reverse; }
+.orbit-track-middle { inset: 13%; border-color: rgba(217,185,112,.13); border-top-color: rgba(237,207,145,.5); animation-duration: 22s; animation-direction: reverse; }
 .orbit-track-middle::after { top: 73%; left: 2%; width: 4px; height: 4px; }
-.orbit-track-inner { inset: 25%; border-color: rgba(217,185,112,.1); animation-duration: 27s; }
+.orbit-track-inner { inset: 25%; border-color: rgba(217,185,112,.12); border-top-color: rgba(237,207,145,.48); animation-duration: 16s; }
 .orbit-track-inner::after { top: 5%; left: 23%; width: 3px; height: 3px; }
-.orbit-dust { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 7% 31%, rgba(217,185,112,.8) 0 1px, transparent 2px), radial-gradient(circle at 84% 16%, rgba(217,185,112,.6) 0 1px, transparent 2px), radial-gradient(circle at 21% 78%, rgba(217,185,112,.7) 0 1px, transparent 2px), radial-gradient(circle at 91% 72%, rgba(217,185,112,.65) 0 1px, transparent 2px), radial-gradient(circle at 46% 6%, rgba(217,185,112,.75) 0 1px, transparent 2px); animation: orbit-turn 90s linear infinite reverse; }
+.orbit-dust { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 7% 31%, rgba(217,185,112,.8) 0 1px, transparent 2px), radial-gradient(circle at 84% 16%, rgba(217,185,112,.6) 0 1px, transparent 2px), radial-gradient(circle at 21% 78%, rgba(217,185,112,.7) 0 1px, transparent 2px), radial-gradient(circle at 91% 72%, rgba(217,185,112,.65) 0 1px, transparent 2px), radial-gradient(circle at 46% 6%, rgba(217,185,112,.75) 0 1px, transparent 2px); animation: orbit-turn 48s linear infinite reverse; }
 .orbit-spark { position: absolute; display: block; width: 12px; height: 12px; background: var(--gold-light); clip-path: polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%); filter: drop-shadow(0 0 8px rgba(217,185,112,.8)); animation: sparkle 5s ease-in-out infinite; }
 .orbit-spark-one { top: 21%; left: 14%; }
 .orbit-spark-two { top: 72%; right: 4%; width: 9px; height: 9px; animation-delay: 1.7s; }
 .orbit-spark-three { top: 9%; right: 25%; width: 7px; height: 7px; animation-delay: 3s; }
-.jewel-ring { position: absolute; inset: 22%; display: block; animation: jewel-float 7s ease-in-out infinite; }
+.jewel-ring { position: absolute; inset: 22%; display: block; animation: jewel-float 6s ease-in-out infinite; }
 .jewel-band { position: absolute; top: 57%; left: 50%; width: 88%; height: 26%; transform: translateX(-50%) rotate(-6deg); border: clamp(12px, 1.45vw, 22px) solid transparent; border-radius: 50%; background: linear-gradient(#173139, #173139) padding-box, linear-gradient(180deg, #f3d792 0%, #bb8e43 28%, #795122 62%, #d4ab61 100%) border-box; box-shadow: 0 21px 38px rgba(0,0,0,.28), inset 0 8px 18px rgba(0,0,0,.3); }
-.jewel-gem { position: absolute; z-index: 2; top: 9%; left: 50%; width: 28%; height: auto; transform: translateX(-50%); filter: drop-shadow(0 8px 18px rgba(225,247,246,.36)); }
+.jewel-monogram { position: absolute; z-index: 2; top: 7%; left: 50%; display: block; width: 46%; height: 36%; overflow: hidden; transform: translateX(-50%); filter: drop-shadow(0 8px 16px rgba(217,185,112,.36)); }
+.jewel-monogram img { position: absolute; top: -1%; left: -8%; width: 335%; max-width: none; height: auto; }
 @keyframes orbit-turn { to { transform: rotate(360deg); } }
 @keyframes jewel-float { 0%, 100% { transform: translateY(-7px); } 50% { transform: translateY(9px); } }
 @keyframes sparkle { 0%, 100% { opacity: .35; transform: scale(.75); } 50% { opacity: 1; transform: scale(1.3); } }

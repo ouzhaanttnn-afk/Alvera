@@ -153,6 +153,7 @@
   if (finePointer.matches) {
     const cursor = document.querySelector('.cursor');
     const glow = document.querySelector('.pointer-glow');
+    const orbitScene = document.querySelector('.orbit-scene');
     let x = -100;
     let y = -100;
     let frame = 0;
@@ -168,6 +169,11 @@
       frame = requestAnimationFrame(() => {
         cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
         glow.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+        if (orbitScene) {
+          const driftX = Math.max(-18, Math.min(18, (x - window.innerWidth / 2) * 0.025));
+          const driftY = Math.max(-14, Math.min(14, (y - window.innerHeight / 2) * 0.02));
+          orbitScene.style.transform = `translate3d(${driftX}px, ${driftY}px, 0)`;
+        }
         frame = 0;
       });
     });
@@ -175,6 +181,7 @@
       if (!event.relatedTarget) {
         cursor.classList.remove('is-visible');
         glow.classList.remove('is-visible');
+        if (orbitScene) orbitScene.style.transform = '';
       }
     });
   }
