@@ -152,6 +152,7 @@
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
   if (finePointer.matches) {
     const cursor = document.querySelector('.cursor');
+    const glow = document.querySelector('.pointer-glow');
     let x = -100;
     let y = -100;
     let frame = 0;
@@ -161,15 +162,21 @@
       x = event.clientX;
       y = event.clientY;
       cursor.classList.add('is-visible');
+      glow.classList.add('is-visible');
       cursor.classList.toggle('is-hovering', Boolean(event.target.closest('a, button')));
       if (frame) return;
       frame = requestAnimationFrame(() => {
         cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+        glow.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
         frame = 0;
       });
     });
     document.addEventListener('pointerout', (event) => {
-      if (!event.relatedTarget) cursor.classList.remove('is-visible');
+      if (!event.relatedTarget) {
+        cursor.classList.remove('is-visible');
+        glow.classList.remove('is-visible');
+      }
     });
   }
 })();
+
