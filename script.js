@@ -115,6 +115,9 @@
 
   menuButton.addEventListener('click', () => setMenu(!body.classList.contains('menu-open')));
   menuLinks.forEach((link) => link.addEventListener('click', () => setMenu(false)));
+  window.matchMedia('(min-width: 901px)').addEventListener('change', (event) => {
+    if (event.matches && body.classList.contains('menu-open')) setMenu(false);
+  });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && body.classList.contains('menu-open')) setMenu(false);
   });

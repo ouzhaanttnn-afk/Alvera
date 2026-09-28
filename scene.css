@@ -39,7 +39,30 @@ body { overflow-x: clip; background: #081d23; }
 .hero-meta a span { display: inline-block; padding-left: 12px; color: #e4c783; font-size: 16px; }
 .intro { background: radial-gradient(ellipse at 17% 50%,rgba(81,126,120,.08),transparent 55%),#0b232a; }
 .rates { background: #0b232a; }
-.rates-panel { border-color: rgba(225,195,129,.34); box-shadow: 0 25px 65px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.6); }
+.rates-grid { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap: clamp(26px,4vw,72px); }
+.rates-panel { min-width: 0; width: 100%; padding: clamp(20px,2.4vw,38px); background: #fbfaf6; color: #172f35; border: 1px solid #baa477; box-shadow: 0 25px 65px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.6); opacity: 1; visibility: visible; }
+.rates-panel-top { color: #765728; border-bottom-color: #d5cdbd; font-size: 11px; line-height: 1.6; }
+.rates-table { width: 100%; table-layout: fixed; border-collapse: collapse; color: #172f35; font-variant-numeric: tabular-nums; }
+.rates-table th { color: #56645f; font-size: 10px; letter-spacing: .08em; }
+.rates-table th:first-child { width: 36%; }
+.rates-table th:not(:first-child) { width: 32%; }
+.rates-table th, .rates-table td { padding: 19px 0; border-bottom: 1px solid #d5cdbd; }
+.rates-table th:first-child, .rates-table td:first-child { text-align: left; padding-right: 10px; }
+.rates-table th:not(:first-child), .rates-table td:not(:first-child) { text-align: right; white-space: nowrap; }
+.rates-table td { color: #172f35; font-size: clamp(14px,1.15vw,18px); line-height: 1.55; }
+.rates-table td:last-child { color: #795623; font-weight: 700; }
+.rates-table .rates-loading { color: #56645f; white-space: normal; text-align: left; }
+.rates-panel-bottom { flex-wrap: wrap; gap: 12px 22px; color: #53645e; font-size: 11px; line-height: 1.7; }
+.rates-panel-bottom a { color: #795623; border-bottom: 1px solid #ad8d52; }
+/* Essential content must never depend on an observer to become readable. */
+body.motion-ready .reveal { opacity: 1; transform: none; transition: none; }
+body.motion-ready .reveal.is-visible { animation: content-arrive .65s ease both; }
+body.motion-ready .rates .reveal { opacity: 1; transform: none; animation: none; }
+@keyframes content-arrive { from { opacity: .35; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+/* The close control belongs above the full-screen menu, including on iOS. */
+.menu-open .site-header { z-index: 102; background: transparent; border-color: transparent; }
+.menu-open .brand, .menu-open .header-nav, .menu-open .header-call { visibility: hidden; }
+.hero { overflow: clip; }
 .gallery-image { border: 1px solid rgba(225,195,129,.17); box-shadow: 10px 25px 45px rgba(2,16,20,.3); transition: transform .65s cubic-bezier(.2,.7,.2,1),box-shadow .65s; }
 .gallery-card:hover .gallery-image { transform: perspective(1200px) translateY(-8px) rotateY(-3deg) rotateX(2deg); box-shadow: 17px 36px 65px rgba(0,10,16,.5); }
 .manifesto { background: radial-gradient(ellipse at 82% 30%,rgba(154,125,67,.14),transparent 45%),linear-gradient(120deg,#071c23,#163439); }
@@ -85,6 +108,12 @@ body { overflow-x: clip; background: #081d23; }
   .intro { padding-block: 76px 90px; }
   .intro .section-marker { margin-bottom: 50px; }
   .collection .section-marker { margin-bottom: 60px; }
+  .rates-grid { display: block; }
+  .rates-panel { padding: 20px 16px; }
+  .rates-table td { font-size: clamp(12px,3.3vw,15px); }
+  .rates-table th { font-size: 9px; letter-spacing: .04em; }
+  .rates-table th, .rates-table td { padding-block: 17px; }
+  .rates-panel-bottom { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .gallery-card:hover .gallery-image { transform: none; }
