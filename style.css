@@ -29,15 +29,12 @@ button { font: inherit; }
 .display-title em, .manifesto h2 em { color: var(--gold); font-weight: 400; }
 .text-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--gold); transition: gap .3s, color .3s; }
 .text-link:hover { gap: 34px; color: var(--gold); }
-.text-link span { font-size: 18px; font-weight: 400; letter-spacing: 0; }
 .section-marker { display: flex; gap: 22px; align-items: center; color: var(--gold); white-space: nowrap; }
 .section-marker span:first-child { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--gold); border-radius: 50%; font-size: 9px; letter-spacing: 0; }
 
 /* Navigation */
 .site-header { position: absolute; z-index: 100; top: 0; left: 0; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 108px; padding-inline: clamp(22px, 5.7vw, 110px); }
 .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 15px; font-weight: 700; letter-spacing: .27em; line-height: 1; }
-.brand-symbol { color: var(--gold); font-family: var(--serif); font-size: 29px; font-weight: 400; }
-.brand-sub { display: block; margin-top: 7px; color: var(--gold); font-size: 6px; font-weight: 700; letter-spacing: .41em; }
 .brand img { width: clamp(150px, 14vw, 205px); height: auto; mix-blend-mode: multiply; }
 .header-location { margin-left: auto; margin-right: 110px; color: var(--muted); }
 .menu-toggle { position: fixed; z-index: 102; top: 29px; right: clamp(22px, 5.7vw, 110px); display: flex; align-items: center; gap: 19px; height: 48px; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
@@ -83,7 +80,6 @@ button { font: inherit; }
 .intro-content { max-width: 900px; }
 .intro-content .eyebrow { margin: 0 0 30px; }
 .intro .body-copy { max-width: 445px; margin: 35px 0 0 auto; }
-.intro-asterisk { position: absolute; right: 5.7vw; bottom: 76px; color: rgba(169,136,80,.28); font-family: var(--serif); font-size: clamp(75px, 13vw, 190px); line-height: 1; }
 
 /* Altinkaynak market rates */
 .rates { padding-top: 60px; padding-bottom: clamp(105px, 12vw, 190px); border-top: 1px solid var(--line); }
@@ -123,8 +119,6 @@ button { font: inherit; }
 .card-details { position: relative; display: block; padding-top: 19px; }
 .card-details > span:first-child { display: block; margin-bottom: 7px; color: var(--gold); }
 .card-details strong { display: block; padding-right: 30px; font-family: var(--serif); font-size: clamp(25px, 2.5vw, 38px); font-weight: 400; letter-spacing: -.02em; }
-.card-arrow { position: absolute; right: 2px; bottom: 3px; font-size: 22px; transition: transform .3s; }
-.gallery-card:hover .card-arrow { transform: translate(4px, -4px); }
 .card-one { grid-column: 1 / span 6; }
 .card-one .gallery-image { aspect-ratio: .87; }
 .card-two { grid-column: 8 / span 5; margin-top: 18%; }
@@ -154,7 +148,7 @@ body.gallery-focused .gallery-card.is-active { z-index: 22; }
 .manifesto h2 { margin: 0; font-family: var(--serif); font-size: clamp(68px, 10.5vw, 160px); font-weight: 400; letter-spacing: -.05em; line-height: .87; }
 .manifesto h2 em { color: var(--gold-light); }
 .manifesto-bottom { display: flex; align-items: start; justify-content: space-between; gap: 30px; margin-top: clamp(75px, 11vw, 160px); }
-.manifesto-star { color: var(--gold-light); font-family: var(--serif); font-size: 51px; line-height: 1; }
+.manifesto-rule { display: block; flex: 0 0 90px; height: 1px; margin-top: 13px; background: var(--gold-light); }
 .manifesto-bottom p { max-width: 320px; margin: 0 6% 0 0; color: #c8c2b7; font-size: 14px; line-height: 1.9; }
 
 /* Visit and footer */
@@ -163,16 +157,14 @@ body.gallery-focused .gallery-card.is-active { z-index: 22; }
 .visit-copy .eyebrow { margin: 0 0 26px; }
 .visit-copy .body-copy { max-width: 370px; margin: 30px 0 48px; }
 .address-link { display: inline-flex; gap: 28px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--gold); font-size: 13px; line-height: 1.6; }
-.address-link span { color: var(--gold); font-size: 20px; }
 .visit-note { max-width: 400px; padding: clamp(30px, 4vw, 60px); border: 1px solid rgba(169,136,80,.36); background: rgba(255,255,255,.25); }
-.visit-note-star { color: var(--gold); font-family: var(--serif); font-size: 47px; line-height: 1; }
+.visit-note-label { color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .22em; }
 .visit-note p { margin: 35px 0 43px; font-family: var(--serif); font-size: clamp(28px, 3vw, 43px); line-height: 1.15; }
 .visit-note strong { color: var(--gold); font-weight: 500; }
 .site-footer { padding: 45px clamp(22px, 5.7vw, 110px) 27px; background: var(--paper-deep); }
 .footer-top { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: 68px; }
 .footer-top > img { width: min(46vw, 540px); height: auto; mix-blend-mode: multiply; }
 .footer-top a { padding-bottom: 8px; border-bottom: 1px solid var(--gold); font-size: 12px; }
-.footer-top a span { color: var(--gold); font-size: 17px; }
 .footer-bottom { display: flex; justify-content: space-between; gap: 25px; padding-top: 25px; border-top: 1px solid var(--line); color: var(--muted); font-size: 9px; }
 .footer-bottom a:hover { color: var(--gold); }
 
@@ -218,7 +210,6 @@ body.motion-ready .reveal.is-visible { opacity: 1; transform: translateY(0); }
   .intro { display: block; padding-block: 110px 145px; }
   .intro .section-marker { margin-bottom: 65px; }
   .intro .body-copy { margin: 25px 0 0; }
-  .intro-asterisk { right: 18px; bottom: 8px; }
   .rates-grid { display: block; margin-top: 85px; }
   .rates-intro .body-copy { margin-bottom: 25px; }
   .rates-disclaimer { margin: 0 0 50px; }
