@@ -1,0 +1,35 @@
+
+.site-header { height: 100px; background: linear-gradient(180deg,rgba(6,24,29,.66),transparent); }
+
+.brand { flex: 0 0 auto; }
+
+.brand img { width: clamp(166px,14vw,208px); }
+
+/* The close control belongs above the full-screen menu, including on iOS. */
+.menu-open .site-header { z-index: 102; background: transparent; border-color: transparent; }
+
+.menu-open .brand, .menu-open .header-nav, .menu-open .header-call { visibility: hidden; }
+
+@media (max-width: 700px) {
+
+  .site-header { height: 82px; }
+
+  .brand img { width: 162px; }
+}
+/* The close button belongs to the modal while it is open. */
+.menu-panel { overflow-y: auto; overscroll-behavior: contain; }
+.menu-panel .menu-toggle { z-index: 2; visibility: visible; }
+.menu-toggle, .header-nav a, .header-call { min-height: 44px; }
+.menu-panel a:focus-visible, .menu-toggle:focus-visible, .header-nav a:focus-visible { outline: 2px solid #d9b970; outline-offset: 7px; }
+@media (max-width: 900px) {
+  .menu-panel { height: 100dvh; align-items: flex-start; padding: 100px 28px 40px; }
+  .menu-inner { width: 100%; margin-block: auto; }
+  .menu-inner > a { font-size: clamp(32px, 7.5vw, 56px); }
+  .menu-panel .menu-toggle { display: flex; }
+}
+@media (max-height: 640px) and (max-width: 900px) {
+  .menu-panel { padding-top: 82px; padding-bottom: 24px; }
+  .menu-brand { width: 150px; margin-bottom: 22px; }
+  .menu-inner > a { font-size: 32px; }
+  .menu-inner > p { margin-top: 24px; }
+}

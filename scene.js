@@ -3,6 +3,17 @@ const stage = document.querySelector('#sculpture-stage');
 const canvas = document.querySelector('#sculpture-canvas');
 const motionButton = document.querySelector('.scene-motion');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const sceneStatus = document.createElement('p');
+sceneStatus.className = 'scene-status';
+sceneStatus.setAttribute('role', 'status');
+sceneStatus.setAttribute('aria-live', 'polite');
+sceneStatus.hidden = true;
+motionButton?.parentElement?.after(sceneStatus);
+function setSceneStatus(message) {
+  sceneStatus.textContent = message;
+  sceneStatus.hidden = !message;
+}
+
 
 async function createSculpture() {
   const [THREE, artwork] = await Promise.all([
@@ -29,7 +40,9 @@ async function createSculpture() {
   scene.add(world);
 
   // A virtual photographic studio gives the metal broad, physical reflections.
-  const studio = new THREE.Scene();
+  function refreshEnvironment() {
+    scene.environment?.dispose();
+    const studio = new THREE.Scene();
   studio.add(new THREE.Mesh(new THREE.BoxGeometry(30, 30, 30), new THREE.MeshBasicMaterial({ color: '#34433f', side: THREE.BackSide })));
   const softbox = (x, y, z, width, height, color) => {
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
@@ -46,6 +59,8 @@ async function createSculpture() {
   scene.environment = environment.texture;
   pmrem.dispose();
   studio.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); });
+  }
+  refreshEnvironment();
 
   const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .19, envMapIntensity: 1.35, clearcoat: .55, clearcoatRoughness: .16 });
   const goldEdge = new THREE.MeshStandardMaterial({ color: '#a56e28', metalness: 1, roughness: .23, envMapIntensity: 1.2 });
@@ -193,7 +208,9 @@ async function createSculpture() {
     world.rotation.y = pointer.x * .22;
     world.rotation.x = pointer.y * .11;
     // A full turn, rather than the previous barely visible seven-degree sway.
-    monogram.rotation.y = -.32 + (time * Math.PI * 2 / 18) % (Math.PI * 2);
+    const turn = (time * Math.PI * 2 / 18) % (Math.PI * 2);
+    // Keep a complete revolution, with a longer, readable front-facing moment.
+    monogram.rotation.y = -.32 + turn - .65 * Math.sin(turn);
     monogram.rotation.x = -.14 + Math.sin(time * .45) * .08;
     monogram.position.y = .06 + Math.sin(time * .8) * .08;
     galaxy.rotation.z = -.32 + time * .085;
@@ -239,8 +256,37 @@ async function createSculpture() {
   new ResizeObserver(resize).observe(stage);
   document.addEventListener('visibilitychange', sync);
   canvas.addEventListener('webglcontextlost', event => {
-    event.preventDefault(); contextLost = true; cancelAnimationFrame(frame);
-    stage.classList.remove('is-ready'); motionButton.hidden = true;
+    event.preventDefault();
+    contextLost = true;
+    cancelAnimationFrame(frame);
+    frame = 0;
+    stage.classList.remove('is-ready');
+    motionButton.hidden = true;
+    setSceneStatus('3D görünüm toparlanıyor. Bu sırada hafif görünüm gösteriliyor.');
+  });
+  canvas.addEventListener('webglcontextrestored', () => {
+    try {
+      refreshEnvironment();
+      scene.traverse(object => {
+        const materials = object.material ? (Array.isArray(object.material) ? object.material : [object.material]) : [];
+        for (const material of materials) {
+          material.needsUpdate = true;
+          if (material.map) material.map.needsUpdate = true;
+        }
+      });
+      contextLost = false;
+      stage.classList.add('is-ready');
+      motionButton.hidden = false;
+      setSceneStatus('');
+      updateButton();
+      resize();
+    } catch (error) {
+      contextLost = true;
+      stage.classList.remove('is-ready');
+      motionButton.hidden = true;
+      setSceneStatus('Hafif görünüm etkin. 3D için sayfayı yenileyebilirsiniz.');
+      console.warn('Alvera 3D recovery unavailable', error);
+    }
   });
   window.addEventListener('pagehide', () => cancelAnimationFrame(frame));
   window.addEventListener('pageshow', sync);
@@ -253,6 +299,7 @@ async function createSculpture() {
 if (stage && canvas) createSculpture().catch(error => {
   // The original vector monogram remains visible without WebGL or JavaScript imports.
   stage.classList.remove('is-ready');
+    setSceneStatus('Hafif görünüm etkin. 3D sahne şu anda kullanılamıyor.');
   motionButton.hidden = true;
   console.warn('Alvera: using the lightweight sculpture fallback.', error);
 });

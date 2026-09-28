@@ -14,8 +14,13 @@
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="scene.css" />
+    <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="scene.css" />
+  <link rel="stylesheet" href="navigation.css" />
+  <link rel="stylesheet" href="rates.css" />
     <script src="script.js" defer></script>
+  <script src="navigation.js" defer></script>
+  <script src="prices.js" defer></script>
     <script type="module" src="scene.js"></script>
   </head>
   <body>
@@ -107,6 +112,7 @@
             </table>
             <div class="rates-panel-bottom">
               <span id="rates-status" role="status" aria-live="polite">Altınkaynak verisine bağlanıyor</span>
+            <button class="rates-refresh" type="button" aria-label="Altın fiyatlarını yeniden getir">Yenile</button>
               <a href="https://www.altinkaynak.com/Altin/Kur/Guncel" target="_blank" rel="noopener noreferrer">KAYNAK</a>
             </div>
           </div>

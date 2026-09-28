@@ -1,0 +1,72 @@
+
+.rates { background: #0b232a; }
+
+.rates-grid { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap: clamp(26px,4vw,72px); }
+
+.rates-panel { min-width: 0; width: 100%; padding: clamp(20px,2.4vw,38px); background: #fbfaf6; color: #172f35; border: 1px solid #baa477; box-shadow: 0 25px 65px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.6); opacity: 1; visibility: visible; }
+
+.rates-panel-top { color: #765728; border-bottom-color: #d5cdbd; font-size: 11px; line-height: 1.6; }
+
+.rates-table { width: 100%; table-layout: fixed; border-collapse: collapse; color: #172f35; font-variant-numeric: tabular-nums; }
+
+.rates-table th { color: #56645f; font-size: 10px; letter-spacing: .08em; }
+
+.rates-table th:first-child { width: 36%; }
+
+.rates-table th:not(:first-child) { width: 32%; }
+
+.rates-table th, .rates-table td { padding: 19px 0; border-bottom: 1px solid #d5cdbd; }
+
+.rates-table th:first-child, .rates-table td:first-child { text-align: left; padding-right: 10px; }
+
+.rates-table th:not(:first-child), .rates-table td:not(:first-child) { text-align: right; white-space: nowrap; }
+
+.rates-table td { color: #172f35; font-size: clamp(14px,1.15vw,18px); line-height: 1.55; }
+
+.rates-table td:last-child { color: #795623; font-weight: 700; }
+
+.rates-table .rates-loading { color: #56645f; white-space: normal; text-align: left; }
+
+.rates-panel-bottom { flex-wrap: wrap; gap: 12px 22px; color: #53645e; font-size: 11px; line-height: 1.7; }
+
+.rates-panel-bottom a { color: #795623; border-bottom: 1px solid #ad8d52; }
+
+body.motion-ready .rates .reveal { opacity: 1; transform: none; animation: none; }
+
+@media (min-width: 901px) {
+
+  .rates-grid { margin-top: 70px; }
+}
+
+@media (max-width: 700px) {
+
+  .rates-grid { display: block; }
+
+  .rates-panel { padding: 20px 16px; }
+
+  .rates-table td { font-size: clamp(12px,3.3vw,15px); }
+
+  .rates-table th { font-size: 9px; letter-spacing: .04em; }
+
+  .rates-table th, .rates-table td { padding-block: 17px; }
+
+  .rates-panel-bottom { font-size: 10px; }
+}
+/* Price states remain legible even when the source is unavailable. */
+.rates-table tbody th { font-family: var(--font-sans, Manrope, sans-serif); font-size: clamp(14px, 1.15vw, 18px); font-weight: 500; letter-spacing: 0; line-height: 1.55; color: #172f35; text-transform: none; }
+.rates-panel-bottom { align-items: center; }
+#rates-status { flex: 1 1 230px; min-width: 0; }
+.rates-refresh { min-height: 44px; padding: 10px 16px; border: 1px solid #b7a47f; background: transparent; color: #614721; font: 600 12px var(--font-sans, Manrope, sans-serif); cursor: pointer; }
+.rates-refresh:hover { background: #eee7d9; }
+.rates-refresh:disabled { cursor: progress; opacity: .65; }
+.rates-refresh:focus-visible, .rates-panel-bottom a:focus-visible { outline: 2px solid #765728; outline-offset: 5px; }
+.rates-panel-bottom a { display: inline-flex; align-items: center; min-height: 44px; }
+.rates-panel[data-state="stale"] .rates-pulse, .rates-panel[data-state="offline"] .rates-pulse, .rates-panel[data-state="error"] .rates-pulse, .rates-panel[data-state="loading"] .rates-pulse { animation: none; box-shadow: none; background: #a87929; }
+.rates-panel[data-state="offline"] .rates-pulse, .rates-panel[data-state="error"] .rates-pulse { background: #8b4a38; }
+.rates-panel.is-stale #rates-status { color: #775327; }
+@media (max-width: 700px) {
+  .rates-table tbody th { font-size: clamp(12px, 3.3vw, 15px); }
+  .rates-panel-bottom { font-size: 12px; gap: 8px 18px; }
+  .rates-table thead th { font-size: 11px; letter-spacing: .04em; }
+  .rates-disclaimer { font-size: 12px; line-height: 1.75; }
+}
