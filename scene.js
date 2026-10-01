@@ -43,7 +43,7 @@ async function createSculpture() {
   function refreshEnvironment() {
     scene.environment?.dispose();
     const studio = new THREE.Scene();
-  studio.add(new THREE.Mesh(new THREE.BoxGeometry(30, 30, 30), new THREE.MeshBasicMaterial({ color: '#34433f', side: THREE.BackSide })));
+  studio.add(new THREE.Mesh(new THREE.BoxGeometry(30, 30, 30), new THREE.MeshBasicMaterial({ color: '#6a5445', side: THREE.BackSide })));
   const softbox = (x, y, z, width, height, color) => {
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
     panel.position.set(x, y, z);
@@ -51,9 +51,9 @@ async function createSculpture() {
     studio.add(panel);
   };
   softbox(-4, 5, 6, 3, 10, new THREE.Color(7, 6, 4.5));
-  softbox(5, 1, 4, 1.4, 9, new THREE.Color(4, 4.5, 4.4));
+  softbox(5, 1, 4, 1.4, 9, new THREE.Color(4.8, 4.0, 3.3));
   softbox(0, 6, -3, 9, 2, new THREE.Color(6, 4.4, 2.5));
-  softbox(-5, -3, -4, 2, 6, new THREE.Color(1.2, 2.1, 2.2));
+  softbox(-5, -3, -4, 2, 6, new THREE.Color(1.8, 1.25, .8));
   const pmrem = new THREE.PMREMGenerator(renderer);
   const environment = pmrem.fromScene(studio, .025);
   scene.environment = environment.texture;
@@ -103,10 +103,10 @@ async function createSculpture() {
   monogram.position.set(0, .06, .3);
   monogram.rotation.set(-.14, -.32, -.015);
 
-  scene.add(new THREE.HemisphereLight(0xf8edd4, 0x18383f, 1.25));
+  scene.add(new THREE.HemisphereLight(0xf8edd4, 0x70533d, 1.25));
   const key = new THREE.DirectionalLight(0xffedc6, 3.3);
   key.position.set(-3, 4, 6); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xbee5e6, 3.4);
+  const rim = new THREE.DirectionalLight(0xf0d8be, 3.4);
   rim.position.set(4, 2, -2); scene.add(rim);
   const pointerLight = new THREE.PointLight(0xffdc99, 12, 12, 2);
   pointerLight.position.set(1, 1.5, 4); scene.add(pointerLight);
@@ -117,9 +117,9 @@ async function createSculpture() {
   const orbitGold = new THREE.MeshStandardMaterial({ color: '#d2af65', metalness: .9, roughness: .24, envMapIntensity: 1.3, transparent: true, opacity: .9 });
   const orbit = new THREE.Mesh(new THREE.TorusGeometry(2.45, .019, 8, 220), orbitGold);
   galaxy.add(orbit);
-  const outer = new THREE.Mesh(new THREE.TorusGeometry(2.98, .008, 6, 240), new THREE.MeshBasicMaterial({ color: '#c6ae76', transparent: true, opacity: .36 }));
+  const outer = new THREE.Mesh(new THREE.TorusGeometry(2.98, .008, 6, 240), new THREE.MeshBasicMaterial({ color: '#8c653b', transparent: true, opacity: .36 }));
   outer.rotation.set(-.52, .31, -.3); world.add(outer);
-  const inner = new THREE.Mesh(new THREE.TorusGeometry(2.12, .007, 6, 190), new THREE.MeshBasicMaterial({ color: '#c6ae76', transparent: true, opacity: .28 }));
+  const inner = new THREE.Mesh(new THREE.TorusGeometry(2.12, .007, 6, 190), new THREE.MeshBasicMaterial({ color: '#8c653b', transparent: true, opacity: .28 }));
   inner.rotation.set(.28, .65, .42); world.add(inner);
 
   let seed = 417;
@@ -166,7 +166,7 @@ async function createSculpture() {
   for (let j = 0; j < 3; j++) {
     const traveler = new THREE.Group();
     const radius = 2.45 + j * .23;
-    const material = new THREE.SpriteMaterial({ map: glowTexture, color: j === 1 ? 0xd5f0ef : 0xffdf9e, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
+    const material = new THREE.SpriteMaterial({ map: glowTexture, color: j === 1 ? 0xffefd8 : 0xffdf9e, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false });
     const glint = new THREE.Sprite(material); glint.scale.setScalar(j === 0 ? .24 : .16); glint.position.x = radius;
     traveler.add(glint);
     const trailPoints = [], trailColors = [];
