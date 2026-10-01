@@ -136,6 +136,10 @@
   color: var(--button-paper);
   box-shadow: inset 0 1px 3px rgba(43, 22, 12, .2);
 }
+/* The compact header uses the menu; calling remains available in the dock. */
+@media (max-width: 900px) {
+  .site-header .header-call { display: none; }
+}
 @media (max-width: 700px) {
   .hero-actions { gap: 12px; }
   .hero-link, .hero-secondary { min-height: 49px; padding: 15px 19px; font-size: 12px; letter-spacing: .07em; }
