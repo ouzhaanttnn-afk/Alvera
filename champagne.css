@@ -402,3 +402,159 @@ fieldset, .panel { background: rgba(255, 248, 239, .45); }
   .visitor-question-list details { padding-inline: 12px; }
   .approach-step { padding: 24px 22px; }
 }
+
+/* Editorial typography: authentic serif italics and a quiet, readable hierarchy. */
+#icerik {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.7;
+  font-kerning: normal;
+}
+.hero-title, .display-title, .manifesto h2, .approach-step h3,
+.visitor-request h3, .visitor-questions h2, .card-details strong,
+.gallery.has-products .card-details strong, .product-dialog-copy h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-kerning: normal;
+  font-synthesis: none;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  text-wrap: balance;
+}
+.hero-title {
+  font-size: clamp(68px, 7.1vw, 126px);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+.hero-title em, .display-title em, .manifesto h2 em, .visitor-questions h2 em {
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -.035em;
+}
+.display-title {
+  font-size: clamp(50px, 5.9vw, 100px);
+  line-height: 1.04;
+  letter-spacing: -.04em;
+}
+.manifesto h2 {
+  font-size: clamp(64px, 8.2vw, 132px);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+.hero-description, .body-copy, .manifesto .manifesto-bottom p,
+.visitor-request-copy > p:last-child, .visitor-questions-heading > p:last-child {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.12vw, 17px);
+  font-weight: 400;
+  line-height: 1.85;
+  letter-spacing: .005em;
+  text-wrap: pretty;
+}
+.hero-description { max-width: 36ch; line-height: 1.8; }
+.body-copy { max-width: 54ch; }
+#icerik .eyebrow, .hero-kicker {
+  font-family: var(--sans);
+  font-size: 11px;
+  line-height: 1.7;
+  font-weight: 600;
+  letter-spacing: .17em;
+}
+.section-marker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+}
+.section-marker span:first-child { font-size: 10px; font-variant-numeric: lining-nums tabular-nums; }
+.header-nav a { font-size: 13px; font-weight: 500; letter-spacing: .015em; }
+.header-call, .menu-toggle-text { font-size: 11px; font-weight: 600; letter-spacing: .13em; }
+.menu-inner > a { font-weight: 500; line-height: 1.12; letter-spacing: -.035em; }
+.menu-inner > a span { font-variant-numeric: lining-nums tabular-nums; }
+.menu-inner p { font-size: clamp(22px, 2vw, 28px); }
+.hero-link, .hero-secondary {
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: .11em;
+}
+.hero-meta { font-size: 10px; font-weight: 500; letter-spacing: .13em; }
+.scene-caption > span { font-size: 10px; letter-spacing: .15em; }
+.card-details > span:first-child, .gallery.has-products .card-details > span:first-child {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.65;
+  letter-spacing: .13em;
+}
+.card-details strong, .gallery.has-products .card-details strong {
+  font-size: clamp(27px, 2.25vw, 38px);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+}
+.gallery.has-products .card-details small { font-size: 12px; line-height: 1.75; letter-spacing: .01em; }
+.collection-end > span { font-size: 10px; letter-spacing: .14em; }
+.collection-end .text-link { font-size: 11px; letter-spacing: .12em; }
+.approach-step h3 { font-size: clamp(30px, 2.6vw, 43px); line-height: 1.1; letter-spacing: -.025em; }
+.approach-step > span { font-size: 10px; font-weight: 600; letter-spacing: .15em; }
+.approach-step p { font-size: 14px; line-height: 1.9; letter-spacing: .005em; }
+.visitor-request h3 { font-size: clamp(32px, 3vw, 46px); line-height: 1.12; letter-spacing: -.03em; }
+.visitor-questions h2 { font-size: clamp(42px, 4.5vw, 68px); line-height: 1.08; letter-spacing: -.035em; }
+.visitor-question-list summary { font-size: 16px; font-weight: 500; line-height: 1.65; letter-spacing: -.005em; }
+.visitor-answer p { font-size: 14px; line-height: 1.9; text-wrap: pretty; }
+.visitor-request-note, .rates-disclaimer { font-size: 12px; line-height: 1.8; letter-spacing: .005em; }
+.rates-panel-top { font-size: 11px; font-weight: 600; letter-spacing: .12em; }
+.rates-table {
+  font-family: var(--sans);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+.rates-table thead th { font-size: 11px; font-weight: 500; line-height: 1.6; letter-spacing: .09em; }
+.rates-table td, .rates-table tbody th {
+  font-size: clamp(14px, 1.16vw, 18px);
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -.015em;
+}
+.rates-table td:last-child { font-weight: 600; }
+.rates-panel-bottom { font-size: 12px; line-height: 1.75; }
+.address-link { font-size: clamp(16px, 1.35vw, 19px); line-height: 1.7; letter-spacing: -.01em; }
+.visit-actions a { font-size: 12px; font-weight: 600; letter-spacing: .07em; }
+.visit-note p { font-size: 15px; line-height: 1.85; }
+.visit-note .text-link { font-size: 11px; letter-spacing: .12em; }
+.product-dialog-copy h2 { font-size: clamp(38px, 4vw, 60px); line-height: 1.08; letter-spacing: -.035em; }
+.product-description { font-size: 14px; line-height: 1.9; }
+.product-metal { font-size: 13px; line-height: 1.75; }
+.product-price-note { font-size: 12px; line-height: 1.75; }
+.product-enquiry, .visitor-request-link { font-size: 13px; font-weight: 600; letter-spacing: .015em; }
+.site-footer .footer-top a { font-size: 14px; letter-spacing: .015em; }
+.footer-bottom { flex-wrap: wrap; row-gap: 14px; font-size: 10px; font-weight: 500; letter-spacing: .1em; }
+
+@media (min-width: 701px) and (max-width: 1000px) {
+  .hero-title { font-size: clamp(54px, 7.2vw, 74px); }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  .header-nav a { font-size: 12px; }
+}
+@media (max-width: 700px) {
+  .hero-title { font-size: clamp(56px, 14vw, 88px); line-height: 1; letter-spacing: -.035em; }
+  .display-title { font-size: clamp(44px, 11vw, 64px); line-height: 1.08; }
+  .manifesto h2 { font-size: clamp(44px, 11.5vw, 70px); line-height: 1.07; }
+  .hero-description, .body-copy, .manifesto .manifesto-bottom p { font-size: 15px; line-height: 1.85; }
+  .hero-kicker, #icerik .eyebrow { font-size: 10px; letter-spacing: .14em; }
+  .hero-meta { font-size: 9px; letter-spacing: .07em; }
+  .section-marker { font-size: 10px; letter-spacing: .13em; }
+  .card-details strong, .gallery.has-products .card-details strong {
+    font-size: clamp(25px, 6.8vw, 32px);
+    line-height: 1.16;
+  }
+  .card-details > span:first-child, .gallery.has-products .card-details > span:first-child {
+    font-size: 9px;
+    letter-spacing: .09em;
+  }
+  .approach-step h3 { font-size: 34px; }
+  .visitor-questions h2 { font-size: clamp(40px, 10.5vw, 58px); }
+  .visitor-question-list summary { font-size: 15px; line-height: 1.7; }
+  .rates-table td, .rates-table tbody th { font-size: clamp(12px, 3.5vw, 15px); }
+  .rates-table thead th { font-size: 10px; letter-spacing: .045em; }
+  .rates-panel-bottom { font-size: 12px; }
+  .site-footer .footer-top a { font-size: 13px; }
+  .footer-bottom { font-size: 10px; letter-spacing: .07em; }
+}
