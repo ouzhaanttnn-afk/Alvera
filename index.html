@@ -18,9 +18,11 @@
   <link rel="stylesheet" href="scene.css" />
   <link rel="stylesheet" href="navigation.css" />
   <link rel="stylesheet" href="rates.css" />
+  <link rel="stylesheet" href="visitor.css" />
     <script src="script.js" defer></script>
   <script src="navigation.js" defer></script>
   <script src="prices.js" defer></script>
+  <script src="visitor.js" defer></script>
     <script type="module" src="scene.js"></script>
   </head>
   <body>
@@ -38,6 +40,7 @@
         <a href="#fiyatlar">Canlı fiyatlar</a>
         <a href="#hikaye">Hikâye</a>
         <a href="#iletisim">İletişim</a>
+              <a href="#sorular">Sorular</a>
       </nav>
       <a class="header-call" href="tel:+903123902425">BİZİ ARAYIN</a>
       <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-controls="site-menu" aria-expanded="false">
@@ -55,6 +58,7 @@
         <a href="#hikaye"><span>04</span> Hikâyemiz</a>
         <a href="#yaklasim"><span>05</span> Yaklaşımımız</a>
         <a href="#iletisim"><span>06</span> İletişim</a>
+        <a href="#sorular"><span>07</span> Sorular</a>
         <p>Yakından tanışalım.</p>
       </div>
     </nav>
@@ -156,6 +160,30 @@
           </a>
         </div>
         <div class="collection-end reveal"><span>SEÇKİNİN DEVAMI İÇİN</span><a class="text-link" href="https://www.instagram.com/alvera_kuyumculuk/" target="_blank" rel="noopener noreferrer">INSTAGRAM'DA BULUŞALIM</a></div>
+      
+        <div class="visitor-request" aria-labelledby="visitor-request-title">
+          <div class="visitor-request-copy">
+            <p class="eyebrow">DOĞRUDAN MAĞAZAYA SORUN</p>
+            <h3 id="visitor-request-title">Bir model mi arıyorsunuz?</h3>
+            <p>İlgilendiğiniz türü seçip bize yazabilirsiniz.</p>
+          </div>
+          <div class="visitor-request-fields">
+            <div class="visitor-select-field">
+              <label for="visitor-category">İlgilendiğiniz takı</label>
+              <select id="visitor-category">
+                <option value="">Takı türü seçin</option>
+                <option value="yuzuk">Yüzük</option>
+                <option value="kolye">Kolye</option>
+                <option value="kupe">Küpe</option>
+                <option value="bileklik">Bileklik</option>
+                <option value="bilezik">Bilezik</option>
+                <option value="hediye">Hediye seçimi</option>
+              </select>
+            </div>
+            <a class="visitor-request-link" id="visitor-request-link" href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer">WhatsApp'tan sor <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <p class="visitor-request-note">Seçim yapmak sipariş oluşturmaz. Görüşme WhatsApp'ta açılır.</p>
+          </div>
+        </div>
       </section>
 
       <section class="manifesto" id="hikaye" aria-labelledby="manifesto-title">
@@ -196,6 +224,28 @@
             <a class="text-link" href="https://www.google.com/maps/search/?api=1&query=Alvera%20Kuyumculuk%20Natoyolu%20Ankara" target="_blank" rel="noopener noreferrer">YOL TARİFİ AL</a>
           </div>
         </div>
+      
+        <aside class="visitor-questions" id="sorular" aria-labelledby="visitor-questions-title">
+          <div class="visitor-questions-heading">
+            <p class="eyebrow">KISA CEVAPLAR</p>
+            <h2 id="visitor-questions-title">Merak <em>ettikleriniz.</em></h2>
+            <p>Başka bir sorunuz varsa <a href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer">bize yazabilirsiniz.</a></p>
+          </div>
+          <div class="visitor-question-list">
+            <details>
+              <summary>Bir modelin fiyatını ve stok durumunu nasıl öğrenebilirim? <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path class="question-plus" d="M12 5v14"/></svg></summary>
+              <div class="visitor-answer"><p>İlgilendiğiniz modelin fotoğrafını veya bağlantısını WhatsApp'tan iletebilir, güncel fiyatını ve mağazadaki seçenekleri sorabilirsiniz.</p><a href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer">Mağazaya sor <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+            </details>
+            <details>
+              <summary>Tablodaki altın fiyatları mağaza satış fiyatı mı? <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path class="question-plus" d="M12 5v14"/></svg></summary>
+              <div class="visitor-answer"><p>Tabloda Altınkaynak'ın piyasa verileri gösterilir. Mağaza fiyatları farklı olabilir. Bir ürünün güncel fiyatını öğrenmek için bize ulaşabilirsiniz.</p><a href="#fiyatlar">Altın fiyatlarına dön <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+            </details>
+            <details>
+              <summary>Mağazanıza nasıl gelebilirim? <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path class="question-plus" d="M12 5v14"/></svg></summary>
+              <div class="visitor-answer"><p>Mamak, Natoyolu Cad. No:417, Ankara adresindeyiz. Gelmeden önce çalışma saatlerini öğrenmek için bizi arayabilirsiniz.</p><a href="https://www.google.com/maps/search/?api=1&amp;query=Mamak%2C%20Natoyolu%20Cad.%20No%3A417%2C%20Ankara" target="_blank" rel="noopener noreferrer">Google Haritalar'da yol tarifi <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+            </details>
+          </div>
+        </aside>
       </section>
     </main>
 
@@ -203,5 +253,11 @@
       <div class="footer-top"><img src="assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" /><a href="https://www.instagram.com/alvera_kuyumculuk/" target="_blank" rel="noopener noreferrer" aria-label="Alvera Kuyumculuk Instagram hesabını aç">@alvera_kuyumculuk</a></div>
       <div class="footer-bottom"><span>© <span id="year">2026</span> TÜM HAKLARI SAKLIDIR</span><span>NESİLLER BOYU BİR MİRAS</span><a href="#baslangic">YUKARI DÖN</a></div>
     </footer>
+  
+    <nav class="contact-dock" aria-label="Mağazaya hızlı ulaşın">
+      <a class="contact-dock-primary" href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp üzerinden mağazaya yaz"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11.5a8 8 0 0 1-8 8 9 9 0 0 1-3.5-.7L4 20l1.2-4.5a8 8 0 1 1 14.8-4Z"/><path d="M8 11.5h8"/></svg><span>WhatsApp</span></a>
+      <a href="tel:+903123902425" aria-label="Alvera mağazasını ara"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 3 2.3 4.7-2 2a15 15 0 0 0 6 6l2-2L21 16v3a2 2 0 0 1-2.2 2A19 19 0 0 1 3 5.2 2 2 0 0 1 5 3Z"/></svg><span>Ara</span></a>
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=Mamak%2C%20Natoyolu%20Cad.%20No%3A417%2C%20Ankara" target="_blank" rel="noopener noreferrer" aria-label="Google Haritalar'da mağazaya yol tarifi al"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Yol tarifi</span></a>
+    </nav>
   </body>
 </html>
