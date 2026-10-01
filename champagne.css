@@ -5,8 +5,8 @@
   --champagne-paper: #F6EFE8;
   --champagne-ink: #2F2722;
   --champagne-muted: #42362D;
-  --champagne-accent: #513821;
-  --champagne-line: rgba(81, 56, 33, .23);
+  --champagne-accent: #603B25;
+  --champagne-line: rgba(96, 59, 37, .27);
   --atelier-porcelain: #F3ECE4;
   --atelier-stone: #DDCABB;
   --atelier-espresso: #382A21;
@@ -18,7 +18,7 @@
   --ink: var(--champagne-ink);
   --ink-deep: #3F3128;
   --muted: var(--champagne-muted);
-  --gold: #735231;
+  --gold: #80512F;
   --gold-light: var(--champagne-accent);
   --line: var(--champagne-line);
   --visitor-gold: var(--champagne-accent);
@@ -57,7 +57,7 @@ body { color: var(--champagne-ink); }
     radial-gradient(ellipse at 23% 75%, rgba(155, 108, 68, .12), transparent 42%);
 }
 .hero-title em, .hero-tagline em, .display-title em, .manifesto h2 em {
-  color: #644329;
+  color: #704329;
 }
 .hero-meta { border-top-color: var(--champagne-line); }
 .hero-meta a { color: var(--champagne-ink); }

@@ -63,19 +63,30 @@ async function createSculpture() {
   }
   refreshEnvironment();
 
-  const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .25, envMapIntensity: 1.2, clearcoat: .32, clearcoatRoughness: .24 });
+  const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .28, envMapIntensity: 1.12, clearcoat: .22, clearcoatRoughness: .28 });
   const goldEdge = new THREE.MeshStandardMaterial({ color: '#a56e28', metalness: 1, roughness: .29, envMapIntensity: 1.1 });
   const monogramDepth = .26;
 
-  // Average coincident normals only across gentle angles, preserving the
-  // original monogram's crisp corners instead of rounding its silhouette.
+  // Preserve flat front/back plates; smooth only the rolled side edges.
+  // The original vector outline and diamond detail are unchanged.
   function polishNormals(geometry) {
     const positions = geometry.getAttribute('position');
     const normals = geometry.getAttribute('normal');
     const originalNormals = normals.array.slice();
+    const flatFaces = new Uint8Array(positions.count);
+    // Extruded face triangles must share an exactly planar normal.
+    // Mixing their normals with the bevel creates visible triangular reflections.
+    for (const group of geometry.groups) {
+      if (group.materialIndex !== 0) continue;
+      for (let i = group.start; i < group.start + group.count; i++) flatFaces[i] = 1;
+    }
     const shared = new Map();
     const keys = new Array(positions.count);
     for (let i = 0; i < positions.count; i++) {
+      if (flatFaces[i]) {
+        normals.setXYZ(i, 0, 0, positions.getZ(i) < 0 ? -1 : 1);
+        continue;
+      }
       const key = [positions.getX(i), positions.getY(i), positions.getZ(i)]
         .map(value => Math.round(value * 1000000)).join(',');
       keys[i] = key;
@@ -85,14 +96,15 @@ async function createSculpture() {
     }
     const crease = Math.cos(Math.PI / 4);
     for (let i = 0; i < positions.count; i++) {
+      if (flatFaces[i]) continue;
       const offset = i * 3;
       const nx = originalNormals[offset];
       const ny = originalNormals[offset + 1];
       const nz = originalNormals[offset + 2];
       let x = 0, y = 0, z = 0;
       for (const other of shared.get(keys[i])) {
-        const start = other * 3;
-        const ox = originalNormals[start], oy = originalNormals[start + 1], oz = originalNormals[start + 2];
+        const offset = other * 3;
+        const ox = originalNormals[offset], oy = originalNormals[offset + 1], oz = originalNormals[offset + 2];
         if (nx * ox + ny * oy + nz * oz >= crease) {
           x += ox; y += oy; z += oz;
         }
@@ -159,7 +171,7 @@ async function createSculpture() {
   key.position.set(-3, 4, 6); scene.add(key);
   const rim = new THREE.DirectionalLight(0xf0d8be, 3.4);
   rim.position.set(4, 2, -2); scene.add(rim);
-  const pointerLight = new THREE.PointLight(0xffdc99, 12, 12, 2);
+  const pointerLight = new THREE.PointLight(0xffdc99, 8, 12, 2);
   pointerLight.position.set(1, 1.5, 4); scene.add(pointerLight);
 
   const galaxy = new THREE.Group();
