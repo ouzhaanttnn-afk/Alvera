@@ -25,7 +25,8 @@ async function createSculpture() {
   ]);
   const compact = matchMedia('(max-width: 700px)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: compact ? 'low-power' : 'high-performance' });
-  const dpr = Math.min(devicePixelRatio || 1, compact ? 1.5 : 1.8);
+  // Use native retina detail; the resize budget keeps large canvases affordable.
+  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1.5), 3);
   renderer.setPixelRatio(dpr);
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -62,8 +63,47 @@ async function createSculpture() {
   }
   refreshEnvironment();
 
-  const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .19, envMapIntensity: 1.35, clearcoat: .55, clearcoatRoughness: .16 });
-  const goldEdge = new THREE.MeshStandardMaterial({ color: '#a56e28', metalness: 1, roughness: .23, envMapIntensity: 1.2 });
+  const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .25, envMapIntensity: 1.2, clearcoat: .32, clearcoatRoughness: .24 });
+  const goldEdge = new THREE.MeshStandardMaterial({ color: '#a56e28', metalness: 1, roughness: .29, envMapIntensity: 1.1 });
+  const monogramDepth = .26;
+
+  // Average coincident normals only across gentle angles, preserving the
+  // original monogram's crisp corners instead of rounding its silhouette.
+  function polishNormals(geometry) {
+    const positions = geometry.getAttribute('position');
+    const normals = geometry.getAttribute('normal');
+    const originalNormals = normals.array.slice();
+    const shared = new Map();
+    const keys = new Array(positions.count);
+    for (let i = 0; i < positions.count; i++) {
+      const key = [positions.getX(i), positions.getY(i), positions.getZ(i)]
+        .map(value => Math.round(value * 1000000)).join(',');
+      keys[i] = key;
+      const group = shared.get(key);
+      if (group) group.push(i);
+      else shared.set(key, [i]);
+    }
+    const crease = Math.cos(Math.PI / 4);
+    for (let i = 0; i < positions.count; i++) {
+      const offset = i * 3;
+      const nx = originalNormals[offset];
+      const ny = originalNormals[offset + 1];
+      const nz = originalNormals[offset + 2];
+      let x = 0, y = 0, z = 0;
+      for (const other of shared.get(keys[i])) {
+        const start = other * 3;
+        const ox = originalNormals[start], oy = originalNormals[start + 1], oz = originalNormals[start + 2];
+        if (nx * ox + ny * oy + nz * oz >= crease) {
+          x += ox; y += oy; z += oz;
+        }
+      }
+      const length = Math.hypot(x, y, z);
+      if (length) normals.setXYZ(i, x / length, y / length, z / length);
+    }
+    normals.needsUpdate = true;
+    return geometry;
+  }
+
   const monogram = new THREE.Group();
   world.add(monogram);
   for (const outline of artwork.paths) {
@@ -76,23 +116,34 @@ async function createSculpture() {
     }
     if (outline.fill) {
       for (const shape of path.toShapes(false)) {
-        const geometry = new THREE.ExtrudeGeometry(shape, { depth: .30, bevelEnabled: true, bevelThickness: .022, bevelSize: .012, bevelSegments: 4, curveSegments: 28, steps: 1 });
-        geometry.translate(0, 0, -.15);
+        const geometry = new THREE.ExtrudeGeometry(shape, { depth: monogramDepth, bevelEnabled: true, bevelThickness: .014, bevelSize: .008, bevelSegments: 6, curveSegments: 48, steps: 1 });
+        geometry.translate(0, 0, -monogramDepth / 2);
+        polishNormals(geometry);
         monogram.add(new THREE.Mesh(geometry, [gold, goldEdge]));
       }
     } else {
       for (const subpath of path.subPaths) {
-        const vertices = subpath.getPoints(32).map(p => new THREE.Vector3(p.x, p.y, .15));
-        if (vertices.length < 2) continue;
         const curve = new THREE.CurvePath();
-        for (let i = 1; i < vertices.length; i++) curve.add(new THREE.LineCurve3(vertices[i - 1], vertices[i]));
+        const point3 = point => new THREE.Vector3(point.x, point.y, monogramDepth / 2);
+        // Keep the actual vector curves, not a coarse polyline approximation.
+        for (const segment of subpath.curves) {
+          if (segment.isLineCurve) {
+            curve.add(new THREE.LineCurve3(point3(segment.v1), point3(segment.v2)));
+          } else if (segment.isCubicBezierCurve) {
+            curve.add(new THREE.CubicBezierCurve3(
+              point3(segment.v0), point3(segment.v1), point3(segment.v2), point3(segment.v3)
+            ));
+          }
+        }
+        if (!curve.curves.length || !curve.getLength()) continue;
         const radius = Math.max(.008, outline.width / 2);
-        const front = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(16, vertices.length * 2), radius, 8, false), gold);
+        const segments = Math.max(48, Math.ceil(curve.getLength() * 120));
+        const front = new THREE.Mesh(new THREE.TubeGeometry(curve, segments, radius, 16, false), gold);
         const back = front.clone();
-        back.position.z = -.30;
+        back.position.z = -monogramDepth;
         monogram.add(front, back);
-        for (const endpoint of [vertices[0], vertices[vertices.length - 1]]) {
-          const edge = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, .30, 8), goldEdge);
+        for (const endpoint of [curve.getPoint(0), curve.getPoint(1)]) {
+          const edge = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, monogramDepth, 16), goldEdge);
           edge.rotation.x = Math.PI / 2;
           edge.position.set(endpoint.x, endpoint.y, 0);
           monogram.add(edge);
@@ -208,7 +259,7 @@ async function createSculpture() {
     world.rotation.y = pointer.x * .22;
     world.rotation.x = pointer.y * .11;
     // A full turn, rather than the previous barely visible seven-degree sway.
-    const turn = (time * Math.PI * 2 / 18) % (Math.PI * 2);
+    const turn = (time * Math.PI * 2 / 24) % (Math.PI * 2);
     // Keep a complete revolution, with a longer, readable front-facing moment.
     monogram.rotation.y = -.32 + turn - .65 * Math.sin(turn);
     monogram.rotation.x = -.14 + Math.sin(time * .45) * .08;
@@ -231,6 +282,14 @@ async function createSculpture() {
   function resize() {
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
+    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1.5), 3);
+    const pixelBudget = matchMedia('(max-width: 700px)').matches ? 1800000 : 3000000;
+    const nextDpr = Math.min(nativeRatio, Math.sqrt(pixelBudget / (width * height)));
+    if (nextDpr !== dpr) {
+      dpr = nextDpr;
+      renderer.setPixelRatio(dpr);
+      dustMaterial.uniforms.uDpr.value = dpr;
+    }
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     // Preserve the complete sculpture in portrait and narrow desktop columns.
@@ -254,6 +313,7 @@ async function createSculpture() {
   const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); }, { rootMargin: '80px' });
   observer.observe(stage);
   new ResizeObserver(resize).observe(stage);
+  window.addEventListener('resize', resize, { passive: true });
   document.addEventListener('visibilitychange', sync);
   canvas.addEventListener('webglcontextlost', event => {
     event.preventDefault();
