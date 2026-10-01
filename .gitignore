@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.local-data/
+.env*
+!.env.example
+*-giris.txt
+test-results/
