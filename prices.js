@@ -89,14 +89,14 @@
     }
     let message;
     if (!current) {
-      message = offline ? 'İnternet bağlantısı yok. Fiyatlar doğrulanamıyor.' : busy ? 'Altınkaynak verisine bağlanıyor' : 'Fiyatlar şu anda alınamıyor. Yeniden deneyebilir veya kaynağı açabilirsiniz.';
+      message = offline ? 'İnternet bağlantısı yok. Fiyatlar doğrulanamıyor.' : busy ? 'Güncel fiyatlar alınıyor' : 'Fiyatlar şu anda alınamıyor. Yeniden deneyebilir veya mağazamıza sorabilirsiniz.';
     } else {
       const date = dateFormatter.format(new Date(current.timestamp));
       if (offline) message = 'Bağlantı yok · Son alınan veri: ' + date;
       else if (connection === 'error') message = 'Güncelleme başarısız · Son alınan veri: ' + date;
       else if (connection === 'cache') message = 'Kaydedilmiş veri · ' + date + ' · Güncellik doğrulanıyor';
-      else if (old) message = 'Gecikmeli veri · Altınkaynak: ' + date;
-      else message = 'Altınkaynak güncellemesi: ' + date;
+      else if (old) message = 'Gecikmeli veri · ' + date;
+      else message = 'Son güncelleme: ' + date;
     }
     if (status.textContent !== message) status.textContent = message;
   }

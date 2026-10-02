@@ -35,6 +35,7 @@
   if (!category || !requestLink) return;
   const destination = new URL(requestLink.href);
   const messages = {
+    pirlanta: 'Merhaba, pırlanta modelleri hakkında bilgi almak istiyorum.',
     yuzuk: 'Merhaba, yüzük modelleri hakkında bilgi almak istiyorum.',
     kolye: 'Merhaba, kolye modelleri hakkında bilgi almak istiyorum.',
     kupe: 'Merhaba, küpe modelleri hakkında bilgi almak istiyorum.',
@@ -50,3 +51,4 @@
   category.addEventListener('change', updateRequest);
   updateRequest();
 })();
+

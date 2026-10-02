@@ -25,8 +25,8 @@ async function createSculpture() {
   ]);
   const compact = matchMedia('(max-width: 700px)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: compact ? 'low-power' : 'high-performance' });
-  // Use native retina detail; the resize budget keeps large canvases affordable.
-  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1.5), 3);
+  // Keep crisp retina edges without rendering unnecessary triple-density pixels.
+  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 2 : 2.25);
   renderer.setPixelRatio(dpr);
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -128,7 +128,7 @@ async function createSculpture() {
     }
     if (outline.fill) {
       for (const shape of path.toShapes(false)) {
-        const geometry = new THREE.ExtrudeGeometry(shape, { depth: monogramDepth, bevelEnabled: true, bevelThickness: .014, bevelSize: .008, bevelSegments: 6, curveSegments: 48, steps: 1 });
+        const geometry = new THREE.ExtrudeGeometry(shape, { depth: monogramDepth, bevelEnabled: true, bevelThickness: .014, bevelSize: .008, bevelSegments: compact ? 4 : 6, curveSegments: compact ? 36 : 48, steps: 1 });
         geometry.translate(0, 0, -monogramDepth / 2);
         polishNormals(geometry);
         monogram.add(new THREE.Mesh(geometry, [gold, goldEdge]));
@@ -149,13 +149,13 @@ async function createSculpture() {
         }
         if (!curve.curves.length || !curve.getLength()) continue;
         const radius = Math.max(.008, outline.width / 2);
-        const segments = Math.max(48, Math.ceil(curve.getLength() * 120));
-        const front = new THREE.Mesh(new THREE.TubeGeometry(curve, segments, radius, 16, false), gold);
+        const segments = Math.max(48, Math.ceil(curve.getLength() * (compact ? 80 : 110)));
+        const front = new THREE.Mesh(new THREE.TubeGeometry(curve, segments, radius, compact ? 12 : 16, false), gold);
         const back = front.clone();
         back.position.z = -monogramDepth;
         monogram.add(front, back);
         for (const endpoint of [curve.getPoint(0), curve.getPoint(1)]) {
-          const edge = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, monogramDepth, 16), goldEdge);
+          const edge = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, monogramDepth, compact ? 12 : 16), goldEdge);
           edge.rotation.x = Math.PI / 2;
           edge.position.set(endpoint.x, endpoint.y, 0);
           monogram.add(edge);
@@ -171,7 +171,7 @@ async function createSculpture() {
   key.position.set(-3, 4, 6); scene.add(key);
   const rim = new THREE.DirectionalLight(0xf0d8be, 3.4);
   rim.position.set(4, 2, -2); scene.add(rim);
-  const pointerLight = new THREE.PointLight(0xffdc99, 8, 12, 2);
+  const pointerLight = new THREE.PointLight(0xffdc99, 5, 12, 2);
   pointerLight.position.set(1, 1.5, 4); scene.add(pointerLight);
 
   const galaxy = new THREE.Group();
@@ -187,7 +187,7 @@ async function createSculpture() {
 
   let seed = 417;
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  const count = compact ? 950 : 1700;
+  const count = compact ? 420 : 1000;
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const phases = new Float32Array(count);
@@ -248,7 +248,7 @@ async function createSculpture() {
   }
 
   const starPositions = [];
-  for (let i = 0; i < 110; i++) starPositions.push((random() - .5) * 9, (random() - .5) * 7, -1 - random() * 3);
+  for (let i = 0; i < (compact ? 50 : 80); i++) starPositions.push((random() - .5) * 9, (random() - .5) * 7, -1 - random() * 3);
   const stars = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3)), new THREE.PointsMaterial({ color: '#d9caa2', size: .014, transparent: true, opacity: .48, depthWrite: false }));
   world.add(stars);
 
@@ -259,9 +259,14 @@ async function createSculpture() {
   const pointer = { x: 0, y: 0 };
   const target = { x: 0, y: 0 };
   const hero = document.querySelector('.hero');
+  const frameInterval = 1000 / (compact ? 30 : 60);
   function draw(now = performance.now()) {
     frame = 0;
     if (contextLost) return;
+    if (!paused && last && now - last < frameInterval - .8) {
+      if (visible && !document.hidden) frame = requestAnimationFrame(draw);
+      return;
+    }
     const dt = last ? Math.min((now - last) / 1000, .05) : 0;
     last = now;
     if (!paused) time += dt;
@@ -281,8 +286,8 @@ async function createSculpture() {
     outer.rotation.z = -.3 - time * .06;
     inner.rotation.y = .65 + Math.sin(time * .25) * .22;
     travelers.forEach((traveler, i) => { traveler.rotation.z = i * 2.1 + time * (.32 + i * .045); });
-    pointerLight.position.x = 1 + pointer.x * 3;
-    pointerLight.position.y = 1.5 - pointer.y * 2;
+    pointerLight.position.x = 1 + pointer.x * 1.5;
+    pointerLight.position.y = 1.5 - pointer.y;
     dustMaterial.uniforms.uTime.value = time;
     renderer.render(scene, camera);
     if (!paused && visible && !document.hidden) frame = requestAnimationFrame(draw);
@@ -294,8 +299,8 @@ async function createSculpture() {
   function resize() {
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
-    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1.5), 3);
-    const pixelBudget = matchMedia('(max-width: 700px)').matches ? 1800000 : 3000000;
+    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 2 : 2.25);
+    const pixelBudget = compact ? 1100000 : 2200000;
     const nextDpr = Math.min(nativeRatio, Math.sqrt(pixelBudget / (width * height)));
     if (nextDpr !== dpr) {
       dpr = nextDpr;
@@ -368,10 +373,17 @@ async function createSculpture() {
   stage.classList.add('is-ready');
 }
 
-if (stage && canvas) createSculpture().catch(error => {
+function startSculpture() {
+  createSculpture().catch(error => {
   // The original vector monogram remains visible without WebGL or JavaScript imports.
   stage.classList.remove('is-ready');
     setSceneStatus('Hafif görünüm etkin. 3D sahne şu anda kullanılamıyor.');
   motionButton.hidden = true;
   console.warn('Alvera: using the lightweight sculpture fallback.', error);
-});
+  });
+}
+if (stage && canvas) {
+  // Let navigation and the original SVG paint before preparing the 3D geometry.
+  if ('requestIdleCallback' in window) window.requestIdleCallback(startSculpture, { timeout: 900 });
+  else window.setTimeout(startSculpture, 120);
+}

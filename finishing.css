@@ -1,0 +1,190 @@
+/* Alvera: quieter effects, a centered signature and a denser editorial rhythm. */
+.cursor { display: none !important; }
+body, body.cursor-ready { cursor: auto; }
+body.cursor-ready a, body.cursor-ready button, a, button { cursor: pointer; }
+body.cursor-ready input, body.cursor-ready textarea, input, textarea { cursor: text; }
+select, summary { cursor: pointer; }
+
+.pointer-glow {
+  width: 360px;
+  height: 360px;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(218, 185, 133, .2), rgba(191, 164, 143, .05) 38%, transparent 68%);
+  mix-blend-mode: soft-light;
+  filter: none;
+  pointer-events: none;
+}
+.pointer-glow.is-visible { opacity: .32; }
+.hero-glow { animation: none; }
+
+.site-header,
+.site-header.is-scrolled {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 22px;
+  height: 88px;
+  padding: 0 4.5vw;
+  background: linear-gradient(115deg, #ecdfd0, #e2cdb8 75%, #d4bba2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid rgba(96, 59, 37, .18);
+}
+.site-header .brand {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  margin: 0;
+  width: clamp(155px, 15.5vw, 205px);
+}
+.site-header .brand img { display: block; width: 100%; height: auto; }
+.site-header .header-nav {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  display: flex;
+  gap: clamp(10px, 1.35vw, 22px);
+  margin: 0;
+}
+.site-header .header-nav a { white-space: nowrap; font-size: clamp(10px, .85vw, 12px); }
+.site-header .header-call { grid-column: 3; grid-row: 1; justify-self: end; margin: 0; min-height: 44px; padding: 12px 20px; }
+.site-header .menu-toggle { display: none; }
+.site-header .header-nav a[aria-current] { color: #603b25; }
+
+.hero {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 3vw;
+  min-height: 0;
+  padding: 130px 5.7vw 56px;
+}
+.hero-copy { min-width: 0; max-width: 590px; }
+.hero-title { font-size: clamp(78px, 8vw, 126px); line-height: .94; }
+.hero-description { max-width: 36ch; margin-top: 26px; font-size: clamp(15px, 1.25vw, 18px); line-height: 1.85; }
+.hero-actions { margin-top: 28px; gap: 14px; flex-wrap: wrap; }
+.hero .hero-visual { min-width: 0; }
+.hero .sculpture-stage { height: clamp(410px, 39vw, 590px); }
+.scene-caption { display: none; }
+.scene-status { margin-top: 10px; }
+.hero-meta { margin-top: 18px; }
+
+.intro.section-shell,
+.rates.section-shell,
+.collection.section-shell,
+.approach.section-shell,
+.visit.section-shell { padding-top: clamp(64px, 6vw, 96px); padding-bottom: clamp(64px, 6vw, 96px); }
+.section-shell .section-marker { margin-bottom: 32px; }
+.intro .intro-content { margin-top: 0; }
+.intro .body-copy { margin-top: 24px; max-width: 58ch; }
+.rates .rates-grid { margin-top: 36px; gap: 5vw; align-items: center; }
+.collection .section-heading { margin-bottom: 34px; }
+.collection-mark { max-width: 180px; margin-bottom: 18px; }
+.collection .collection-end { margin-top: 30px; padding-top: 22px; }
+.collection .visitor-request { margin-top: 48px; }
+.manifesto .manifesto-inner.section-shell { padding-top: 76px; padding-bottom: 76px; }
+.manifesto h2 { margin-top: 24px; font-size: clamp(60px, 7vw, 108px); }
+.manifesto-bottom { margin-top: 32px; }
+.approach .approach-grid { margin-top: 42px; }
+.visit .visit-grid { margin-top: 38px; gap: 5vw; }
+.visit .visitor-questions { margin-top: 64px; padding-top: 40px; }
+.site-footer { padding-top: 48px; padding-bottom: 30px; }
+.site-footer .footer-bottom { margin-top: 32px; gap: 18px; }
+.site-footer .admin-entry { text-transform: none; letter-spacing: .02em; }
+.rates-panel-bottom { flex-wrap: wrap; gap: 12px; }
+#rates-status { flex: 1 1 200px; }
+.rates-refresh { margin-left: auto; }
+.gallery:empty { display: none; }
+.catalog-tools { scroll-margin-top: 110px; }
+
+.category-showcase {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(12px, 1.5vw, 24px);
+  margin: 0;
+}
+.category-tile {
+  display: block;
+  min-width: 0;
+  color: #33281f;
+  text-align: left;
+  text-decoration: none;
+}
+.category-photo {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 8 / 9;
+  background: #d8c2ab;
+  border: 1px solid rgba(96, 59, 37, .16);
+  border-radius: 3px;
+  box-shadow: 0 9px 22px rgba(85, 55, 33, .07);
+}
+.category-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms ease;
+}
+.category-label { display: block; margin-top: 14px; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(25px, 2.4vw, 36px); font-weight: 500; line-height: 1.15; }
+.category-action { display: block; margin-top: 6px; font-size: 10px; font-weight: 600; letter-spacing: .07em; color: #70472f; }
+.category-tile[aria-current] .category-photo { border-color: #70472f; box-shadow: 0 0 0 2px rgba(112, 71, 47, .15); }
+.category-tile:focus-visible { outline: 2px solid #70472f; outline-offset: 6px; border-radius: 3px; }
+.category-photo-note { max-width: 65ch; margin-top: 18px; color: #675345; font-size: 11px; line-height: 1.8; }
+.category-photo-note[hidden] { display: none; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .category-tile:hover .category-photo img { transform: scale(1.035); }
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .site-header { padding-inline: 3vw; column-gap: 14px; }
+  .site-header .header-nav { gap: 10px; }
+  .site-header .header-call { padding-inline: 15px; font-size: 10px; }
+}
+@media (max-width: 900px) {
+  .site-header, .site-header.is-scrolled { height: 78px; padding: 0 22px; column-gap: 8px; }
+  .site-header .brand { width: clamp(150px, 35vw, 175px); }
+  .site-header .header-nav, .site-header .header-call { display: none; }
+  .site-header .menu-toggle { display: inline-flex; position: static; grid-column: 3; grid-row: 1; justify-self: end; width: 46px; height: 46px; margin: 0; }
+  .hero { grid-template-columns: minmax(0, 1fr); padding: 118px 24px 38px; row-gap: 0; }
+  .hero-copy { max-width: 580px; margin-inline: auto; text-align: center; }
+  .hero-title { font-size: clamp(66px, 12vw, 94px); }
+  .hero-description { margin: 22px auto 0; max-width: 38ch; }
+  .hero-actions { justify-content: center; margin-top: 26px; }
+  .hero .hero-visual { width: 100%; margin: 20px 0 0; }
+  .hero .sculpture-stage { height: clamp(330px, 66vw, 455px); }
+  .hero-meta { margin-top: 8px; }
+  .category-showcase { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 16px; }
+  .category-label { font-size: 31px; }
+  .manifesto .manifesto-inner.section-shell { padding-top: 62px; padding-bottom: 62px; }
+}
+@media (max-width: 600px) {
+  .site-header, .site-header.is-scrolled { height: 74px; padding-inline: 18px; }
+  .site-header .brand { width: 156px; }
+  .hero { padding-top: 111px; padding-bottom: 26px; }
+  .hero-title { font-size: clamp(58px, 14.5vw, 82px); }
+  .hero-description { font-size: 15px; line-height: 1.8; max-width: 32ch; }
+  .hero-actions { gap: 10px; }
+  .hero-actions .hero-link, .hero-actions .hero-secondary { min-height: 48px; padding: 14px 16px; font-size: 11px; }
+  .hero .hero-visual { margin-top: 18px; }
+  .hero .sculpture-stage { height: clamp(315px, 87vw, 405px); }
+  .intro.section-shell, .rates.section-shell, .collection.section-shell, .approach.section-shell, .visit.section-shell { padding-top: 52px; padding-bottom: 52px; }
+  .section-shell .section-marker { margin-bottom: 24px; }
+  .rates .rates-grid { margin-top: 26px; gap: 28px; }
+  .collection .section-heading { margin-bottom: 25px; }
+  .category-showcase { display: flex; overflow-x: auto; gap: 14px; padding: 3px 3px 14px; scroll-snap-type: x mandatory; scroll-padding-inline: 3px; scrollbar-width: thin; scrollbar-color: #a98768 transparent; }
+  .category-tile { flex: 0 0 42%; scroll-snap-align: start; }
+  .category-label { font-size: 30px; margin-top: 11px; }
+  .category-action { font-size: 10px; }
+  .category-photo-note { font-size: 10px; margin-top: 9px; }
+  .collection .visitor-request { margin-top: 34px; }
+  .manifesto .manifesto-inner.section-shell { padding-top: 54px; padding-bottom: 54px; }
+  .manifesto h2 { font-size: clamp(48px, 11.5vw, 68px); }
+  .approach .approach-grid { margin-top: 30px; }
+  .visit .visit-grid { margin-top: 28px; gap: 32px; }
+  .visit .visitor-questions { margin-top: 42px; padding-top: 30px; }
+  .site-footer { padding-top: 38px; padding-bottom: 108px; }
+  .site-footer .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: 22px; margin-top: 25px; }
+  .site-footer .footer-bottom > span { flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .category-photo img { transition: none; }
+  .pointer-glow { display: none; }
+}

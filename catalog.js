@@ -23,6 +23,43 @@
     const select=document.querySelector('#visitor-category');const link=document.querySelector('#visitor-request-link');
     if(select&&link){const update=()=>{const option=select.options[select.selectedIndex];link.href=wa('Merhaba, '+(select.value?option.textContent+' seçenekleri':'mağazanızdaki modeller')+' hakkında bilgi almak istiyorum.');};select.addEventListener('change',update);update();}
   }
+  function categoryNavigation() {
+    let representative = false;
+    document.querySelectorAll('[data-category-tile]').forEach(tile => {
+      const key = tile.dataset.categoryTile;
+      const label = tile.dataset.categoryLabel;
+      const product = catalog.products.find(p => p.category === key && p.images.length);
+      const photo = product && catalog.media.find(m => m.id === product.images[0]);
+      if (photo) {
+        const image = tile.querySelector('img');
+        image.src = photo.url;
+        image.alt = product.name;
+        tile.querySelector('.category-action').textContent = 'Modelleri incele';
+        tile.href = '#koleksiyon';
+        tile.removeAttribute('target');
+        tile.removeAttribute('rel');
+        tile.addEventListener('click', event => {
+          event.preventDefault();
+          filter = key;
+          query = '';
+          const tools = document.querySelector('.catalog-tools');
+          tools.querySelector('input').value = '';
+          tools.querySelectorAll('[data-category]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.category === key)));
+          document.querySelectorAll('[data-category-tile]').forEach(item => {
+            if (item === tile) item.setAttribute('aria-current', 'true');
+            else item.removeAttribute('aria-current');
+          });
+          render();
+          tools.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+        });
+      } else {
+        representative = true;
+        tile.href = wa('Merhaba, ' + label + ' modelleri hakkında bilgi almak istiyorum.');
+      }
+    });
+    const note = document.querySelector('.category-photo-note');
+    if (note) note.hidden = !representative;
+  }
   function render() {
     const products=catalog.products.filter(p=>(filter==='all'||p.category===filter)&&(!query||(p.name+' '+p.description+' '+p.metal+' '+p.sku).toLocaleLowerCase('tr-TR').includes(query)));
     gallery.classList.add('has-products');
@@ -33,7 +70,7 @@
   function createTools() {
     const tools=document.createElement('div');tools.className='catalog-tools';tools.innerHTML='<div class="catalog-filters" aria-label="Ürün kategorileri"><button type="button" data-category="all" aria-pressed="true">Tümü</button>'+Object.entries(catalog.categories).filter(([key])=>catalog.products.some(p=>p.category===key)).map(([key,label])=>`<button type="button" data-category="${key}" aria-pressed="false">${escape(label)}</button>`).join('')+'</div><label><span class="sr-only">Seçkide ürün ara</span><input type="search" class="catalog-search" placeholder="Seçkide ara" aria-label="Seçkide ürün ara" /></label>';
     gallery.before(tools);const count=document.createElement('p');count.className='catalog-count';count.setAttribute('role','status');count.setAttribute('aria-live','polite');gallery.after(count);
-    tools.addEventListener('click',event=>{const button=event.target.closest('[data-category]');if(!button)return;filter=button.dataset.category;tools.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();});
+    tools.addEventListener('click',event=>{const button=event.target.closest('[data-category]');if(!button)return;filter=button.dataset.category;document.querySelectorAll('[data-category-tile]').forEach(tile=>{if(tile.dataset.categoryTile===filter)tile.setAttribute('aria-current','true');else tile.removeAttribute('aria-current');});tools.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();});
     tools.querySelector('input').addEventListener('input',event=>{query=event.target.value.trim().toLocaleLowerCase('tr-TR');render();});
     gallery.addEventListener('click',event=>{const card=event.target.closest('[data-product]');if(!card)return;event.preventDefault();showProduct(card.dataset.product,true);});
     gallery.addEventListener('pointerover',event=>{if(!matchMedia('(hover:hover)').matches)return;const card=event.target.closest('.gallery-card');if(!card)return;gallery.querySelectorAll('.is-active').forEach(c=>c.classList.remove('is-active'));card.classList.add('is-active');document.body.classList.add('gallery-focused');});
@@ -54,5 +91,5 @@
     document.body.classList.add('product-dialog-open');document.body.classList.remove('gallery-focused');if(!dialog.open)dialog.showModal();
   }
   window.addEventListener('popstate',()=>{const id=new URL(location.href).searchParams.get('urun');if(id&&catalog)showProduct(id,false);else if(dialog?.open)dialog.close();});
-  fetch('/api/catalog',{signal:AbortSignal.timeout(10000)}).then(response=>{if(!response.ok)throw new Error();return response.json();}).then(value=>{catalog=value;applySettings(value.settings);if(value.products.length){createTools();render();const id=new URL(location.href).searchParams.get('urun');if(id)showProduct(id,false);} }).catch(()=>{/* Keep the original site and prices available if the catalog is offline. */});
+  fetch('/api/catalog',{signal:AbortSignal.timeout(10000)}).then(response=>{if(!response.ok)throw new Error();return response.json();}).then(value=>{catalog=value;applySettings(value.settings);if(value.products.length){createTools();render();const id=new URL(location.href).searchParams.get('urun');if(id)showProduct(id,false);} categoryNavigation(); }).catch(()=>{/* Keep the original site and prices available if the catalog is offline. */});
 })();

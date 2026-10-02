@@ -2,7 +2,7 @@
   'use strict';
   const $ = selector => document.querySelector(selector);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-  const names = {yuzuk:'Yüzük',kolye:'Kolye',kupe:'Küpe',bileklik:'Bileklik',bilezik:'Bilezik',hediye:'Hediye',ozel:'Özel seçki'};
+  const names = {pirlanta:'Pırlanta',yuzuk:'Yüzük',kolye:'Kolye',kupe:'Küpe',bileklik:'Bileklik',bilezik:'Bilezik',hediye:'Hediye',ozel:'Özel seçki'};
   let csrf = '', data = null, photos = [], editing = false, dirty = false, pendingBackup = null, uploading = false, noticeTimer;
   function notice(message, error = false) { const box = $('#notice'); box.textContent = message; box.classList.toggle('error', error); box.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => { box.hidden = true; }, error ? 10000 : 5000); }
   async function api(action, body) {
