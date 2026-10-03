@@ -35,7 +35,7 @@ select, summary { cursor: pointer; }
   grid-row: 1;
   justify-self: center;
   margin: 0;
-  width: clamp(155px, 15.5vw, 205px);
+  width: clamp(175px, 17.5vw, 230px);
 }
 .site-header .brand img { display: block; width: 100%; height: auto; }
 .site-header .header-nav {
@@ -140,7 +140,7 @@ select, summary { cursor: pointer; }
 }
 @media (max-width: 900px) {
   .site-header, .site-header.is-scrolled { height: 78px; padding: 0 22px; column-gap: 8px; }
-  .site-header .brand { width: clamp(150px, 35vw, 175px); }
+  .site-header .brand { width: clamp(175px, 38vw, 205px); }
   .site-header .header-nav, .site-header .header-call { display: none; }
   .site-header .menu-toggle { display: inline-flex; position: static; grid-column: 3; grid-row: 1; justify-self: end; width: 46px; height: 46px; margin: 0; }
   .hero { grid-template-columns: minmax(0, 1fr); padding: 118px 24px 38px; row-gap: 0; }
@@ -157,7 +157,7 @@ select, summary { cursor: pointer; }
 }
 @media (max-width: 600px) {
   .site-header, .site-header.is-scrolled { height: 74px; padding-inline: 18px; }
-  .site-header .brand { width: 156px; }
+  .site-header .brand { width: 180px; }
   .hero { padding-top: 111px; padding-bottom: 26px; }
   .hero-title { font-size: clamp(58px, 14.5vw, 82px); }
   .hero-description { font-size: 15px; line-height: 1.8; max-width: 32ch; }
