@@ -19,7 +19,7 @@
     const store=catalog.media.find(m=>m.id===s.storeImage);if(store&&visit){const image=document.createElement('img');image.src=store.url;image.alt='Alvera Kuyumculuk mağazası';image.className='store-photo';image.loading='lazy';image.width=store.width;image.height=store.height;visit.append(image);}
     const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href=s.siteUrl+'/';
     let schema=document.querySelector('#store-schema');if(!schema){schema=document.createElement('script');schema.type='application/ld+json';schema.id='store-schema';document.head.append(schema);}
-    schema.textContent=JSON.stringify({'@context':'https://schema.org','@type':'JewelryStore',name:'Alvera Kuyumculuk',url:s.siteUrl,telephone:s.phone,address:{'@type':'PostalAddress',streetAddress:s.address,addressLocality:'Ankara',addressCountry:'TR'},logo:s.siteUrl+'/assets/alvera-logo.png',sameAs:['https://www.instagram.com/'+s.instagram+'/'],hasMap:s.mapsUrl});
+    schema.textContent=JSON.stringify({'@context':'https://schema.org','@type':'JewelryStore',name:'Alvera Kuyumculuk',url:s.siteUrl,telephone:s.phone,address:{'@type':'PostalAddress',streetAddress:s.address,addressLocality:'Ankara',addressCountry:'TR'},logo:s.siteUrl+'/assets/alvera-wordmark.svg',sameAs:['https://www.instagram.com/'+s.instagram+'/'],hasMap:s.mapsUrl});
     const select=document.querySelector('#visitor-category');const link=document.querySelector('#visitor-request-link');
     if(select&&link){const update=()=>{const option=select.options[select.selectedIndex];link.href=wa('Merhaba, '+(select.value?option.textContent+' seçenekleri':'mağazanızdaki modeller')+' hakkında bilgi almak istiyorum.');};select.addEventListener('change',update);update();}
   }
@@ -63,8 +63,9 @@
   function render() {
     const products=catalog.products.filter(p=>(filter==='all'||p.category===filter)&&(!query||(p.name+' '+p.description+' '+p.metal+' '+p.sku).toLocaleLowerCase('tr-TR').includes(query)));
     gallery.classList.add('has-products');
-    gallery.innerHTML=products.map(p=>{const photo=catalog.media.find(m=>m.id===p.images[0]);return `<a href="?urun=${p.id}#koleksiyon" class="gallery-card is-visible" data-product="${p.id}" aria-label="${escape(p.name)} detaylarını aç"><span class="gallery-image"><img src="${escape(photo?.url)}" alt="${escape(p.name)}" width="${photo?.width||800}" height="${photo?.height||1000}" loading="lazy" decoding="async" /></span><span class="card-details"><span>${escape(catalog.categories[p.category])}${p.sku?' / '+escape(p.sku):''}</span><strong>${escape(p.name)}</strong>${p.metal?'<small>'+escape(p.metal)+'</small>':''}</span></a>`;}).join('')||(query||filter!=='all'?'<p class="catalog-empty">Bu aramada ürün bulunamadı. Başka bir kategoriye göz atın.</p>':'');
+    gallery.innerHTML=products.map(p=>{const photo=catalog.media.find(m=>m.id===p.images[0]);return `<a href="?urun=${p.id}#koleksiyon" class="gallery-card is-visible" data-product="${p.id}" aria-label="${escape(p.name)} detaylarını aç"><span class="gallery-image"><img src="${escape(photo?.url)}" alt="${escape(p.name)}" width="${photo?.width||800}" height="${photo?.height||1000}" loading="lazy" decoding="async" /></span><span class="card-details"><span>${escape(catalog.categories[p.category])}${p.sku?' / '+escape(p.sku):''}</span><strong>${escape(p.name)}</strong>${p.metal?'<small>'+escape(p.metal)+'</small>':''}</span></a>`;}).join('')||(query||filter!=='all'?'<div class="catalog-empty"><p>Bu aramada ürün bulunamadı.</p><button class="catalog-reset" type="button">Tüm seçkiye dön</button></div>':'');
     document.querySelector('.catalog-count').textContent=products.length+' parça';
+    gallery.querySelector('.catalog-reset')?.addEventListener('click',()=>{filter='all';query='';const tools=document.querySelector('.catalog-tools');tools.querySelector('input').value='';tools.querySelectorAll('[data-category]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category==='all')));document.querySelectorAll('[data-category-tile]').forEach(t=>t.removeAttribute('aria-current'));render();tools.querySelector('input').focus({preventScroll:true});});
     document.body.classList.remove('gallery-focused');
   }
   function createTools() {
@@ -77,9 +78,9 @@
     gallery.addEventListener('pointerleave',()=>{document.body.classList.remove('gallery-focused');gallery.querySelectorAll('.is-active').forEach(c=>c.classList.remove('is-active'));});
   }
   function ensureDialog() {
-    if(dialog)return;dialog=document.createElement('dialog');dialog.className='product-dialog';dialog.setAttribute('aria-labelledby','product-dialog-title');dialog.innerHTML='<header class="product-dialog-header"><img src="/assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" /><button type="button" class="product-dialog-close" aria-label="Ürün detayını kapat">×</button></header><div class="product-dialog-content"></div>';document.body.append(dialog);
+    if(dialog)return;dialog=document.createElement('dialog');dialog.className='product-dialog';dialog.setAttribute('aria-labelledby','product-dialog-title');dialog.innerHTML='<header class="product-dialog-header"><img src="/assets/alvera-wordmark.svg" alt="Alvera Kuyumculuk" width="1010" height="360" /><button type="button" class="product-dialog-close" aria-label="Ürün detayını kapat">×</button></header><div class="product-dialog-content"></div>';document.body.append(dialog);
     dialog.querySelector('.product-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',event=>{if(event.target===dialog){const bounds=dialog.getBoundingClientRect();if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)dialog.close();}});
-    dialog.addEventListener('close',()=>{document.body.classList.remove('product-dialog-open','gallery-focused');const url=new URL(location.href);url.searchParams.delete('urun');history.replaceState({},'',url);lastFocus?.focus({preventScroll:true});});
+    dialog.addEventListener('close',()=>{document.body.classList.remove('product-dialog-open','gallery-focused');document.dispatchEvent(new Event('alvera:overlay'));const url=new URL(location.href);url.searchParams.delete('urun');history.replaceState({},'',url);lastFocus?.focus({preventScroll:true});});
   }
   function showProduct(id, push) {
     const p=catalog.products.find(p=>p.id===id);if(!p)return;ensureDialog();activeProduct=p;lastFocus=document.activeElement;
@@ -88,8 +89,24 @@
     dialog.querySelectorAll('[data-image]').forEach(b=>b.addEventListener('click',()=>{dialog.querySelector('.product-main-photo').src=photos[+b.dataset.image].url;dialog.querySelectorAll('[data-image]').forEach(item=>item.setAttribute('aria-pressed',String(item===b)));}));
     dialog.querySelector('.product-share').addEventListener('click',async()=>{try{if(navigator.share)await navigator.share({title:p.name,url});else{await navigator.clipboard.writeText(url);dialog.querySelector('.product-share-status').textContent='Bağlantı kopyalandı.';}}catch(error){if(error.name!=='AbortError')dialog.querySelector('.product-share-status').textContent='Adres çubuğundaki bağlantıyı paylaşabilirsiniz.';}});
     if(push){const path=new URL(location.href);path.searchParams.set('urun',p.id);path.hash='koleksiyon';history.pushState({},'',path);}
-    document.body.classList.add('product-dialog-open');document.body.classList.remove('gallery-focused');if(!dialog.open)dialog.showModal();
+    document.body.classList.add('product-dialog-open');document.dispatchEvent(new Event('alvera:overlay'));document.body.classList.remove('gallery-focused');if(!dialog.open)dialog.showModal();
   }
+  document.addEventListener('alvera:category',event=>{
+    const key=event.detail;
+    if(catalog?.products.some(p=>p.category===key)){
+      filter=key;query='';
+      const tools=document.querySelector('.catalog-tools');
+      tools.querySelector('input').value='';
+      tools.querySelectorAll('[data-category]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category===key)));
+      document.querySelectorAll('[data-category-tile]').forEach(t=>{if(t.dataset.categoryTile===key)t.setAttribute('aria-current','true');else t.removeAttribute('aria-current');});
+      render();
+      tools.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});
+    }else{
+      const select=document.querySelector('#visitor-category');
+      if(select&&[...select.options].some(option=>option.value===key)){select.value=key;select.dispatchEvent(new Event('change')); }
+    }
+  });
+  document.addEventListener('alvera:product',event=>{if(catalog)showProduct(event.detail,true);});
   window.addEventListener('popstate',()=>{const id=new URL(location.href).searchParams.get('urun');if(id&&catalog)showProduct(id,false);else if(dialog?.open)dialog.close();});
-  fetch('/api/catalog',{signal:AbortSignal.timeout(10000)}).then(response=>{if(!response.ok)throw new Error();return response.json();}).then(value=>{catalog=value;applySettings(value.settings);if(value.products.length){createTools();render();const id=new URL(location.href).searchParams.get('urun');if(id)showProduct(id,false);} categoryNavigation(); }).catch(()=>{/* Keep the original site and prices available if the catalog is offline. */});
+  fetch('/api/catalog',{signal:AbortSignal.timeout(10000)}).then(response=>{if(!response.ok)throw new Error();return response.json();}).then(value=>{catalog=value;applySettings(value.settings);if(value.products.length){createTools();render();const id=new URL(location.href).searchParams.get('urun');if(id)showProduct(id,false);} categoryNavigation();document.dispatchEvent(new CustomEvent('alvera:catalog-ready',{detail:value})); }).catch(()=>{document.dispatchEvent(new Event('alvera:catalog-unavailable'));/* Keep the original site and prices available if the catalog is offline. */});
 })();

@@ -260,9 +260,10 @@ async function createSculpture() {
   const target = { x: 0, y: 0 };
   const hero = document.querySelector('.hero');
   const frameInterval = 1000 / (compact ? 30 : 60);
+  const overlayActive = () => document.body.matches('.menu-open, .product-dialog-open, .search-open');
   function draw(now = performance.now()) {
     frame = 0;
-    if (contextLost) return;
+    if (contextLost || overlayActive()) return;
     if (!paused && last && now - last < frameInterval - .8) {
       if (visible && !document.hidden) frame = requestAnimationFrame(draw);
       return;
@@ -294,7 +295,7 @@ async function createSculpture() {
   }
   function sync() {
     cancelAnimationFrame(frame); frame = 0; last = 0;
-    if (visible && !document.hidden && !contextLost) draw();
+    if (visible && !document.hidden && !contextLost && !overlayActive()) draw();
   }
   function resize() {
     const { width, height } = stage.getBoundingClientRect();
@@ -332,6 +333,7 @@ async function createSculpture() {
   new ResizeObserver(resize).observe(stage);
   window.addEventListener('resize', resize, { passive: true });
   document.addEventListener('visibilitychange', sync);
+  document.addEventListener('alvera:overlay', sync);
   canvas.addEventListener('webglcontextlost', event => {
     event.preventDefault();
     contextLost = true;

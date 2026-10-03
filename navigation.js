@@ -5,7 +5,7 @@
   if (!button || !panel) return;
   const originalPosition = document.createComment('Mobile menu button position');
   button.before(originalPosition);
-  const background = [...document.querySelectorAll('.site-header, main, footer, .skip-link')];
+  const background = [...document.querySelectorAll('.site-header, main, footer, .skip-link, .contact-dock')];
   const previousInert = new Map();
   let open = false;
   let previousFocus = null;
@@ -24,6 +24,7 @@
     if (next === open) return;
     open = next;
     document.body.classList.toggle('menu-open', open);
+    document.dispatchEvent(new Event('alvera:overlay'));
     button.setAttribute('aria-expanded', String(open));
     button.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
     if (open) {
@@ -53,6 +54,7 @@
   panel.querySelectorAll('a[href]').forEach(link => {
     link.addEventListener('click', () => {
       setMenu(false, false);
+      if (link.dataset.navigationCategory) document.dispatchEvent(new CustomEvent('alvera:category', { detail: link.dataset.navigationCategory }));
       const href = link.getAttribute('href');
       const target = href?.startsWith('#') ? document.getElementById(href.slice(1)) : null;
       if (!target) { button.focus({ preventScroll: true }); return; }

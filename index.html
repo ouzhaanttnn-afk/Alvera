@@ -22,16 +22,17 @@
     <link rel="stylesheet" href="catalog.css" />
   <link rel="stylesheet" href="champagne.css?v=20261002-mobile-readability" />
     <link rel="stylesheet" href="buttons.css?v=20261001-brown" />
-    <link rel="stylesheet" href="finishing.css?v=20261003-brand-copy" />
+    <link rel="stylesheet" href="finishing.css?v=20261003-interface" />
     <link rel="icon" href="assets/alvera-monogram.svg" type="image/svg+xml" />
     <link rel="canonical" href="https://alvera-ashy.vercel.app/" />
     <meta property="og:image" content="https://alvera-ashy.vercel.app/assets/alvera-logo.png" />
     <script src="script.js?v=20261002-refinement" defer></script>
-  <script src="navigation.js" defer></script>
+  <script src="navigation.js?v=20261003-interface" defer></script>
   <script src="prices.js?v=20261002-refinement" defer></script>
     <script src="visitor.js?v=20261002-refinement" defer></script>
-    <script src="catalog.js?v=20261002-refinement" defer></script>
-    <script type="module" src="scene.js?v=20261002-refinement"></script>
+    <script src="interface.js?v=20261003-interface" defer></script>
+    <script src="catalog.js?v=20261003-interface" defer></script>
+    <script type="module" src="scene.js?v=20261003-interface"></script>
   </head>
   <body>
     <a class="skip-link" href="#icerik">İçeriğe geç</a>
@@ -40,35 +41,54 @@
 
     <header class="site-header">
       <a class="brand" href="#baslangic" aria-label="Alvera, sayfa başına dön">
-        <img src="assets/alvera-logo.png" alt="" width="1010" height="360" />
+        <img src="assets/alvera-wordmark.svg" alt="" width="1010" height="360" />
       </a>
       <nav class="header-nav" aria-label="Hızlı bağlantılar">
-        <a href="#koleksiyon">Seçki</a>
-        <a href="#fiyatlar">Canlı fiyatlar</a>
-        <a href="#hikaye">Hikâye</a>
-        <a href="#iletisim">İletişim</a>
-              <a href="#sorular">Sorular</a>
+        <a href="#koleksiyon">Seçki</a><a href="#fiyatlar">Altın fiyatları</a><a href="#iletisim">Mağazamız</a>
       </nav>
-      <a class="header-call" href="tel:+903123902425">BİZİ ARAYIN</a>
-      <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-controls="site-menu" aria-expanded="false">
-        <span class="menu-toggle-text">MENÜ</span>
-        <span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
-      </button>
+      <div class="header-actions">
+        <button class="search-toggle" type="button" aria-label="Seçkide ara" aria-haspopup="dialog" aria-controls="site-search-dialog"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+        <a class="header-call" href="tel:+903123902425">BİZİ ARAYIN</a>
+        <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-controls="site-menu" aria-expanded="false">
+          <span class="menu-toggle-text">MENÜ</span><span class="menu-icon" aria-hidden="true"><i></i><i></i></span>
+        </button>
+      </div>
     </header>
 
     <nav class="menu-panel" id="site-menu" aria-label="Ana menü" aria-hidden="true" inert>
       <div class="menu-inner">
-        <img class="menu-brand" src="assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" />
-        <a href="#baslangic"><span>01</span> Ana Sayfa</a>
-        <a href="#fiyatlar"><span>02</span> Altın Fiyatları</a>
-        <a href="#koleksiyon"><span>03</span> Koleksiyon</a>
-        <a href="#hikaye"><span>04</span> Hikâyemiz</a>
-        <a href="#yaklasim"><span>05</span> Yaklaşımımız</a>
-        <a href="#iletisim"><span>06</span> İletişim</a>
-        <a href="#sorular"><span>07</span> Sorular</a>
-        <p>Yakından tanışalım.</p>
+        <img class="menu-brand" src="assets/alvera-wordmark-light.svg" alt="Alvera Kuyumculuk" width="907" height="317" />
+        <div class="menu-groups">
+          <div class="menu-group"><p class="menu-group-label">KEŞFEDİN</p>
+            <a href="#baslangic">Ana sayfa</a><a href="#koleksiyon">Mücevher seçkisi</a><a href="#fiyatlar">Altın fiyatları</a>
+            <a href="#hikaye">Hikâye</a><a href="#iletisim">Mağazamız</a><a href="#sorular">Bilgi ve destek</a>
+          </div>
+          <div class="menu-group"><p class="menu-group-label">KATEGORİLER</p>
+            <div class="menu-categories">
+              <a href="#koleksiyon" data-navigation-category="pirlanta">Pırlanta</a><a href="#koleksiyon" data-navigation-category="yuzuk">Yüzük</a>
+              <a href="#koleksiyon" data-navigation-category="kolye">Kolye</a><a href="#koleksiyon" data-navigation-category="kupe">Küpe</a>
+              <a href="#koleksiyon" data-navigation-category="bileklik">Bileklik</a><a href="#koleksiyon" data-navigation-category="bilezik">Bilezik</a>
+            </div>
+            <div class="menu-contact"><a href="tel:+903123902425">0312 390 24 25</a><a href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer">WhatsApp ile iletişim</a></div>
+          </div>
+        </div>
       </div>
     </nav>
+
+    <dialog class="site-search-dialog" id="site-search-dialog" aria-labelledby="site-search-title">
+      <div class="site-search-top"><h2 id="site-search-title">Seçkide arayın.</h2><button class="site-search-close" type="button" aria-label="Aramayı kapat"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <form class="site-search-form" role="search">
+        <label class="sr-only" for="site-search-input">Ürün adı, kategori veya ürün kodu</label>
+        <div class="site-search-field"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="site-search-input" type="search" maxlength="100" placeholder="Ürün adı, kategori veya ürün kodu" autocomplete="off" autofocus /></div>
+      </form>
+      <p class="site-search-status" role="status" aria-live="polite">Seçki yükleniyor…</p>
+      <ul class="site-search-results"></ul>
+      <div class="search-categories" aria-label="Kategorilere git">
+        <button type="button" data-search-category="pirlanta">Pırlanta</button><button type="button" data-search-category="yuzuk">Yüzük</button><button type="button" data-search-category="kolye">Kolye</button>
+        <button type="button" data-search-category="kupe">Küpe</button><button type="button" data-search-category="bileklik">Bileklik</button><button type="button" data-search-category="bilezik">Bilezik</button>
+      </div>
+      <p class="search-help">Aradığınızı bulamadıysanız <a href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer">mağazamıza yazın.</a></p>
+    </dialog>
 
     <main id="icerik">
       <section class="hero" id="baslangic" aria-labelledby="hero-title">
@@ -133,7 +153,7 @@
         <div class="section-marker reveal"><span>03</span><span>SEÇKİ</span></div>
         <div class="section-heading reveal">
           <div>
-            <img class="collection-mark" src="assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" />
+            <img class="collection-mark" src="assets/alvera-wordmark.svg" alt="Alvera Kuyumculuk" width="1010" height="360" />
             <h2 class="display-title" id="collection-title">Altın ve pırlanta<br /><em>seçkimiz.</em></h2>
           </div>
           <p class="body-copy">Yüzük, kolye, küpe ve bileklik modellerimizi kategoriye göre keşfedin. Güncel fiyat ve stok bilgisi için mağazamızla iletişime geçin.</p>
@@ -228,7 +248,7 @@
             <div class="visit-actions reveal"><a href="tel:+903123902425">0312 390 24 25</a><a href="https://wa.me/905334853040" target="_blank" rel="noopener noreferrer">WHATSAPP'TAN YAZ</a></div>
           </div>
           <div class="visit-note reveal">
-            <img class="visit-note-brand" src="assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" />
+            <img class="visit-note-brand" src="assets/alvera-wordmark.svg" alt="Alvera Kuyumculuk" width="1010" height="360" />
             <p>Google Haritalar’da mağaza bilgilerine, yol tarifine ve müşteri yorumlarına ulaşabilirsiniz.</p>
             <a class="text-link" href="https://www.google.com/maps/search/?api=1&amp;query=Cengizhan%20Mah.%2C%20Natoyolu%20Cad.%20No%3A209%2FC%2C%20Mamak%20%2F%20Ankara" target="_blank" rel="noopener noreferrer">YOL TARİFİ AL</a>
           </div>
@@ -259,7 +279,7 @@
     </main>
 
     <footer class="site-footer">
-      <div class="footer-top"><img src="assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" /><a href="https://www.instagram.com/alvera_kuyumculuk/" target="_blank" rel="noopener noreferrer" aria-label="Alvera Kuyumculuk Instagram hesabını aç">@alvera_kuyumculuk</a></div>
+      <div class="footer-top"><img src="assets/alvera-wordmark-light.svg" alt="Alvera Kuyumculuk" width="1010" height="360" /><a href="https://www.instagram.com/alvera_kuyumculuk/" target="_blank" rel="noopener noreferrer" aria-label="Alvera Kuyumculuk Instagram hesabını aç">@alvera_kuyumculuk</a></div>
       <div class="footer-bottom"><span>© <span id="year">2026</span> TÜM HAKLARI SAKLIDIR</span><a class="admin-entry" href="/admin" rel="nofollow">Yönetim paneli</a><a href="#baslangic">YUKARI DÖN</a></div>
     </footer>
   
