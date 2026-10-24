@@ -1,0 +1,12 @@
+.git
+.agents
+.env*
+.local
+.next
+node_modules
+test-results
+playwright-report
+tmp
+output
+coverage
+*.tsbuildinfo
