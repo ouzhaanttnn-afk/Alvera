@@ -440,3 +440,79 @@ body {
     display: none;
   }
 }
+
+/* ---------- Liquid glass v2: daha yüksek doz (ana siteyle aynı malzeme) ---------- */
+:root {
+  --lg-tint: rgba(255, 251, 245, .3);
+  --lg-tint-strong: rgba(255, 251, 245, .56);
+  --lg-blur: 26px;
+  --lg-rim: linear-gradient(140deg, rgba(255, 255, 255, .98) 0%, rgba(255, 255, 255, .28) 26%, rgba(255, 255, 255, .02) 52%, rgba(255, 255, 255, .18) 74%, rgba(255, 255, 255, .78) 100%);
+  --lg-gloss: radial-gradient(120% 70% at 30% -18%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 58%);
+}
+.liquid-backdrop { background: linear-gradient(165deg, #f8efe4 0%, #f0e2d1 38%, #ead6c1 70%, #e4ccb5 100%); }
+.liquid-backdrop span:nth-child(1) { background: radial-gradient(circle, rgba(232, 186, 112, .62), rgba(232, 186, 112, 0) 66%); }
+.liquid-backdrop span:nth-child(2) { background: radial-gradient(circle, rgba(196, 120, 86, .34), rgba(196, 120, 86, 0) 64%); }
+.liquid-backdrop span:nth-child(3) { background: radial-gradient(circle, rgba(222, 156, 132, .42), rgba(222, 156, 132, 0) 64%); }
+.liquid-backdrop span:nth-child(5) { width: 34vmax; height: 34vmax; top: 62vh; right: 8vw; background: radial-gradient(circle, rgba(201, 152, 64, .4), rgba(201, 152, 64, 0) 64%); animation: lg-drift-c 41s ease-in-out infinite alternate-reverse; }
+.liquid-backdrop span:nth-child(6) { width: 28vmax; height: 28vmax; top: 6vh; left: 44vw; background: radial-gradient(circle, rgba(170, 110, 74, .26), rgba(170, 110, 74, 0) 64%); animation: lg-drift-a 57s ease-in-out infinite alternate-reverse; }
+
+:is(.site-header, .form-card, .art-card, .reference-card, .unavailable, .privacy-page, .collection-off, .mobile-progress) {
+  isolation: isolate;
+  background: var(--lg-gloss), var(--lg-tint);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(210%) brightness(1.04);
+  backdrop-filter: blur(var(--lg-blur)) saturate(210%) brightness(1.04);
+  border-color: transparent;
+  box-shadow: inset 0 -22px 38px -30px rgba(96, 58, 30, .38), inset 0 18px 30px -28px rgba(255, 255, 255, .9), 0 0 0 1px rgba(122, 84, 48, .12),
+    0 10px 22px -12px rgba(60, 36, 20, .22), 0 34px 70px -34px rgba(60, 36, 20, .42);
+}
+:is(.form-card, .reference-card) { background: var(--lg-gloss), var(--lg-tint-strong); }
+:is(.form-card, .art-card, .reference-card, .unavailable, .privacy-page, .collection-off, .mobile-progress, .type-option, .upload-box, .notice-toggle, .review-grid, .button) { position: relative; }
+:is(.site-header, .form-card, .art-card, .reference-card, .unavailable, .privacy-page, .collection-off, .mobile-progress, .type-option, .notice-toggle, .review-grid, .button)::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: var(--lg-rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.form-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(60% 40% at 88% 108%, rgba(255, 214, 160, .32), transparent 70%), radial-gradient(40% 30% at 6% 0%, rgba(255, 255, 255, .5), transparent 70%);
+  pointer-events: none;
+}
+.button.primary, .primary {
+  background: linear-gradient(180deg, rgba(255, 236, 214, .42) 0%, rgba(255, 236, 214, .08) 48%, rgba(255, 236, 214, 0) 52%), linear-gradient(180deg, rgba(134, 86, 54, .84), rgba(80, 47, 28, .92));
+  box-shadow: inset 0 1px 0 rgba(255, 240, 220, .7), inset 0 -12px 20px -12px rgba(30, 14, 6, .6), 0 0 0 1px rgba(60, 34, 18, .35), 0 14px 30px -14px rgba(90, 50, 22, .7);
+  text-shadow: 0 1px 1px rgba(40, 20, 8, .35);
+}
+.button.secondary, .secondary { background: linear-gradient(180deg, rgba(255, 255, 255, .6) 0%, rgba(255, 255, 255, .14) 50%, rgba(255, 255, 255, .05) 52%), rgba(255, 251, 245, .26); }
+.field input, .field select, .field textarea { background: var(--lg-sheen), rgba(255, 252, 247, .42); -webkit-backdrop-filter: blur(10px) saturate(180%); backdrop-filter: blur(10px) saturate(180%); }
+.field input:focus, .field select:focus, .field textarea:focus { background: rgba(255, 253, 250, .82); }
+
+/* Marka uyumu: kalan turkuaz ayrıntılar bronz/altına çekilir. */
+.step-item:not(:last-child):after { border-left-color: rgba(122, 84, 48, .28); }
+.type-option strong, .type-option.selected strong, .section-kicker, .eyebrow { color: var(--lg-bronze); }
+.radio-dot { border-color: rgba(122, 84, 48, .45); }
+.selected .radio-dot { border-color: var(--lg-bronze); }
+.form-aside h1 { letter-spacing: -.03em; }
+.form-aside h1 span { color: #8a5a35; }
+.art-check { background: linear-gradient(180deg, #a2774d, #6e4428); color: #fff8ee; box-shadow: 0 0 0 3px rgba(255, 251, 245, .7); }
+
+@media (prefers-reduced-transparency: reduce) {
+  :is(.site-header, .form-card, .art-card, .reference-card, .unavailable, .privacy-page, .collection-off, .mobile-progress) { background: #f8f1e8; }
+}
+@media (forced-colors: active) {
+  :is(.site-header, .form-card, .art-card, .reference-card, .unavailable, .privacy-page, .collection-off, .mobile-progress, .type-option, .notice-toggle, .review-grid, .button)::before { display: none; }
+}
+.type-option:focus-within { outline-color: var(--lg-bronze); }
+.type-option svg, .notice-toggle, .notice-toggle > svg, .upload-icon { color: var(--lg-bronze); }
+.review-grid dt, .notice-toggle small, .art-card > span { color: var(--lg-muted); }
