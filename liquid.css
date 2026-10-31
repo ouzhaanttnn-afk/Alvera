@@ -191,3 +191,37 @@
 @media (forced-colors: active) {
   :is(.site-header, .rates .rates-panel, .visitor-request, .visit .visit-note, .approach .approach-step, .visitor-question-list, .masak-entry, .contact-dock)::before { display: none; }
 }
+
+/* ---------- Başlık logosu: kapsülün içinde yatay ve dikey tam ortada ----------
+   Logo yüksekliği başlık yüksekliğinden eşit iç boşluk çıkarılarak verilir; kaydırınca başlıkla birlikte küçülür.
+   SVG'nin kendi iç boşlukları simetriktir (üst/alt 16, sol/sağ 19-20 birim). */
+.site-header .brand, .site-header.is-scrolled .brand {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+.site-header .brand img { display: block; width: auto; max-width: none; height: 62px; transition: height 320ms var(--ui-ease); }
+.site-header, .site-header.is-scrolled { height: 86px; }
+.site-header.is-scrolled { height: 72px; }
+.site-header.is-scrolled .brand img { height: 52px; }
+@media (max-width: 900px) {
+  .site-header, .site-header.is-scrolled { height: 76px; }
+  .site-header.is-scrolled { height: 66px; }
+  .site-header .brand img { height: 56px; }
+  .site-header.is-scrolled .brand img { height: 48px; }
+}
+@media (max-width: 600px) {
+  .site-header, .site-header.is-scrolled { height: 70px; }
+  .site-header.is-scrolled { height: 64px; }
+  .site-header .brand img { height: 50px; }
+  .site-header.is-scrolled .brand img { height: 46px; }
+}
