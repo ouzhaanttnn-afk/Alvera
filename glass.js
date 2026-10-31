@@ -19,10 +19,7 @@
       '<feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="11" result="n"/>' +
       '<feGaussianBlur in="n" stdDeviation="2.4" result="s"/>' +
       '<feDisplacementMap in="SourceGraphic" in2="s" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter>' +
-      '<filter id="lg-lens" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">' +
-      '<feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="1" seed="4" result="n"/>' +
-      '<feGaussianBlur in="n" stdDeviation="3" result="s"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="s" scale="30" xChannelSelector="R" yChannelSelector="G"/></filter>';
+      '';
     document.body.appendChild(svg);
     document.documentElement.classList.add('lg-refract');
   }
