@@ -57,8 +57,8 @@ body { background: transparent; }
 :is(.rates .rates-panel, .visitor-request, .visit .visit-note, .approach .approach-step, .visitor-question-list, .masak-entry,
     .catalog-tools, .catalog-empty, .contact-dock, .site-search-dialog, .product-dialog) {
   background: var(--lg-light), var(--lg-sheen), var(--lg-tint);
-  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
-  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  backdrop-filter: blur(22px) saturate(175%);
   border: 1px solid rgba(255, 255, 255, .55);
   border-radius: var(--lg-radius);
   box-shadow: var(--lg-shadow);

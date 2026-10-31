@@ -26,13 +26,14 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .22 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- Ortak cam malzemesi: ışık kenarı + iç parlama + derinlik ---------- */
+/* ---------- Ortak cam malzemesi: ışık kenarı + iç parlama + derinlik ----------
+   Not: backdrop-filter değerleri sabit yazılır; Safari (iOS dahil) içinde var() kullanılan backdrop-filter'ı uygulamaz. */
 :is(.site-header, .rates .rates-panel, .visitor-request, .visit .visit-note, .approach .approach-step, .visitor-question-list, .masak-entry,
     .catalog-tools, .catalog-empty, .contact-dock, .site-search-dialog, .product-dialog, .hero-meta) {
   isolation: isolate;
   background: var(--lg-light), var(--lg-gloss), var(--lg-tint);
-  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(1.04);
-  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(1.04);
+  -webkit-backdrop-filter: blur(26px) saturate(210%) brightness(1.04);
+  backdrop-filter: blur(26px) saturate(210%) brightness(1.04);
   border: 1px solid transparent;
   box-shadow: var(--lg-depth), 0 0 0 1px rgba(122, 84, 48, .12), var(--lg-drop);
 }
