@@ -39,7 +39,7 @@ export const MIGRATIONS = ['20261031120000_masak_raporu.sql', '20261031120100_ma
 
 export function migrationSql() {
   const dir = resolve(/* turbopackIgnore: true */ process.cwd(), 'supabase/migrations');
-  return MIGRATIONS.map((f) => readFileSync(join(dir, f), 'utf8'));
+  return MIGRATIONS.map((f) => readFileSync(join(/* turbopackIgnore: true */ dir, f), 'utf8'));
 }
 
 type PG = import('@electric-sql/pglite').PGlite;

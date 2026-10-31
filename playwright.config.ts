@@ -25,6 +25,8 @@ export default defineConfig({
       TOKEN_SECRET: 'dGVzdC1vbmx5LWtleS0wMTIzNDU2Nzg5MDEyMzQ1Njc=',
       LOCAL_ADMIN_PASSWORD: 'synthetic-e2e-only-password',
       LOCAL_ADMIN_TOTP_CODE: '654321',
+      MASAK_RAPORU_DEMO_PASSWORD: 'Demo-Sentetik-Parola-1',
+      MASAK_RAPORU_DEMO_TOTP_SECRET: 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
       DOCUMENTS_ENABLED: 'true',
       SIGNATURE_ENABLED: 'true',
       RESIDENCE_DOCUMENT_ENABLED: 'true',

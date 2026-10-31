@@ -89,7 +89,8 @@ create table masak.invitations (
   accepted_at timestamptz,
   accepted_user_id uuid references masak.profiles (id),
   revoked_at timestamptz,
-  created_by uuid not null references masak.profiles (id),
+  -- Boş: ilk işletme sahibi için sunucu kurulum betiğiyle oluşturulan davet.
+  created_by uuid references masak.profiles (id),
   created_at timestamptz not null default now()
 );
 

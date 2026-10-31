@@ -164,6 +164,14 @@ describe('MRZ ve OCR yardımcıları', () => {
     expect(r.checks).toMatchObject({ documentNumber: true, birthDate: true, expiryDate: true, composite: true, tckn: false });
     expect(checkDigit('740812')).toBe('2');
   });
+  it('gerçek OCR gürültüsüne (0/O karışıklığı, İ, fazladan karakter) dayanıklıdır', () => {
+    // Tesseract.js'in sentetik MRZ görüntüsünden ürettiği ham metin (tarayıcıda alındı)
+    const noisy = 'I<UT0D231458907<<<<<<<<<<<<<<z\n7408122F1204159UT0<<<<<<<<<<<6\nERIİIKSSON<<ANNA<MARLA<<<<<<<<<<\n';
+    const r = parseTd1(noisy)!;
+    expect(r).toMatchObject({ documentNumber: 'D23145890', issuingState: 'UTO', nationality: 'UTO', birthDate: '1974-08-12' });
+    expect(r.checks.documentNumber && r.checks.birthDate && r.checks.expiryDate).toBe(true);
+    expect(r.surname).toMatch(/^ERI+KSSON$/);
+  });
   it('OCR metninden yalnızca sağlaması geçerli TCKN adaylarını çıkarır', () => {
     expect(tcknCandidates('No 10000000146 ve 12345678901')).toEqual(['10000000146']);
   });

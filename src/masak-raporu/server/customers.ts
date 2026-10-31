@@ -1,6 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
-import { validTckn, validVkn } from '@/lib/validation';
+import { validTckn, validVkn } from '../ids';
 import { maskIdentifier } from '../mrz';
 import { audit } from './audit';
 import type { Sql } from './db';
@@ -144,6 +144,9 @@ export async function updateCustomer(ctx: Ctx, id: string, input: unknown) {
     const update: Record<string, unknown> = { ...data };
     for (const k of ['identity_number_enc', 'identity_hash', 'identity_masked', 'identity_document_number_enc', 'tax_number_enc', 'tax_hash', 'tax_masked'])
       if (update[k] === null) delete update[k];
+    // Hassas bilgiyi göremeyen kullanıcı maskeli alanları boş görür; boş gönderim mevcut değeri silmez.
+    if (!ctx.can('sensitive.view'))
+      for (const k of ['address', 'phone', 'email', 'mother_name', 'father_name']) if (update[k] === null) delete update[k];
     const cols = Object.keys(update);
     await sql.query(
       `update masak.customers set ${cols.map((c, i) => `${c} = $${i + 3}`).join(', ')}, updated_by = masak.uid() where id = $1 and organization_id = $2`,

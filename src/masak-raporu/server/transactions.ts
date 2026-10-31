@@ -157,7 +157,7 @@ export async function evaluateTransaction(ctx: Ctx, sql: Sql, id: string): Promi
   const [reps, verified, groupRows, history, inCase, rules] = await Promise.all([
     sql.query<{ n: number }>('select count(*)::int as n from masak.customer_representatives where customer_id = $1', [tx.customerId]),
     sql.query<{ ok: boolean }>(`select exists (select 1 from masak.customer_identity_checks where customer_id = $1 and status = 'verified') as ok`, [tx.customerId]),
-    sql.query<{ group_id: string; status: LinkGroup['status'] } & TxRow>(
+    sql.query<Omit<TxRow, 'status'> & { group_id: string; status: LinkGroup['status']; tx_status: Tx['status'] }>(
       `select g.id as group_id, g.status, t.id, t.number, t.occurred_at, t.total_try_kurus::text, t.status as tx_status, t.type, t.payment_method, t.customer_id,
               t.on_behalf_of_customer_id, t.representative_id, t.version
          from masak.transaction_links l join masak.transaction_link_groups g on g.id = l.group_id
@@ -174,7 +174,7 @@ export async function evaluateTransaction(ctx: Ctx, sql: Sql, id: string): Promi
     loadRules(sql, org),
   ]);
   const groups = new Map<string, LinkGroup>();
-  for (const g of groupRows as unknown as (TxRow & { group_id: string; status: LinkGroup['status']; tx_status: Tx['status'] })[]) {
+  for (const g of groupRows) {
     const entry = groups.get(g.group_id) || { id: g.group_id, status: g.status, transactions: [] };
     entry.transactions.push(toTx({ ...g, status: g.tx_status }));
     groups.set(g.group_id, entry);

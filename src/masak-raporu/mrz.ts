@@ -1,6 +1,6 @@
 // Kimlik kartı arka yüzündeki MRZ (ICAO 9303 TD1, 3 × 30 karakter) çözümleyicisi.
 // OCR çıktısı yalnızca form önerisidir; personel belgeyle karşılaştırıp onaylamadan teyit sayılmaz.
-import { validTckn } from '@/lib/validation';
+import { validTckn } from './ids';
 
 export type MrzResult = {
   documentNumber: string;
@@ -25,8 +25,12 @@ export function checkDigit(s: string) {
   return String([...s].reduce((sum, c, i) => sum + value(c) * WEIGHTS[i % 3], 0) % 10);
 }
 
+// Harf olması gereken alanlarda tipik OCR karışıklıkları (0→O, 1→I, 5→S, 8→B, 2→Z).
+const letters = (v: string) => v.replace(/0/g, 'O').replace(/1/g, 'I').replace(/5/g, 'S').replace(/8/g, 'B').replace(/2/g, 'Z');
+
 function normalizeLine(line: string) {
   return line
+    .replace(/[İ]/g, 'I')
     .toUpperCase()
     .replace(/[«‹]/g, '<')
     .replace(/\s+/g, '')
@@ -47,16 +51,16 @@ export function parseTd1(text: string): MrzResult | null {
   const lines = text.split(/\r?\n/).map(normalizeLine).filter((l) => l.length >= 28);
   for (let i = 0; i + 2 < lines.length; i++) {
     const [a, b, c] = [lines[i], lines[i + 1], lines[i + 2]].map((l) => l.padEnd(30, '<').slice(0, 30));
-    if (!/^[AIC][A-Z<][A-Z<]{3}/.test(a) || !/^\d{6}/.test(b)) continue;
+    if (!/^[AIC][A-Z0-9<][A-Z0-9<]{3}/.test(a) || !/^\d{6}/.test(b)) continue;
     const documentNumber = a.slice(5, 14).replace(/<+$/, '');
     const optional1 = a.slice(15, 30);
-    const [surname, ...given] = c.split('<<');
+    const [surname, ...given] = letters(c).split('<<');
     const personalNumber = optional1.replace(/</g, '');
     const composite = a.slice(5, 30) + b.slice(0, 7) + b.slice(8, 15) + b.slice(18, 29);
     return {
       documentNumber,
-      issuingState: a.slice(2, 5).replace(/</g, ''),
-      nationality: b.slice(15, 18).replace(/</g, ''),
+      issuingState: letters(a.slice(2, 5)).replace(/</g, ''),
+      nationality: letters(b.slice(15, 18)).replace(/</g, ''),
       birthDate: mrzDate(b.slice(0, 6), 'birth'),
       expiryDate: mrzDate(b.slice(8, 14), 'expiry'),
       sex: b[7] === '<' ? '' : b[7],
