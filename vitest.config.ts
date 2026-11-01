@@ -7,6 +7,6 @@ export default defineConfig({
     fileParallelism: false,
   },
   resolve: {
-    alias: { '@': new URL('./src', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1') },
+    alias: { 'server-only': new URL('./tests/masak-raporu/server-only.ts', import.meta.url).pathname, '@': new URL('./src', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1') },
   },
 });
