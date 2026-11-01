@@ -97,7 +97,7 @@ select, summary { cursor: pointer; }
 
 .category-showcase {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(12px, 1.5vw, 24px);
   margin: 0;
 }
@@ -151,7 +151,7 @@ select, summary { cursor: pointer; }
   .hero .hero-visual { width: 100%; margin: 20px 0 0; }
   .hero .sculpture-stage { height: clamp(330px, 66vw, 455px); }
   .hero-meta { margin-top: 8px; }
-  .category-showcase { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 16px; }
+  .category-showcase { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 12px; }
   .category-label { font-size: 31px; }
   .manifesto .manifesto-inner.section-shell { padding-top: 62px; padding-bottom: 62px; }
 }
@@ -435,3 +435,7 @@ body.motion-ready .reveal { transition-duration: 650ms; transition-timing-functi
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .product-dialog::backdrop, .site-search-dialog::backdrop { backdrop-filter: none; }
 }
+
+/* Fotoğrafı olmayan kategori kutusu: marka monogramı. İlk ürün yayımlanınca catalog.js bu sınıfı kaldırır. */
+.category-tile .category-photo.is-placeholder { background: linear-gradient(155deg, #f6ede1 0%, #e8d4ba 55%, #dcc3a3 100%); }
+.category-tile .category-photo.is-placeholder img { box-sizing: border-box; object-fit: contain; padding: 22% 14%; }

@@ -38,6 +38,7 @@
       const photo = product && catalog.media.find(m => m.id === product.images[0]);
       if (photo) {
         const image = tile.querySelector('img');
+        image.closest('.category-photo')?.classList.remove('is-placeholder');
         image.src = photo.url;
         image.alt = product.name;
         tile.querySelector('.category-action').textContent = 'Modelleri incele';
