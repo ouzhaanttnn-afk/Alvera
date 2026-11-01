@@ -6,7 +6,8 @@
   if (!panel || !body || !status) return;
 
   const products = [['PGA', 'Gram Altın'], ['PC', 'Çeyrek Altın'], ['PY', 'Yarım Altın'], ['PA', 'Ata Cumhuriyet'], ['PB', '22 Ayar Bilezik']];
-  const endpoints = ['/api/prices', 'https://static.altinkaynak.com/public/Gold'];
+  const endpoints = ['/api/prices'];
+  const karatCodes = { 24: 'PGA', 22: 'PB', 18: 'P18', 14: 'P14' };
   const storageKey = 'alvera.gold.last-good.v1';
   const freshnessLimit = 20 * 60 * 1000;
   const formatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -44,7 +45,17 @@
       if (!item) throw new Error('Missing price: ' + code);
       return { code, name, buy: amount(raw ? item.Alis : item.buy), sell: amount(raw ? item.Satis : item.sell) };
     });
-    return { source_updated_at: new Date(timestamp).toISOString(), timestamp, prices };
+    const calc = {};
+    for (const [karat, code] of Object.entries(karatCodes)) {
+      const item = byCode.get(code);
+      // Yerel önbellekte yalnızca tablo ürünleri bulunur; hesaplayıcı fiyatları ayrı saklanır.
+      const saved = raw ? null : input.calc?.[karat];
+      try {
+        if (item) calc[karat] = { buy: amount(raw ? item.Alis : item.buy), sell: amount(raw ? item.Satis : item.sell) };
+        else if (saved) calc[karat] = { buy: amount(saved.buy), sell: amount(saved.sell) };
+      } catch { /* Bu ayar hesaplayıcıdan çıkar. */ }
+    }
+    return { source_updated_at: new Date(timestamp).toISOString(), timestamp, prices, calc, stale: !raw && input.stale === true };
   }
 
   function showEmpty(message) {
@@ -72,13 +83,67 @@
       return row;
     });
     body.replaceChildren(...rows);
+    updateCalculator();
+  }
+
+
+  // ---- Gram hesaplayıcı: yalnızca piyasa referansı gösterir, fiyat teklifi değildir ----
+  const calcForm = document.querySelector('#rates-calc');
+  const calcKarat = document.querySelector('#calc-karat');
+  const calcGrams = document.querySelector('#calc-grams');
+  const calcResult = document.querySelector('#calc-result');
+  const calcAsk = document.querySelector('#calc-ask');
+  function parseGrams(text) {
+    const value = String(text).trim().replace(',', '.');
+    if (!/^\d{1,5}(\.\d{1,3})?$/.test(value)) return null;
+    const [whole, fraction = ''] = value.split('.');
+    const milligrams = BigInt(whole) * 1000n + BigInt((fraction + '000').slice(0, 3));
+    return milligrams > 0n && milligrams <= 100000000n ? milligrams : null;
+  }
+  // Kuruşa tam sayı olarak çevrilir; kayan nokta yuvarlama hatası olmaz.
+  function worth(milligrams, price) { return Number((milligrams * BigInt(Math.round(price * 100)) + 500n) / 1000n) / 100; }
+  function updateCalculator() {
+    if (!calcForm) return;
+    const available = Object.keys(current?.calc || {});
+    calcForm.hidden = !available.length;
+    if (!available.length) return;
+    for (const option of calcKarat.options) { option.hidden = option.disabled = !available.includes(option.value); }
+    if (!available.includes(calcKarat.value)) calcKarat.value = available[0];
+    const milligrams = parseGrams(calcGrams.value);
+    const entry = current.calc[calcKarat.value];
+    calcAsk.disabled = !milligrams;
+    if (!milligrams) {
+      calcResult.replaceChildren(Object.assign(document.createElement('p'), { className: 'rates-calc-hint', textContent: calcGrams.value.trim() ? 'Gramı 12,5 gibi girin (en fazla 3 ondalık).' : 'Gram girin; piyasa referans değerini görün.' }));
+      return;
+    }
+    const rows = [['Piyasa alış değeri', worth(milligrams, entry.buy)], ['Piyasa satış değeri', worth(milligrams, entry.sell)]].map(([label, amountValue]) => {
+      const wrap = document.createElement('div');
+      const term = document.createElement('dt'); term.textContent = label;
+      const detail = document.createElement('dd'); detail.textContent = formatter.format(amountValue) + ' ₺';
+      wrap.append(term, detail);
+      return wrap;
+    });
+    const list = document.createElement('dl');
+    list.append(...rows);
+    calcResult.replaceChildren(list);
+  }
+  if (calcForm) {
+    calcForm.addEventListener('input', updateCalculator);
+    calcForm.addEventListener('submit', event => event.preventDefault());
+    calcAsk.addEventListener('click', () => {
+      const grams = calcGrams.value.trim().replace('.', ',');
+      const number = (document.querySelector('a[href^="https://wa.me/"]')?.getAttribute('href') || 'https://wa.me/905334853040').split('?')[0];
+      const text = 'Merhaba, ' + grams + ' gram ' + calcKarat.value + ' ayar altın için bilgi almak istiyorum.';
+      window.open(number + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+    });
   }
 
   function updateStatus() {
     const offline = !navigator.onLine;
     const old = current && Date.now() - current.timestamp > freshnessLimit;
     const verified = connection === 'online' && !offline;
-    const state = !current ? (busy && !offline ? 'loading' : offline ? 'offline' : 'error') : offline ? 'offline' : verified && !old ? 'live' : 'stale';
+    const behind = current?.stale === true;
+    const state = !current ? (busy && !offline ? 'loading' : offline ? 'offline' : 'error') : offline ? 'offline' : verified && !old && !behind ? 'live' : 'stale';
     panel.dataset.state = state;
     panel.classList.toggle('is-stale', state !== 'live');
     panel.classList.toggle('is-refreshing', busy);
@@ -94,6 +159,7 @@
       const date = dateFormatter.format(new Date(current.timestamp));
       if (offline) message = 'Bağlantı yok · Son alınan veri: ' + date;
       else if (connection === 'error') message = 'Güncelleme başarısız · Son alınan veri: ' + date;
+      else if (behind && connection === 'online') message = 'Kaynağa şu an ulaşılamıyor · Son alınan veri: ' + date;
       else if (connection === 'cache') message = 'Kaydedilmiş veri · ' + date + ' · Güncellik doğrulanıyor';
       else if (old) message = 'Gecikmeli veri · ' + date;
       else message = 'Son güncelleme: ' + date;

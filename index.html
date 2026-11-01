@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="theme.css" />
   <link rel="stylesheet" href="scene.css" />
   <link rel="stylesheet" href="navigation.css" />
-  <link rel="stylesheet" href="rates.css" />
+  <link rel="stylesheet" href="rates.css?v=20261101-calc" />
     <link rel="stylesheet" href="visitor.css" />
     <link rel="stylesheet" href="catalog.css" />
   <link rel="stylesheet" href="champagne.css?v=20261002-mobile-readability" />
@@ -28,7 +28,7 @@
     <meta property="og:image" content="https://alvera-ashy.vercel.app/assets/alvera-logo.png" />
     <script src="script.js?v=20261002-refinement" defer></script>
   <script src="navigation.js?v=20261003-interface" defer></script>
-  <script src="prices.js?v=20261002-refinement" defer></script>
+  <script src="prices.js?v=20261101-calc" defer></script>
     <script src="visitor.js?v=20261002-refinement" defer></script>
     <script src="interface.js?v=20261003-interface" defer></script>
     <script src="catalog.js?v=20261003-interface" defer></script>
@@ -146,6 +146,16 @@
               <thead><tr><th scope="col">ALTIN TÜRÜ</th><th scope="col">ALIŞ</th><th scope="col">SATIŞ</th></tr></thead>
               <tbody id="rates-body"><tr><td colspan="3" class="rates-loading">Fiyatlar yükleniyor...</td></tr></tbody>
             </table>
+            <form class="rates-calc" id="rates-calc" aria-labelledby="calc-title" hidden>
+              <p class="rates-calc-title" id="calc-title">GRAM HESAPLAYICI</p>
+              <div class="rates-calc-fields">
+                <label for="calc-karat">Ayar<select id="calc-karat"><option value="24">24 ayar (gram altın)</option><option value="22" selected>22 ayar</option><option value="18">18 ayar</option><option value="14">14 ayar</option></select></label>
+                <label for="calc-grams">Gram<input id="calc-grams" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 12,5" maxlength="10" /></label>
+              </div>
+              <div id="calc-result" class="rates-calc-result" role="status" aria-live="polite"></div>
+              <p class="rates-calc-note">Bu bir fiyat teklifi değildir. İşçilik, fire ve mağaza fiyatı farklıdır; kesin değer için mağazamıza danışın.</p>
+              <button type="button" class="rates-calc-ask" id="calc-ask" disabled>Bu miktar için mağazaya sor</button>
+            </form>
             <div class="rates-panel-bottom">
               <span id="rates-status" role="status" aria-live="polite">Güncel fiyatlar alınıyor</span>
             <button class="rates-refresh" type="button" aria-label="Altın fiyatlarını yeniden getir">Yenile</button>
