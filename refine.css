@@ -33,6 +33,13 @@
 .scene-motion:hover { color: #2f2722 !important; }
 
 /* Small hit areas grow to 44px without changing the look. */
-.footer-bottom a, .hero-meta a { display: inline-flex; align-items: center; min-height: 44px; }
+.footer-bottom a { display: inline-flex; align-items: center; min-height: 44px; }
+/* The hero bar is pinned to the bottom of the hero: grow its link's hit area without growing the bar. */
+.hero .hero-meta a { padding-block: 12px; margin-block: -12px; }
 
 .rates-disclaimer a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+/* On short desktop screens the bar follows the hero content instead of sitting on top of the buttons. */
+@media (min-width: 701px) and (max-height: 860px) {
+  .hero .hero-meta { position: relative; inset: auto; grid-column: 1 / -1; width: auto; margin: 28px 0; }
+}
