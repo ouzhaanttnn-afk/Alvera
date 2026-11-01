@@ -384,8 +384,25 @@ function startSculpture() {
   console.warn('Alvera: using the lightweight sculpture fallback.', error);
   });
 }
+// Veri tasarrufu açık veya 2G bağlantıda 700 KB'lık 3D kitaplığı indirilmez; özgün SVG simge kalır.
+function constrainedConnection() {
+  const connection = navigator.connection;
+  return !!connection && (connection.saveData === true || /(^|-)2g$/.test(connection.effectiveType || ''));
+}
 if (stage && canvas) {
-  // Let navigation and the original SVG paint before preparing the 3D geometry.
-  if ('requestIdleCallback' in window) window.requestIdleCallback(startSculpture, { timeout: 900 });
-  else window.setTimeout(startSculpture, 120);
+  if (constrainedConnection()) {
+    if (motionButton) motionButton.hidden = true;
+  } else {
+    // Sayfa (görseller, yazı tipleri, fiyatlar) yüklendikten sonra boşta başlar; yüklenme uzarsa 3 sn'de yine başlar.
+    let started = false;
+    const begin = () => {
+      if (started) return;
+      started = true;
+      if ('requestIdleCallback' in window) window.requestIdleCallback(startSculpture, { timeout: 2500 });
+      else window.setTimeout(startSculpture, 300);
+    };
+    if (document.readyState === 'complete') begin();
+    else window.addEventListener('load', begin, { once: true });
+    window.setTimeout(begin, 3000);
+  }
 }
