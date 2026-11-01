@@ -1,5 +1,6 @@
 # Alvera yonetim rehberi
 
+- Panel adresi: `alvera-ashy.vercel.app/admin` (domain baglaninca `alanadiniz/admin`). Sitede panele giden herkese acik bir baglanti yoktur; adresi yer imine ekleyin. Telefona uygulama gibi eklemek icin: iPhone'da Safari > Paylas > Ana Ekrana Ekle; Android'de Chrome > menu > Ana ekrana ekle / Uygulamayi yukle. Panel cevrimdisi calismaz; internet gerekir.
 - Panel: `/admin`. Giris bilgileri GitHub'a veya tarayici koduna yazilmaz. Ilk rastgele sifrenin tek yonlu dogrulayicisi sunucuya dagitilir. Acik sifre yalnizca bilgisayarinizdaki ozel giris dosyasindadir.
 - Ilk giriste Guvenlik ve yedek bolumunden kendiniz bir sifre belirleyebilirsiniz. Bu islem tum oturumlari kapatir. Sifreyi sifirlama gerekiyorsa mevcut ozel security.json kaydi korunarak yetkili bir sunucu islemi yapilmalidir; herkese acik ilk-kaydolan-yonetici mekanizmasi yoktur.
 - Yeni urun: ad, kategori, gercek ayar/malzeme, aciklama ve fotograf. Sitede yayimla kapaliysa taslaktir. Fotograf olmadan yayimlanmaz. Fiyat veya stok uydurulmaz; sorular urune ozel WhatsApp mesajiyla gelir.

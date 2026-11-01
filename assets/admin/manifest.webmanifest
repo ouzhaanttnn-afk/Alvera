@@ -1,0 +1,17 @@
+{
+  "id": "/admin",
+  "name": "Alvera Mağaza Yönetimi",
+  "short_name": "Alvera Yönetim",
+  "description": "Alvera Kuyumculuk ürünlerini, fotoğraflarını ve mağaza bilgilerini yönetin.",
+  "lang": "tr",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#f4f1e9",
+  "theme_color": "#BFA48F",
+  "icons": [
+    { "src": "/assets/admin/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/admin/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/admin/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
