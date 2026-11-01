@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/manage
+Sitemap: https://alvera-ashy.vercel.app/sitemap.xml

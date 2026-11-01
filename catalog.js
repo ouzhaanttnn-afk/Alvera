@@ -19,7 +19,13 @@
     const store=catalog.media.find(m=>m.id===s.storeImage);if(store&&visit){const image=document.createElement('img');image.src=store.url;image.alt='Alvera Kuyumculuk mağazası';image.className='store-photo';image.loading='lazy';image.width=store.width;image.height=store.height;visit.append(image);}
     const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href=s.siteUrl+'/';
     let schema=document.querySelector('#store-schema');if(!schema){schema=document.createElement('script');schema.type='application/ld+json';schema.id='store-schema';document.head.append(schema);}
-    schema.textContent=JSON.stringify({'@context':'https://schema.org','@type':'JewelryStore',name:'Alvera Kuyumculuk',url:s.siteUrl,telephone:s.phone,address:{'@type':'PostalAddress',streetAddress:s.address,addressLocality:'Ankara',addressCountry:'TR'},logo:s.siteUrl+'/assets/alvera-wordmark.svg',sameAs:['https://www.instagram.com/'+s.instagram+'/'],hasMap:s.mapsUrl});
+    // Sabit işaretleme HTML'de zaten var; yönetim panelinden değişen bilgiler burada güncellenir. Saat ve puan uydurulmaz.
+    const digits=s.phone.replace(/\D/g,'');const phone=/^0\d{10}$/.test(digits)?'+90 '+digits.slice(1,4)+' '+digits.slice(4,7)+' '+digits.slice(7,9)+' '+digits.slice(9):s.phone;
+    const parts=s.address.match(/^(.*?),?\s*([^,/]+?)\s*\/\s*([^,/]+)$/);
+    const postal={'@type':'PostalAddress',streetAddress:parts?parts[1]:s.address,addressLocality:parts?parts[2]:'Ankara',...(parts?{addressRegion:parts[3]}:{}),addressCountry:'TR'};
+    const data={'@context':'https://schema.org','@type':'JewelryStore',name:'Alvera Kuyumculuk',description:'Ankara Mamak’ta altın ve pırlanta seçkisi, güncel altın fiyatları ve mağaza bilgileri.',url:s.siteUrl,telephone:phone,image:store?store.url:s.siteUrl+'/assets/alvera-logo.png',logo:s.siteUrl+'/assets/alvera-wordmark.svg',address:postal,sameAs:['https://www.instagram.com/'+s.instagram+'/'],hasMap:s.mapsUrl};
+    schema.textContent=JSON.stringify(data);
+    for(const [property,value] of [['og:url',s.siteUrl+'/']]){const tag=document.querySelector('meta[property="'+property+'"]');if(tag)tag.content=value;}
     const select=document.querySelector('#visitor-category');const link=document.querySelector('#visitor-request-link');
     if(select&&link){const update=()=>{const option=select.options[select.selectedIndex];link.href=wa('Merhaba, '+(select.value?option.textContent+' seçenekleri':'mağazanızdaki modeller')+' hakkında bilgi almak istiyorum.');};select.addEventListener('change',update);update();}
   }
