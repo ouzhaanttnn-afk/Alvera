@@ -1763,3 +1763,27 @@ input[type='radio'] {
 /* Existing Alvera champagne/bronze palette. */
 :root {--ink:#35271e;--muted:#655043;--teal:#794c2b;--teal-dark:#603c23;--line:#e2d4c4;--bg:#f8f1e7;--soft:#eee2d4}
 .alvera-brand img{object-fit:contain;max-width:210px;height:auto}
+
+/* Müşteri formu düzeltmeleri */
+.residence-document {
+  margin-top: 28px;
+}
+.residence-document .section-description {
+  margin-top: 10px;
+}
+.identity-purpose {
+  margin-bottom: 22px;
+}
+.identity-purpose a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.unavailable-actions,
+.success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 6px;
+}

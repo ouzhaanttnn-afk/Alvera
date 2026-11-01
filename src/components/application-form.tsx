@@ -262,7 +262,7 @@ export function ApplicationForm({ policy, notice }: { policy: PublicPolicy; noti
               >
             )[name] || 'off'
           }
-          inputMode={['identityNumber', 'amount'].includes(name) ? 'decimal' : undefined}
+          inputMode={name === 'identityNumber' ? 'numeric' : name === 'amount' ? 'decimal' : undefined}
           maxLength={name === 'identityNumber' ? (kind === 'individual' ? 11 : 10) : 254}
           aria-invalid={!!errors[name]}
           aria-describedby={errors[name] ? `${name}-error` : undefined}
@@ -424,9 +424,14 @@ export function ApplicationForm({ policy, notice }: { policy: PublicPolicy; noti
             belgesi değildir.
           </span>
         </div>
-        <a className="button primary" href="/masak-form">
-          Yeni başvuru oluştur <ArrowRight size={17} />
-        </a>
+        <div className="success-actions">
+          <a className="button primary" href="/">
+            Ana sayfaya dön <ArrowRight size={17} />
+          </a>
+          <a className="button secondary" href="/#iletisim">
+            İletişim bilgilerimiz
+          </a>
+        </div>
       </main>
     );
   return (
@@ -516,6 +521,21 @@ export function ApplicationForm({ policy, notice }: { policy: PublicPolicy; noti
               ][step]
             }
           </p>
+          {step === 0 && (
+            // HUKUK TEYİDİ GEREKLİ: bu cümle müşteri tanıma yükümlülüğüne atıf yapar; yayımdan önce
+            // avukat onayı alınmalı. Veri kullanımı hakkında söz verilmez, aydınlatma metnine yönlendirilir.
+            <div className="subtle-note identity-purpose">
+              <LockKeyhole size={17} />
+              <span>
+                Kimlik bilgileriniz, kuyumculuk işlemlerinde mevzuatın öngördüğü müşteri tanıma
+                yükümlülükleri kapsamında istenir. Bilgilerinizin nasıl işlendiğini{' '}
+                <a href="/masak-form/privacy" target="_blank" rel="noopener">
+                  Gizlilik ve aydınlatma metninde
+                </a>{' '}
+                (yeni sekmede açılır) okuyabilirsiniz.
+              </span>
+            </div>
+          )}
           <form
             noValidate
             onSubmit={(e) => {
