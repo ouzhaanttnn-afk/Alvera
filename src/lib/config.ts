@@ -79,7 +79,11 @@ export function config(scope: 'intake' | 'admin' = 'intake') {
       if (!process.env.FILE_SCAN_URL?.startsWith('https://') || !process.env.FILE_SCAN_TOKEN)
         throw new Error('SCANNER_REQUIRED');
     }
-    if (scope === 'intake') readFileSync(process.env.PRIVACY_NOTICE_PATH!, 'utf8');
+    if (scope === 'intake') {
+      const notice = readFileSync(process.env.PRIVACY_NOTICE_PATH!, 'utf8');
+      // Taslak metindeki doldurulmamış alanlar ([[DOLDURUN: ...]]) varsa başvuru kabul edilmez.
+      if (notice.includes('[[')) throw new Error('PRIVACY_NOTICE_INCOMPLETE');
+    }
   }
   return c;
 }

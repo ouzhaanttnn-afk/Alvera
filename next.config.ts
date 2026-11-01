@@ -6,7 +6,14 @@ const config: NextConfig = {
     '*': ['./.local/**', './test-results/**', './playwright-report/**', './tmp/**', './.env*'],
   },
   serverExternalPackages: ['node:sqlite', 'sharp'],
-  outputFileTracingIncludes: { '/api/masak/admin/[...path]': ['./assets/fonts/*', './public/brand/*'] },
+  // Aydınlatma metni çalışma anında dosyadan okunur (PRIVACY_NOTICE_PATH); dağıtım paketine girmesi için açıkça eklenir.
+  outputFileTracingIncludes: {
+    '/masak-form': ['./legal/*'],
+    '/masak-form/privacy': ['./legal/*'],
+    '/api/masak/*': ['./legal/*'],
+    '/api/masak/auth/[...path]': ['./legal/*'],
+    '/api/masak/admin/[...path]': ['./assets/fonts/*', './public/brand/*', './legal/*'],
+  },
   async rewrites() { return { beforeFiles: [{ source: '/', destination: '/index.html' }, { source: '/admin', destination: '/admin.html' }, { source: '/sitemap.xml', destination: '/api/sitemap' }], afterFiles: [], fallback: [] }; },
   async headers() {
     return [

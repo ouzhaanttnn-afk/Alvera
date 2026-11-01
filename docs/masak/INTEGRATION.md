@@ -9,6 +9,7 @@
 - Worker: POST /api/masak/jobs with server-only Bearer secret.
 
 ## Deployment gates
+The privacy notice draft is `legal/aydinlatma-metni.txt`; fill-in marks and the lawyer checklist are in `HUKUK-DANISMANI-LISTESI.md`. Production refuses applications while any `[[DOLDURUN: …]]` mark remains.
 Remote intake remains closed with MASAK_INTAKE_ENABLED=false and LEGAL_REVIEW_APPROVED=false. Antivirus, approved privacy notice, verified corporate and KVKK contact details, DNS and validated email delivery are required before opening.
 Preview/development may use the existing test Supabase. Production requires separately approved production credentials; never copy local administrator passwords to hosting.
 ADMIN_EMAIL and EMAIL_FROM are server settings. Notifications contain only reference/date/type/status and an authorized administration link. No identity documents, full identity numbers or signatures are emailed.

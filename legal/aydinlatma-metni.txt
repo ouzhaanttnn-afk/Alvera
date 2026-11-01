@@ -1,0 +1,55 @@
+KİŞİSEL VERİLERİN İŞLENMESİNE İLİŞKİN AYDINLATMA METNİ
+Alvera Kuyumculuk – Müşteri Başvuru Formu
+Yürürlük tarihi: [[DOLDURUN: yayın tarihi]]
+
+Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun (KVKK) 10. maddesi uyarınca, formu doldurmadan önce sizi bilgilendirmek için hazırlanmıştır. Metni okumanız bir onay veya açık rıza anlamına gelmez; verileriniz açık rızanıza dayanılarak işlenmez.
+
+1. VERİ SORUMLUSU
+Unvan: [[DOLDURUN: ticari unvan veya gerçek kişi adı soyadı]] (ticari adı: Alvera Kuyumculuk)
+Vergi kimlik numarası: [[DOLDURUN: vergi kimlik numarası]]
+Adres: Cengizhan Mah., Natoyolu Cad. No:209/C, Mamak / Ankara
+Telefon: 0312 390 24 25
+E-posta: alverakuyumculuk@gmail.com
+KEP adresi: [[DOLDURUN: KEP adresi veya "yoktur"]]
+
+2. İŞLENEN KİŞİSEL VERİLER
+- Kimlik: ad soyad, T.C. kimlik numarası veya vergi kimlik numarası, kimlik belgesi türü, uyruk
+- İletişim: cep telefonu, e-posta adresi (isteğe bağlı)
+- Adres: il, ilçe, mahalle, açık adres
+- Meslek: meslek veya unvan
+- İşlem: işlem (satış) tutarı
+- Başvuru kaydı: başvuru türü (bireysel veya kurumsal), başvuru numarası, başvuru tarihi, bu metni okuduğunuza dair beyan ve metnin sürümü
+- Belgeler (yalnızca formda isteniyorsa): kimlik belgesinin ön ve arka yüzü, ikametgâh belgesi, çizim imzanız
+- Teknik veriler: formun güvenliği için yapılan bot doğrulaması sırasında IP adresi ve tarayıcı bilgisi gibi teknik veriler
+
+3. İŞLEME AMAÇLARI
+Verileriniz yalnızca şu amaçlarla işlenir:
+a) Kimlik tespiti ve müşteri tanıma yükümlülüklerinin yerine getirilmesi
+b) Başvurunuzun alınması, değerlendirilmesi ve sizinle iletişime geçilmesi
+c) Mevzuatın öngördüğü kayıt tutma, saklama, denetim ve resmî mercilere bilgi verme yükümlülüklerinin yerine getirilmesi
+ç) Formun ve sistemin güvenliğinin sağlanması, kötüye kullanımın önlenmesi
+d) Hukuki uyuşmazlıklarda bir hakkın tesisi, kullanılması veya korunması
+Bu veriler pazarlama veya reklam amacıyla kullanılmaz.
+
+4. HUKUKİ SEBEPLER
+Verileriniz, KVKK'nın 5. maddesinin 2. fıkrasındaki şu sebeplere dayanılarak işlenir:
+- Kanunlarda açıkça öngörülmesi (bent a) ve veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması (bent ç): 5549 sayılı Suç Gelirlerinin Aklanmasının Önlenmesi Hakkında Kanun ile Suç Gelirlerinin Aklanmasının ve Terörün Finansmanının Önlenmesine Dair Tedbirler Hakkında Yönetmelik uyarınca kuyumcular, müşterilerinin kimliğini tespit etmek ve ilgili bilgi ve belgeleri saklamakla yükümlüdür (amaçlar a ve c).
+- Sözleşmenin kurulmasıyla doğrudan ilgili olması (bent c): başvurunuzun değerlendirilmesi ve sizinle iletişim (amaç b).
+- Meşru menfaat (bent f): temel hak ve özgürlüklerinize zarar vermemek kaydıyla, formun güvenliği ve kötüye kullanımın önlenmesi (amaç ç).
+- Bir hakkın tesisi, kullanılması veya korunması için zorunlu olması (bent e): uyuşmazlık hâlinde (amaç d).
+
+5. VERİLERİN KİMLERE VE HANGİ AMAÇLA AKTARILDIĞI
+- Yetkili kamu kurum ve kuruluşları (Mali Suçları Araştırma Kurulu Başkanlığı, Hazine ve Maliye Bakanlığı denetim elemanları, savcılıklar, mahkemeler ve mevzuatla yetkili kılınan diğer mercilere): yasal yükümlülüklerin yerine getirilmesi amacıyla. Bu paylaşımlara ilişkin olarak mevzuattaki gizlilik hükümleri nedeniyle size bilgi verilemeyebilir.
+- Hizmet sağlayıcılarımız: formun işletilmesi için veri tabanı ve dosya depolama, uygulama barındırma, e-posta bildirimi ve bot doğrulaması hizmeti veren firmalar ([[DOLDURUN: kullanılan hizmetler ve firmalar, örn. Supabase, Vercel, Resend, Cloudflare]]). Bu firmalar verileri yalnızca bizim talimatımızla ve bu amaçlarla işler.
+- Yurt dışına aktarım: [[DOLDURUN: hizmet sağlayıcıların sistemlerinin bulunduğu ülke veya bölge ile KVKK'nın 9. maddesine göre dayanılan güvence (örn. standart sözleşme). Aktarım yoksa yalnızca "Verileriniz yurt dışına aktarılmaz." yazın.]]
+Verileriniz bunların dışında üçüncü kişilerle paylaşılmaz.
+
+6. VERİLERİN TOPLANMA YÖNTEMİ
+Verileriniz, bu internet sitesindeki başvuru formu üzerinden, elektronik ortamda ve sizin beyanınızla toplanır.
+
+7. SAKLAMA VE GÜVENLİK
+Başvuru bilgileriniz [[DOLDURUN: saklama süresi gün olarak, örn. 365]] gün sonra silinmek üzere işaretlenir ve yetkili kişilerce silinir. Başvurunuz bir işleme veya iş ilişkisine dönüşürse, ilgili bilgi ve belgeler mevzuatın öngördüğü süre boyunca (5549 sayılı Kanun'un 8. maddesi uyarınca sekiz yıl) saklanır. [[DOLDURUN: bu iki süreyi hukuk danışmanıyla netleştirip bu uyarıyı silin]]
+Bilgileriniz şifrelenerek saklanır; erişim yalnızca yetkili kişilerle ve çok adımlı doğrulamayla sınırlıdır.
+
+8. HAKLARINIZ
+KVKK'nın 11. maddesi kapsamındaki haklarınızı kullanmak için yukarıdaki iletişim bilgilerimizden yazılı olarak, e-posta veya KEP ile başvurabilirsiniz. Başvurunuz, niteliğine göre en kısa sürede ve en geç otuz gün içinde sonuçlandırılır. Mevzuattaki saklama yükümlülükleri nedeniyle bazı talepler (örneğin silme) yerine getirilemeyebilir. Cevabı yetersiz bulmanız hâlinde Kişisel Verileri Koruma Kurulu'na şikâyette bulunma hakkınız saklıdır.
