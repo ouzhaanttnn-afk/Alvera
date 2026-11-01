@@ -207,6 +207,10 @@ test('Alan hataları ve gerçek başvuru: dosya, mobil çizim, kontrol, referans
   await page.getByRole('button', { name: 'Başvuruyu gönder' }).click();
   await expect(page.getByRole('heading', { name: 'İlk adım tamamlandı.' })).toBeVisible();
   await expect(page.locator('.reference-card strong')).toContainText(/^NF-\d{4}-\d{6,}$/);
+  // Başarı ekranında çıkış yolu: yeni başvuru değil, ana sayfa ve iletişim.
+  await expect(page.getByRole('link', { name: /Ana sayfaya dön/ })).toHaveAttribute('href', '/');
+  await expect(page.getByRole('link', { name: 'İletişim bilgilerimiz' })).toHaveAttribute('href', '/#iletisim');
+  await expect(page.getByText('Yeni başvuru oluştur')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );

@@ -8,16 +8,22 @@
     <meta property="og:title" content="Alvera Kuyumculuk | Nesiller Boyu Bir Miras" />
     <meta property="og:description" content="Altın ve pırlanta seçkisi, güncel altın fiyatları ve mağaza bilgileri. Alvera Kuyumculuk, Ankara Mamak." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alvera Kuyumculuk" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:url" content="https://alvera-ashy.vercel.app/" />
+    <meta property="og:image:alt" content="Alvera Kuyumculuk" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Alvera Kuyumculuk | Nesiller Boyu Bir Miras" />
+    <meta name="twitter:description" content="Altın ve pırlanta seçkisi, güncel altın fiyatları ve mağaza bilgileri. Alvera Kuyumculuk, Ankara Mamak." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <title>Alvera Kuyumculuk | Nesiller Boyu Bir Miras</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="fonts.css?v=20261101-order" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="theme.css" />
   <link rel="stylesheet" href="scene.css" />
   <link rel="stylesheet" href="navigation.css" />
-  <link rel="stylesheet" href="rates.css" />
+  <link rel="stylesheet" href="rates.css?v=20261101-calc" />
     <link rel="stylesheet" href="visitor.css" />
     <link rel="stylesheet" href="catalog.css" />
   <link rel="stylesheet" href="champagne.css?v=20261002-mobile-readability" />
@@ -25,20 +31,23 @@
     <link rel="stylesheet" href="finishing.css?v=20261003-interface" />
     <link rel="icon" href="assets/alvera-monogram.svg" type="image/svg+xml" />
     <link rel="canonical" href="https://alvera-ashy.vercel.app/" />
+    <script type="application/ld+json" id="store-schema">{"@context": "https://schema.org", "@type": "JewelryStore", "name": "Alvera Kuyumculuk", "description": "Ankara Mamak’ta altın ve pırlanta seçkisi, güncel altın fiyatları ve mağaza bilgileri.", "url": "https://alvera-ashy.vercel.app", "telephone": "+90 312 390 24 25", "image": "https://alvera-ashy.vercel.app/assets/alvera-logo.png", "logo": "https://alvera-ashy.vercel.app/assets/alvera-wordmark.svg", "address": {"@type": "PostalAddress", "streetAddress": "Cengizhan Mah., Natoyolu Cad. No:209/C", "addressLocality": "Mamak", "addressRegion": "Ankara", "addressCountry": "TR"}, "sameAs": ["https://www.instagram.com/alvera_kuyumculuk/"], "hasMap": "https://www.google.com/maps/search/?api=1&query=Cengizhan%20Mah.%2C%20Natoyolu%20Cad.%20No%3A209%2FC%2C%20Mamak%20%2F%20Ankara"}</script>
     <meta property="og:image" content="https://alvera-ashy.vercel.app/assets/alvera-logo.png" />
     <script src="script.js?v=20261002-refinement" defer></script>
   <script src="navigation.js?v=20261003-interface" defer></script>
-  <script src="prices.js?v=20261002-refinement" defer></script>
+  <script src="prices.js?v=20261101-calc" defer></script>
+    <script src="stats.js?v=20261101-stats" defer></script>
     <script src="visitor.js?v=20261002-refinement" defer></script>
     <script src="interface.js?v=20261003-interface" defer></script>
     <script src="catalog.js?v=20261003-interface" defer></script>
-    <script type="module" src="scene.js?v=20261003-interface"></script>
+    <script type="module" src="scene.js?v=20261101-defer"></script>
   <link rel="stylesheet" href="/masak-entry.css" />
-    <link rel="stylesheet" href="glass.css?v=20261031-liquid-glass" />
-    <script src="glass.js?v=20261031-liquid-glass" defer></script>
+    <link rel="stylesheet" href="glass.css?v=20261031-liquid-v3" />
+    <link rel="stylesheet" href="liquid.css?v=20261031-liquid-v5" />
+    <script src="glass.js?v=20261031-liquid-v4" defer></script>
   </head>
   <body>
-    <div class="liquid-backdrop" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="liquid-backdrop" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <a class="skip-link" href="#icerik">İçeriğe geç</a>
     <div class="pointer-glow" aria-hidden="true"></div>
     <div class="gallery-dim" aria-hidden="true"></div>
@@ -145,6 +154,16 @@
               <thead><tr><th scope="col">ALTIN TÜRÜ</th><th scope="col">ALIŞ</th><th scope="col">SATIŞ</th></tr></thead>
               <tbody id="rates-body"><tr><td colspan="3" class="rates-loading">Fiyatlar yükleniyor...</td></tr></tbody>
             </table>
+            <form class="rates-calc" id="rates-calc" aria-labelledby="calc-title" hidden>
+              <p class="rates-calc-title" id="calc-title">GRAM HESAPLAYICI</p>
+              <div class="rates-calc-fields">
+                <label for="calc-karat">Ayar<select id="calc-karat"><option value="24">24 ayar (gram altın)</option><option value="22" selected>22 ayar</option><option value="18">18 ayar</option><option value="14">14 ayar</option></select></label>
+                <label for="calc-grams">Gram<input id="calc-grams" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 12,5" maxlength="10" /></label>
+              </div>
+              <div id="calc-result" class="rates-calc-result" role="status" aria-live="polite"></div>
+              <p class="rates-calc-note">Bu bir fiyat teklifi değildir. İşçilik, fire ve mağaza fiyatı farklıdır; kesin değer için mağazamıza danışın.</p>
+              <button type="button" class="rates-calc-ask" id="calc-ask" disabled>Bu miktar için mağazaya sor</button>
+            </form>
             <div class="rates-panel-bottom">
               <span id="rates-status" role="status" aria-live="polite">Güncel fiyatlar alınıyor</span>
             <button class="rates-refresh" type="button" aria-label="Altın fiyatlarını yeniden getir">Yenile</button>
@@ -285,7 +304,7 @@
 
     <footer class="site-footer">
       <div class="footer-top"><img src="assets/alvera-wordmark-light.svg" alt="Alvera Kuyumculuk" width="1010" height="360" /><a href="https://www.instagram.com/alvera_kuyumculuk/" target="_blank" rel="noopener noreferrer" aria-label="Alvera Kuyumculuk Instagram hesabını aç">@alvera_kuyumculuk</a></div>
-      <div class="footer-bottom"><span>© <span id="year">2026</span> TÜM HAKLARI SAKLIDIR</span><a class="admin-entry" href="/admin" rel="nofollow">Yönetim paneli</a><a class="admin-entry" href="/masak-raporu" rel="nofollow">MASAK Raporu (personel)</a><a href="#baslangic">YUKARI DÖN</a></div>
+      <div class="footer-bottom"><span>© <span id="year">2026</span> TÜM HAKLARI SAKLIDIR</span><a href="#baslangic">YUKARI DÖN</a></div>
     </footer>
   
     <nav class="contact-dock" aria-label="Mağazaya hızlı ulaşın">

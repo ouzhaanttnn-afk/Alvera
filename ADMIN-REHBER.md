@@ -1,8 +1,11 @@
 # Alvera yonetim rehberi
 
+- Panel adresi: `alvera-ashy.vercel.app/admin` (domain baglaninca `alanadiniz/admin`). Sitede panele giden herkese acik bir baglanti yoktur; adresi yer imine ekleyin. Telefona uygulama gibi eklemek icin: iPhone'da Safari > Paylas > Ana Ekrana Ekle; Android'de Chrome > menu > Ana ekrana ekle / Uygulamayi yukle. Panel cevrimdisi calismaz; internet gerekir.
 - Panel: `/admin`. Giris bilgileri GitHub'a veya tarayici koduna yazilmaz. Ilk rastgele sifrenin tek yonlu dogrulayicisi sunucuya dagitilir. Acik sifre yalnizca bilgisayarinizdaki ozel giris dosyasindadir.
 - Ilk giriste Guvenlik ve yedek bolumunden kendiniz bir sifre belirleyebilirsiniz. Bu islem tum oturumlari kapatir. Sifreyi sifirlama gerekiyorsa mevcut ozel security.json kaydi korunarak yetkili bir sunucu islemi yapilmalidir; herkese acik ilk-kaydolan-yonetici mekanizmasi yoktur.
 - Yeni urun: ad, kategori, gercek ayar/malzeme, aciklama ve fotograf. Sitede yayimla kapaliysa taslaktir. Fotograf olmadan yayimlanmaz. Fiyat veya stok uydurulmaz; sorular urune ozel WhatsApp mesajiyla gelir.
+- Toplu urun ekleme: Secki sayfasinda "Toplu ekle". Tek seferde en fazla 20 fotograf secin; her fotograf ayri bir urun olur. Adi dosya adindan tahmin edilir (IMG_1234 gibi anlamsiz adlarda "Yuzuk 3" gibi gecici ad verilir); adi ve kategoriyi satirda degistirebilirsiniz. Urunler her zaman taslak acilir, kendiliginden yayimlanmaz. Bozuk veya desteklenmeyen dosyalar listede kalir, digerleri kaydedilir.
+- Hizli yayimlama: Urun satirindaki "Yayimla" / "Yayindan al" dugmesi urunu editoru acmadan yayimlar veya taslaga alir. Fotografi olmayan urun yayimlanamaz.
 - Fotograflar JPEG, PNG veya WebP olmali. Panel otomatik olarak 1600 piksele indirir, WebP yapar ve metadata/konum bilgisini yeniden kodlayarak temizler. Telefonunuz HEIC cekiyorsa JPEG disari aktarin.
 - Ilk fotograf kapaktir. Oklarla fotograf ve urun siralarini degistirebilirsiniz.
 - Arsivleme geri alinabilir. Fotoğraf dosyalari otomatik silinmez; urun geri yuklendiginizde baglantilari korunur.
@@ -10,6 +13,9 @@
 - Google yorumlari otomatik olarak cekilmiyor. Dogrulanmis puan/sayi istege bagli olarak girilebilir; varsayilan durumda sadece Google Haritalar baglantisi gosterilir. Otomatik yorumlar icin Google Places API ve isletme kaydi baglantisi gerekir.
 - JSON yedegi urunleri, ayarlari ve fotograf baglantilarini icerir; fotograf dosyalarinin kendisini veya sifreleri icermez. Blob depolarini silmeden once fotograf dosyalarini ayrica indirin.
 - Domain baglaninca panelde Site adresi alanini degistirin. Canonical, urun paylasim adresleri, yapilandirilmis veri ve sitemap yeni adresi kullanir. Vercel Domains bolumundeki DNS kurulumu ayrica gerekir.
+- Ziyaretler bolumu: sitenin kac kez acildigini ve WhatsApp, arama, yol tarifi, Instagram, gram hesaplayici dugmelerine kac kez basildigini gosterir. Cerez kullanilmaz; IP adresi, tarayici bilgisi veya ziyaret yolu saklanmaz, yalnizca gunluk toplamlar tutulur (90 gun). Sayilar "kisi" degil "sayfa acilisi"dir; ayni kisi yeniden acarsa tekrar sayilir. "Tiklama" baglantiya basildigini gosterir, mesajin gonderildigi anlamina gelmez. Robotlar, "izlenmek istemiyorum" tercihi acik olanlar ve yonetime giris yaptiginiz tarayici sayilmaz. Bu ozelligi ziyaretcilere duyurulan aydinlatma metninde belirtmek icin hukuk danismaninizla teyit edin.
+- MASAK form yonetimi (personel): `/masak-form/admin`. Musterinin gordugu form sayfasinda bu baglanti artik yoktur; adresi yer imine ekleyin.
+- Domain degisince `robots.txt` icindeki `Sitemap:` satirini yeni adresle elle guncelleyin; bu dosya panelden degismez.
 
 ## Teknik notlar
 

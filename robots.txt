@@ -4,3 +4,4 @@ Disallow: /admin
 Disallow: /api/manage
 Disallow: /masak-raporu
 Disallow: /api/masak-raporu
+Sitemap: https://alvera-ashy.vercel.app/sitemap.xml

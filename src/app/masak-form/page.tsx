@@ -15,9 +15,6 @@ export default function Page() {
             <span>
               <ShieldCheck size={16} /> MASAK Form
             </span>
-            <Link href="/masak-form/admin">
-              Yönetim paneli <ArrowUpRight size={15} />
-            </Link>
           </div>
         </header>
         {policy.local && (
@@ -35,8 +32,7 @@ export default function Page() {
           <ApplicationForm policy={policy} notice={notice} />
         </div>
         <footer className="site-footer">
-          <span>© {new Date().getFullYear()} Alvera Form</span>
-          <span>Özenle tasarlandı. Güvenle ilerleyin.</span>
+          <span>© {new Date().getFullYear()} Alvera Kuyumculuk</span>
           <Link href="/masak-form/privacy">
             Gizlilik ve aydınlatma <ArrowUpRight size={12} />
           </Link>
@@ -49,6 +45,14 @@ export default function Page() {
         <ShieldCheck size={36} />
         <h1>Başvurular henüz açılmadı.</h1>
         <p>Güvenli kullanım için gerekli yapılandırmalar tamamlanıyor.</p>
+        <div className="unavailable-actions">
+          <a className="button primary" href="/">
+            Ana sayfaya dön
+          </a>
+          <a className="button secondary" href="/#iletisim">
+            İletişim bilgilerimiz
+          </a>
+        </div>
       </main>
     );
   }

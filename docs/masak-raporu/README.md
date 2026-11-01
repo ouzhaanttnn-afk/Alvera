@@ -2,7 +2,7 @@
 
 Alvera Kuyumculuk için iç uyum kayıt ve denetim hazırlık uygulaması. Mevcut Next.js 16 sitesinin içinde
 `/masak-raporu` rotasında çalışır. Ana site (statik `index.html`) ve MASAK müşteri formu (`/masak-form`) değişmeden kalır.
-Ana sitenin alt bilgisinde yalnızca küçük bir "MASAK Raporu (personel)" bağlantısı eklendi.
+Ana sitede bu uygulamaya giden herkese açık bir bağlantı YOKTUR (özel uygulamanın adresi duyurulmaz); personel `/masak-raporu` adresini yer imine ekler. `robots.txt` bu yolları arama motorlarına kapatır.
 
 > **Önemli:** Bu uygulama MASAK Online'ın yerine geçmez, resmi bildirim yapmaz ve uyumluluk sertifikası değildir.
 > Şüpheli işlem bildirimi yalnızca yetkili kişi tarafından resmi kanaldan yapılır. Kurallar açıklayıcı uyarı üretir;

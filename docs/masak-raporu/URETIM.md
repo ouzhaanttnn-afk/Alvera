@@ -33,7 +33,7 @@ MASAK formu etkilenmez. Panelin preview'da çalışması için ayrı bir **test 
 - [ ] Saklama politikaları hukuk onayıyla işaretlendi.
 - [ ] Yedekleme (PITR) açık ve bir geri yükleme tatbikatı yapıldı.
 - [ ] İzleme/hata takibi eklenecekse kişisel veri göndermeyecek şekilde yapılandırıldı.
-- [ ] Ana sitedeki "MASAK Raporu (personel)" bağlantısının görünürlüğü işletmece onaylandı.
+- [ ] Personel `/masak-raporu` adresini biliyor (ana sitede herkese açık bağlantı yoktur; yer imine eklenir).
 
 ## Yedekleme ve geri yükleme
 
