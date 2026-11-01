@@ -30,7 +30,7 @@
     $('#products-empty').hidden = data.products.length > 0;
     $('#product-list').innerHTML = products.map(p => {
       const photo = data.media.find(m => m.id === p.images[0]);
-      return `<article class="product-row" data-id="${p.id}"><img class="product-thumb" src="${escape(photo?.url || '/assets/alvera-monogram.svg')}" alt="${escape(p.name)}" loading="lazy" /><div class="product-info"><strong>${escape(p.name)}</strong><small>${names[p.category]}${p.sku ? ' · ' + escape(p.sku) : ''}</small><span class="badge ${p.archived?'archive':p.visible?'':'draft'}">${p.archived?'Arşiv':p.visible?'Yayında':'Taslak'}</span></div><div class="product-actions"><button data-edit="${p.id}">Düzenle</button><button data-archive="${p.id}">${p.archived?'Geri al':'Arşivle'}</button>${p.archived?'':`<button class="move" data-move="${p.id}" data-direction="-1" aria-label="${escape(p.name)} ürününü yukarı taşı">↑</button><button class="move" data-move="${p.id}" data-direction="1" aria-label="${escape(p.name)} ürününü aşağı taşı">↓</button>`}</div></article>`;
+      return `<article class="product-row" data-id="${p.id}"><img class="product-thumb" src="${escape(photo?.url || '/assets/alvera-monogram.svg')}" alt="${escape(p.name)}" loading="lazy" /><div class="product-info"><strong>${escape(p.name)}</strong><small>${names[p.category]}${p.sku ? ' · ' + escape(p.sku) : ''}</small><span class="badge ${p.archived?'archive':p.visible?'':'draft'}">${p.archived?'Arşiv':p.visible?'Yayında':'Taslak'}</span></div><div class="product-actions">${p.archived?'':`<button class="publish" data-visibility="${p.id}">${p.visible?'Yayından al':'Yayımla'}</button>`}<button data-edit="${p.id}">Düzenle</button><button data-archive="${p.id}">${p.archived?'Geri al':'Arşivle'}</button>${p.archived?'':`<button class="move" data-move="${p.id}" data-direction="-1" aria-label="${escape(p.name)} ürününü yukarı taşı">↑</button><button class="move" data-move="${p.id}" data-direction="1" aria-label="${escape(p.name)} ürününü aşağı taşı">↓</button>`}</div></article>`;
     }).join('');
     if (!products.length && data.products.length) $('#product-list').innerHTML = '<p class="empty-copy">Bu aramada ürün bulunamadı.</p>';
   }
@@ -53,7 +53,7 @@
   async function optimize(file) {
     if (!['image/jpeg','image/png','image/webp'].includes(file.type)) throw new Error('JPEG, PNG veya WebP seçin. HEIC için JPEG olarak dışa aktarın.');
     if (file.size > 25000000) throw new Error('Orijinal fotoğraf 25 MB sınırını aşıyor.');
-    const bitmap = await createImageBitmap(file);
+    let bitmap; try { bitmap = await createImageBitmap(file); } catch { throw new Error('Fotoğraf okunamadı. Dosya bozuk olabilir; başka bir fotoğraf deneyin.'); }
     const scale = Math.min(1,1600/Math.max(bitmap.width,bitmap.height));
     const canvas=document.createElement('canvas'); canvas.width=Math.round(bitmap.width*scale); canvas.height=Math.round(bitmap.height*scale); canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height); bitmap.close();
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',.86));
@@ -75,6 +75,78 @@
       renderMedia(); renderProducts(); notice(files.length+' fotoğraf yüklendi.');
     } catch(error){notice(error.message,true);} finally {uploading=false;input.value='';document.querySelectorAll('#product-form button[type=submit]').forEach(b=>{b.disabled=false;});}
   }
+
+  // ---- Toplu ürün ekleme: her fotoğraf ayrı bir taslak ürün olur ----
+  // Eski bir admin.html önbellekten gelirse yalnızca bu bölüm devre dışı kalır, panel çalışmaya devam eder.
+  if ($('#bulk-editor')) {
+  let bulk = [], bulkBusy = false, bulkKey = 0;
+  const bulkMax = 20;
+  function guessName(file) {
+    const base = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!base || /^(img|dsc|dscn|dscf|pxl|mvimg|photo|image|images|whatsapp|screenshot|snapshot|wa|resim|foto|fotoğraf)\b/i.test(base) || /\d{5,}/.test(base) || /^[\d\s.()]+$/.test(base)) return '';
+    return (base.charAt(0).toLocaleUpperCase('tr-TR') + base.slice(1)).slice(0, 120);
+  }
+  const bulkPlaceholder = (row, index) => `${names[row.category]} ${index + 1}`;
+  function bulkRowEl(row) { return document.querySelector(`[data-row="${row.key}"]`); }
+  function updateBulkRow(row) { const el = bulkRowEl(row); if (!el) return; el.dataset.state = row.state; el.querySelector('.bulk-state').textContent = row.message || row.file.name; }
+  function renderBulk() {
+    $('#bulk-list').innerHTML = bulk.map((row, index) => `<div class="bulk-row" data-row="${row.key}" data-state="${row.state}"><img src="${escape(row.url)}" alt="" /><div><label class="sr-only" for="bn-${row.key}">Ürün adı ${index + 1}</label><input id="bn-${row.key}" data-bulk-name="${row.key}" maxlength="120" value="${escape(row.name)}" placeholder="${escape(bulkPlaceholder(row, index))}"${bulkBusy ? ' disabled' : ''} /></div><div><label class="sr-only" for="bc-${row.key}">Kategori ${index + 1}</label><select id="bc-${row.key}" data-bulk-category="${row.key}"${bulkBusy ? ' disabled' : ''}>${Object.entries(names).map(([key, label]) => `<option value="${key}"${key === row.category ? ' selected' : ''}>${label}</option>`).join('')}</select></div><button type="button" class="bulk-remove" data-bulk-remove="${row.key}" aria-label="${escape(row.file.name)} dosyasını listeden çıkar"${bulkBusy ? ' disabled' : ''}>×</button><span class="bulk-state">${escape(row.message || row.file.name)}</span></div>`).join('');
+    $('#bulk-empty').hidden = bulk.length > 0; $('#bulk-hint').hidden = !bulk.length;
+    $('#bulk-submit').disabled = bulkBusy || !bulk.length;
+    $('#bulk-submit').textContent = bulkBusy ? 'Kaydediliyor…' : bulk.length ? `${bulk.length} taslak ürün oluştur` : 'Taslak olarak oluştur';
+  }
+  function resetBulk() { for (const row of bulk) URL.revokeObjectURL(row.url); bulk = []; $('#bulk-error').textContent = ''; renderBulk(); }
+  function addBulk(files) {
+    const room = bulkMax - bulk.length, accepted = files.filter(file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type));
+    if (accepted.length < files.length) notice(`${files.length - accepted.length} dosya JPEG, PNG veya WebP olmadığı için atlandı. HEIC ise önce JPEG olarak dışa aktarın.`, true);
+    else if (accepted.length > room) notice(room > 0 ? `En fazla ${bulkMax} fotoğraf eklenebilir; ilk ${room} tanesi alındı.` : `En fazla ${bulkMax} fotoğraf eklenebilir.`, true);
+    for (const file of accepted.slice(0, Math.max(0, room))) bulk.push({ key: ++bulkKey, file, url: URL.createObjectURL(file), name: guessName(file), category: $('#bulk-category').value, state: '', message: '', mediaId: '' });
+    renderBulk();
+  }
+  function closeBulk() {
+    if (bulkBusy) { notice('Yükleme bitene kadar bekleyin.'); return; }
+    if (bulk.length && !confirm('Listedeki fotoğraflardan vazgeçilsin mi? Henüz hiçbiri ürüne dönüşmedi.')) return;
+    resetBulk(); $('#bulk-editor').close();
+  }
+  $('#bulk-category').innerHTML = Object.entries(names).map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
+  $('#bulk-open').addEventListener('click', () => { if (uploading) { notice('Önce devam eden yüklemenin bitmesini bekleyin.'); return; } resetBulk(); $('#bulk-editor').showModal(); });
+  $('#bulk-files').addEventListener('change', event => { const files = [...event.target.files]; event.target.value = ''; addBulk(files); });
+  $('#bulk-category').addEventListener('change', event => { if (bulkBusy) return; for (const row of bulk) row.category = event.target.value; renderBulk(); });
+  for (const id of ['bulk-close', 'bulk-cancel']) $('#' + id).addEventListener('click', closeBulk);
+  $('#bulk-editor').addEventListener('cancel', event => { event.preventDefault(); closeBulk(); });
+  $('#bulk-list').addEventListener('input', event => { const key = event.target.dataset.bulkName; const row = bulk.find(r => String(r.key) === key); if (row) row.name = event.target.value; });
+  $('#bulk-list').addEventListener('change', event => {
+    const key = event.target.dataset.bulkCategory; const row = bulk.find(r => String(r.key) === key); if (!row) return;
+    row.category = event.target.value; const input = bulkRowEl(row).querySelector('[data-bulk-name]'); input.placeholder = bulkPlaceholder(row, bulk.indexOf(row));
+  });
+  $('#bulk-list').addEventListener('click', event => {
+    const button = event.target.closest('[data-bulk-remove]'); if (!button || bulkBusy) return;
+    const row = bulk.find(r => String(r.key) === button.dataset.bulkRemove); if (!row) return;
+    URL.revokeObjectURL(row.url); bulk = bulk.filter(r => r !== row); renderBulk();
+  });
+  $('#bulk-form').addEventListener('submit', async event => {
+    event.preventDefault(); if (bulkBusy || uploading || !bulk.length) return;
+    bulkBusy = true; uploading = true; $('#bulk-error').textContent = ''; renderBulk();
+    try {
+      for (let i = 0; i < bulk.length; i++) {
+        const row = bulk[i]; if (row.mediaId) continue;
+        row.state = ''; row.message = 'Yükleniyor…'; updateBulkRow(row); notice(`Fotoğraf yükleniyor · ${i + 1}/${bulk.length}`);
+        try { const result = await api('upload', await optimize(row.file)); data.media.push(result.photo); data.revision = result.revision; row.mediaId = result.photo.id; row.state = 'bitti'; row.message = 'Yüklendi'; }
+        catch (error) { row.state = 'hata'; row.message = error.message; }
+        updateBulkRow(row);
+      }
+      const ready = bulk.filter(row => row.mediaId);
+      if (!ready.length) throw new Error('Hiçbir fotoğraf yüklenemedi. Satırlardaki açıklamaları kontrol edin.');
+      const products = ready.map(row => ({ name: row.name.trim() || bulkPlaceholder(row, bulk.indexOf(row)), category: row.category, image: row.mediaId }));
+      setData(await api('bulk', { revision: data.revision, products }));
+      for (const row of ready) URL.revokeObjectURL(row.url);
+      bulk = bulk.filter(row => !row.mediaId);
+      if (!bulk.length) { bulkBusy = false; uploading = false; $('#bulk-editor').close(); notice(`${ready.length} taslak ürün oluşturuldu. Adlarını kontrol edip listeden yayımlayın.`); }
+      else notice(`${ready.length} ürün oluşturuldu; ${bulk.length} fotoğraf yüklenemedi. Aşağıda kalanları kontrol edin.`, true);
+    } catch (error) { $('#bulk-error').textContent = error.message; }
+    finally { bulkBusy = false; uploading = false; renderBulk(); }
+  });
+  }
   $('#login-form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget, button=form.querySelector('button');button.disabled=true;$('#login-error').textContent='';try{const active=await api('login',Object.fromEntries(new FormData(form)));form.elements.password.value='';await start(active);}catch(error){$('#login-error').textContent=error.message;}finally{button.disabled=false;}});
   document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>view(button.dataset.view)));
   $('#logout').addEventListener('click',async()=>{try{await api('logout',{});showLogin();}catch(error){notice(error.message,true);}});
@@ -83,6 +155,7 @@
   $('#product-search').addEventListener('input',renderProducts);$('#product-status').addEventListener('change',renderProducts);
   $('#product-list').addEventListener('click',async event=>{const b=event.target.closest('button');if(!b)return;try{
     if(b.dataset.edit)return openEditor(data.products.find(p=>p.id===b.dataset.edit));
+    if(b.dataset.visibility){const p=data.products.find(p=>p.id===b.dataset.visibility),visible=!p.visible;b.disabled=true;setData(await api('visibility',{revision:data.revision,id:p.id,visible}));notice(visible?'Ürün yayımlandı. Sitede yaklaşık 1 dakika içinde görünür.':'Ürün yayından alındı; taslak olarak duruyor.');}
     if(b.dataset.archive){const p=data.products.find(p=>p.id===b.dataset.archive);setData(await api(p.archived?'restore':'archive',{revision:data.revision,id:p.id}));notice(p.archived?'Ürün taslağa geri alındı.':'Ürün arşivlendi. İstediğiniz zaman geri alabilirsiniz.');}
     if(b.dataset.move){const ids=data.products.slice().sort((a,b)=>a.order-b.order).map(p=>p.id),i=ids.indexOf(b.dataset.move),j=i+Number(b.dataset.direction);if(j<0||j>=ids.length)return;[ids[i],ids[j]]=[ids[j],ids[i]];setData(await api('order',{revision:data.revision,ids}));notice('Ürün sırası kaydedildi.');}
   }catch(error){notice(error.message,true);}});

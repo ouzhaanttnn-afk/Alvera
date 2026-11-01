@@ -35,6 +35,22 @@ export default async function handler(req, res) {
       const index = value.products.findIndex(p => p.id === product.id);
       if (index < 0) value.products.push(product); else value.products[index] = product;
     }));
+    // Toplu ekleme: her biri tek fotoğraflı, taslak ürünler. Tek istek, tek revizyon kontrolü; ürünler yayımlanmaz.
+    if (action === 'bulk') return json(res, 200, await updateCatalog(body.revision, value => {
+      const items = Array.isArray(body.products) ? body.products : [];
+      if (!items.length || items.length > 20) throw httpError(400, 'Tek seferde 1 ile 20 ürün eklenebilir.');
+      if (value.products.length + items.length > 300) throw httpError(400, '300 ürün sınırı aşılıyor.');
+      for (const item of items) {
+        if (!item || typeof item !== 'object' || typeof item.image !== 'string') throw httpError(400, 'Toplu ürün verisi geçersiz.');
+        value.products.push(validProduct({ name: item.name, category: item.category, images: [item.image], visible: false }, value));
+      }
+    }));
+    if (action === 'visibility') return json(res, 200, await updateCatalog(body.revision, value => {
+      const product = value.products.find(p => p.id === body.id);
+      if (!product || product.archived) throw httpError(404, 'Ürün bulunamadı.');
+      if (body.visible && !product.images.length) throw httpError(400, 'Yayımlamadan önce en az bir fotoğraf ekleyin.');
+      product.visible = !!body.visible; product.updatedAt = new Date().toISOString();
+    }));
     if (action === 'archive' || action === 'restore') return json(res, 200, await updateCatalog(body.revision, value => {
       const product = value.products.find(p => p.id === body.id); if (!product) throw httpError(404, 'Ürün bulunamadı.');
       product.archived = action === 'archive'; if (product.archived) product.visible = false;

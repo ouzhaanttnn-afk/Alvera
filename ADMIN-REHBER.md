@@ -3,6 +3,8 @@
 - Panel: `/admin`. Giris bilgileri GitHub'a veya tarayici koduna yazilmaz. Ilk rastgele sifrenin tek yonlu dogrulayicisi sunucuya dagitilir. Acik sifre yalnizca bilgisayarinizdaki ozel giris dosyasindadir.
 - Ilk giriste Guvenlik ve yedek bolumunden kendiniz bir sifre belirleyebilirsiniz. Bu islem tum oturumlari kapatir. Sifreyi sifirlama gerekiyorsa mevcut ozel security.json kaydi korunarak yetkili bir sunucu islemi yapilmalidir; herkese acik ilk-kaydolan-yonetici mekanizmasi yoktur.
 - Yeni urun: ad, kategori, gercek ayar/malzeme, aciklama ve fotograf. Sitede yayimla kapaliysa taslaktir. Fotograf olmadan yayimlanmaz. Fiyat veya stok uydurulmaz; sorular urune ozel WhatsApp mesajiyla gelir.
+- Toplu urun ekleme: Secki sayfasinda "Toplu ekle". Tek seferde en fazla 20 fotograf secin; her fotograf ayri bir urun olur. Adi dosya adindan tahmin edilir (IMG_1234 gibi anlamsiz adlarda "Yuzuk 3" gibi gecici ad verilir); adi ve kategoriyi satirda degistirebilirsiniz. Urunler her zaman taslak acilir, kendiliginden yayimlanmaz. Bozuk veya desteklenmeyen dosyalar listede kalir, digerleri kaydedilir.
+- Hizli yayimlama: Urun satirindaki "Yayimla" / "Yayindan al" dugmesi urunu editoru acmadan yayimlar veya taslaga alir. Fotografi olmayan urun yayimlanamaz.
 - Fotograflar JPEG, PNG veya WebP olmali. Panel otomatik olarak 1600 piksele indirir, WebP yapar ve metadata/konum bilgisini yeniden kodlayarak temizler. Telefonunuz HEIC cekiyorsa JPEG disari aktarin.
 - Ilk fotograf kapaktir. Oklarla fotograf ve urun siralarini degistirebilirsiniz.
 - Arsivleme geri alinabilir. Fotoğraf dosyalari otomatik silinmez; urun geri yuklendiginizde baglantilari korunur.

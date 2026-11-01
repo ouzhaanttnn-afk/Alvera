@@ -19,6 +19,7 @@ export default defineConfig({
     env: {
       APP_MODE: 'local',
       ALPERA_LOCAL_STORAGE: '1',
+      ALPERA_DATA_DIR: '.local/e2e-katalog',
       APP_URL: 'http://127.0.0.1:3100',
       DATA_DIR: `.local/e2e-${Date.now()}`,
       DATA_ENCRYPTION_KEY: 'dGVzdC1vbmx5LWtleS0wMTIzNDU2Nzg5MDEyMzQ1Njc=',
