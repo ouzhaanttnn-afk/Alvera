@@ -1,6 +1,7 @@
 import { catalog, defaults, updateCatalog, validProduct, validSettings, text } from '../lib/catalog.js';
 import { json, session, login, logout, changePassword, sameOrigin } from '../lib/security.js';
-import { available, savePhoto, httpError } from '../lib/storage.js';
+import { available, readDocument, savePhoto, httpError } from '../lib/storage.js';
+import { summary } from '../lib/stats.js';
 
 export default async function handler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
@@ -13,6 +14,7 @@ export default async function handler(req, res) {
     const active = await session(req, req.method !== 'GET');
     if (action === 'session' && req.method === 'GET') return json(res, 200, { username: active.username, csrf: active.csrf, storage: available(), environment: process.env.VERCEL_ENV || 'local' });
     if (action === 'catalog' && req.method === 'GET') return json(res, 200, await catalog());
+    if (action === 'stats' && req.method === 'GET') return json(res, 200, summary(available() ? (await readDocument('stats.json'))?.value : null));
     if (action === 'export' && req.method === 'GET') { res.setHeader('Content-Disposition', 'attachment; filename="alvera-katalog-yedegi.json"'); return json(res, 200, await catalog()); }
     if (req.method !== 'POST') throw httpError(405, 'Bu işlem POST gerektirir.');
     sameOrigin(req);

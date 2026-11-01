@@ -13,15 +13,34 @@
   }
   function showLogin() { $('#workspace').hidden = true; $('#login-screen').hidden = false; csrf = ''; }
   function setData(result) { data = result; renderProducts(); renderMedia(); $('#save-state').textContent = 'Kaydedildi · ' + (data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : 'Kalıcı depolama bağlı'); }
-  async function start(active) { csrf = active.csrf; data = await api('catalog'); $('#login-screen').hidden = true; $('#workspace').hidden = false; $('#environment-note').textContent = active.environment === 'preview' ? 'Önizleme · ayrı katalog' : active.environment === 'local' ? 'Yerel geliştirme · ayrı katalog' : 'Canlı mağaza'; setData(data); fillSettings(); }
+  async function start(active) { csrf = active.csrf; try { localStorage.setItem('alvera.owner', '1'); } catch { /* Depolama kapalı olabilir. */ } data = await api('catalog'); $('#login-screen').hidden = true; $('#workspace').hidden = false; $('#environment-note').textContent = active.environment === 'preview' ? 'Önizleme · ayrı katalog' : active.environment === 'local' ? 'Yerel geliştirme · ayrı katalog' : 'Canlı mağaza'; setData(data); fillSettings(); }
   function view(name) {
     if (dirty && !confirm('Kaydedilmemiş mağaza bilgileri var. Bu değişikliklerden vazgeçmek istiyor musunuz?')) return;
     dirty = false;
     document.querySelectorAll('.view').forEach(el => { el.hidden = el.id !== 'view-' + name; });
     document.querySelectorAll('[data-view]').forEach(el => { if (el.dataset.view === name) el.setAttribute('aria-current','page'); else el.removeAttribute('aria-current'); });
-    $('#view-kicker').textContent = {products:'SEÇKİ',media:'FOTOĞRAFLAR',settings:'MAĞAZA BİLGİLERİ',security:'GÜVENLİK VE YEDEK'}[name];
+    $('#view-kicker').textContent = {products:'SEÇKİ',media:'FOTOĞRAFLAR',stats:'ZİYARETLER',settings:'MAĞAZA BİLGİLERİ',security:'GÜVENLİK VE YEDEK'}[name];
     if (name === 'settings') fillSettings();
+    if (name === 'stats') loadStats();
   }
+  const number = value => Number(value || 0).toLocaleString('tr-TR');
+  async function loadStats() {
+    try {
+      const result = await api('stats');
+      const set = (key, value) => { const el = document.querySelector('[data-stat="' + key + '"]'); if (el) el.textContent = number(value); };
+      set('views7', result.totals7.view); set('views30', result.totals30.view); set('whatsapp30', result.totals30.whatsapp); set('call30', result.totals30.call);
+      const rows = result.days.slice(0, 14).map(day => {
+        const tr = document.createElement('tr');
+        const [year, month, date] = day.day.split('-');
+        const th = document.createElement('th'); th.scope = 'row'; th.textContent = date + '.' + month + '.' + year; tr.append(th);
+        for (const key of ['view', 'whatsapp', 'call', 'directions', 'instagram', 'calculator']) { const td = document.createElement('td'); td.textContent = number(day[key]); tr.append(td); }
+        return tr;
+      });
+      $('#stats-body').replaceChildren(...rows);
+      $('#stats-empty').hidden = Object.values(result.totals30).some(value => value > 0);
+    } catch (error) { notice(error.message || 'Ziyaret bilgileri alınamadı.', true); }
+  }
+
   function renderProducts() {
     const all = data.products.filter(p => !p.archived), live = all.filter(p => p.visible);
     $('#stat-total').textContent = all.length; $('#nav-count').textContent = all.length; $('#stat-live').textContent = live.length; $('#stat-draft').textContent = all.length - live.length; $('#stat-media').textContent = data.media.length;

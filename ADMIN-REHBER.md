@@ -12,6 +12,8 @@
 - Google yorumlari otomatik olarak cekilmiyor. Dogrulanmis puan/sayi istege bagli olarak girilebilir; varsayilan durumda sadece Google Haritalar baglantisi gosterilir. Otomatik yorumlar icin Google Places API ve isletme kaydi baglantisi gerekir.
 - JSON yedegi urunleri, ayarlari ve fotograf baglantilarini icerir; fotograf dosyalarinin kendisini veya sifreleri icermez. Blob depolarini silmeden once fotograf dosyalarini ayrica indirin.
 - Domain baglaninca panelde Site adresi alanini degistirin. Canonical, urun paylasim adresleri, yapilandirilmis veri ve sitemap yeni adresi kullanir. Vercel Domains bolumundeki DNS kurulumu ayrica gerekir.
+- Ziyaretler bolumu: sitenin kac kez acildigini ve WhatsApp, arama, yol tarifi, Instagram, gram hesaplayici dugmelerine kac kez basildigini gosterir. Cerez kullanilmaz; IP adresi, tarayici bilgisi veya ziyaret yolu saklanmaz, yalnizca gunluk toplamlar tutulur (90 gun). Sayilar "kisi" degil "sayfa acilisi"dir; ayni kisi yeniden acarsa tekrar sayilir. "Tiklama" baglantiya basildigini gosterir, mesajin gonderildigi anlamina gelmez. Robotlar, "izlenmek istemiyorum" tercihi acik olanlar ve yonetime giris yaptiginiz tarayici sayilmaz. Bu ozelligi ziyaretcilere duyurulan aydinlatma metninde belirtmek icin hukuk danismaninizla teyit edin.
+- Domain degisince `robots.txt` icindeki `Sitemap:` satirini yeni adresle elle guncelleyin; bu dosya panelden degismez.
 
 ## Teknik notlar
 
