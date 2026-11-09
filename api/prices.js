@@ -53,7 +53,9 @@ export function buildPayload(feed) {
 }
 
 // ---- İkinci kaynak: has altın ve sarrafiye TL fiyatları (Ozan Döviz'in sayfasının kendi yüklediği veri adresleri) ----
-// 24 ayar gram: alış = has alış, satış = has satış × 1,003 (binde 3 fark). Tam sayı kuruşla hesaplanır.
+// 24 ayar gram: alış = 995 milyem (has alış × 0,995; kaynağın "995 HAS" satırıyla aynıdır), satış = has satış × 1,003.
+// Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
+const GRAM24_ALIS_PERMILLE = 995;
 const GRAM24_SATIS_PERMILLE = 1003;
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
@@ -88,7 +90,7 @@ export function applyOzan(payload, ozan) {
   const used = [];
   const gram = find('PGA');
   if (ozan?.has && gram && near((ozan.has.buy + ozan.has.sell) / 2, gram, 0.04)) {
-    gram.buy = formatCents(ozan.has.buy);
+    gram.buy = formatCents(Math.round((ozan.has.buy * GRAM24_ALIS_PERMILLE) / 1000));
     gram.sell = formatCents(Math.round((ozan.has.sell * GRAM24_SATIS_PERMILLE) / 1000));
     used.push('PGA');
   }
