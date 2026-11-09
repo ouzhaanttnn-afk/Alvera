@@ -48,15 +48,21 @@ export function buildPayload(feed) {
   const prices = PRODUCTS.map(read);
   let extra = [];
   try { extra = EXTRA.map(read); } catch { /* Hesaplayıcının 14/18 ayar satırları yoksa yalnızca onlar gizlenir. */ }
+  // "Has Altın" satırı: ilk kaynakta varsa yedek olarak alınır; hiçbir kaynakta yoksa tabloda gösterilmez.
+  let has = [];
+  try { has = [{ ...read(['HH_T', 'Has Altın']), code: 'HAS' }]; } catch { /* Has satırı yoksa gösterilmez. */ }
   const source_updated_at = sourceTimestamp(feed.find((item) => item?.Kod === 'PGA')?.GuncellenmeZamani);
-  return { source_updated_at, prices: [...prices, ...extra] };
+  return { source_updated_at, prices: [...prices, ...extra, ...has] };
 }
 
 // ---- İkinci kaynak: has altın ve sarrafiye TL fiyatları (Ozan Döviz'in sayfasının kendi yüklediği veri adresleri) ----
+// "Has Altın" satırı kaynaktan aynen gösterilir (ileride kendi fiyat motoruna geçilecek).
 // 24 ayar gram: alış = 995 milyem (has alış × 0,995; kaynağın "995 HAS" satırıyla aynıdır), satış = has satış × 1,003.
 // Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
 const GRAM24_ALIS_PERMILLE = 995;
 const GRAM24_SATIS_PERMILLE = 1003;
+// 22 ayar bilezik: 920 milyem. Alış ve satış, kaynağın kendi has alış / has satış fiyatından ayrı ayrı hesaplanır.
+const BILEZIK22_PERMILLE = 920;
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
 const trFormat = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true });
@@ -93,6 +99,20 @@ export function applyOzan(payload, ozan) {
     gram.buy = formatCents(Math.round((ozan.has.buy * GRAM24_ALIS_PERMILLE) / 1000));
     gram.sell = formatCents(Math.round((ozan.has.sell * GRAM24_SATIS_PERMILLE) / 1000));
     used.push('PGA');
+    const bilezik = find('PB');
+    if (bilezik) {
+      bilezik.buy = formatCents(Math.round((ozan.has.buy * BILEZIK22_PERMILLE) / 1000));
+      bilezik.sell = formatCents(Math.round((ozan.has.sell * BILEZIK22_PERMILLE) / 1000));
+      used.push('PB');
+    }
+    let hasEntry = find('HAS');
+    if (!hasEntry) {
+      hasEntry = { code: 'HAS', name: 'Has Altın' };
+      prices.push(hasEntry);
+    }
+    hasEntry.buy = formatCents(ozan.has.buy);
+    hasEntry.sell = formatCents(ozan.has.sell);
+    used.push('HAS');
   }
   for (const [code, row] of Object.entries(ozan?.sarrafiye || {})) {
     const entry = find(code);

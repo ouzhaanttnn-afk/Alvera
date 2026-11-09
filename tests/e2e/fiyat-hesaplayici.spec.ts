@@ -4,7 +4,6 @@ import { expect, test, type Page } from '@playwright/test';
 const price = (code: string, name: string, buy: string, sell: string) => ({ code, name, buy, sell });
 function payload(extra: Record<string, unknown> = {}, withKarats = true) {
   return {
-    source: 'Altınkaynak',
     source_updated_at: new Date().toISOString(),
     prices: [
       price('PGA', 'Gram Altın', '6.206', '6.350'),
@@ -96,5 +95,28 @@ test.describe('Fiyat paneli durumları', () => {
     await open(page, payload({ prices: [price('PGA', 'Gram Altın', 'yaklaşık 6200', '6.350')] }), 200, false);
     await expect(page.locator('#rates-body')).not.toContainText('₺');
     await expect(page.locator('#rates-calc')).toBeHidden();
+  });
+});
+
+test.describe('Has Altın satırı', () => {
+  const has = (buy: string, sell: string) => price('HAS', 'Has Altın', buy, sell);
+
+  test('varsa tablonun ilk satırı olur ve değerleri aynen gösterir', async ({ page }) => {
+    await open(page, payload({ prices: [has('6.632,38', '6.662,31'), ...payload().prices] }));
+    await expect(page.locator('#rates-body th')).toHaveCount(6);
+    const first = page.locator('#rates-body tr').first();
+    await expect(first).toContainText('Has Altın');
+    await expect(first).toContainText('6.632,38 ₺');
+    await expect(first).toContainText('6.662,31 ₺');
+    await expect(page.locator('#rates-body tr').nth(1)).toContainText('Gram Altın');
+  });
+
+  test('yoksa ya da bozuksa tablo 5 satırla çalışır; hata sayılmaz', async ({ page }) => {
+    await open(page, payload());
+    await expect(page.locator('#rates-body th')).toHaveCount(5);
+    await expect(page.locator('#rates-body')).not.toContainText('Has Altın');
+    await open(page, payload({ prices: [has('yaklaşık', '6.662,31'), ...payload().prices] }));
+    await expect(page.locator('#rates-body th')).toHaveCount(5);
+    await expect(page.locator('.rates-panel')).not.toHaveAttribute('data-state', 'error');
   });
 });

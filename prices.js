@@ -5,7 +5,8 @@
   const status = document.querySelector('#rates-status');
   if (!panel || !body || !status) return;
 
-  const products = [['PGA', 'Gram Altın'], ['PC', 'Çeyrek Altın'], ['PY', 'Yarım Altın'], ['PA', 'Ata Cumhuriyet'], ['PB', '22 Ayar Bilezik']];
+  // Üçüncü değer true ise satır isteğe bağlıdır: veri yoksa tabloda gösterilmez, hata sayılmaz.
+  const products = [['HAS', 'Has Altın', true], ['PGA', 'Gram Altın'], ['PC', 'Çeyrek Altın'], ['PY', 'Yarım Altın'], ['PA', 'Ata Cumhuriyet'], ['PB', '22 Ayar Bilezik']];
   const endpoints = ['/api/prices'];
   const karatCodes = { 24: 'PGA', 22: 'PB', 18: 'P18', 14: 'P14' };
   const storageKey = 'alvera.gold.last-good.v1';
@@ -40,11 +41,16 @@
     if (!Array.isArray(entries)) throw new Error('Invalid price response');
     const byCode = new Map(entries.map(item => [raw ? item.Kod : item.code, item]));
     const timestamp = sourceTime(raw ? byCode.get('PGA')?.GuncellenmeZamani : input.source_updated_at);
-    const prices = products.map(([code, name]) => {
+    const prices = [];
+    for (const [code, name, optional] of products) {
       const item = byCode.get(code);
-      if (!item) throw new Error('Missing price: ' + code);
-      return { code, name, buy: amount(raw ? item.Alis : item.buy), sell: amount(raw ? item.Satis : item.sell) };
-    });
+      try {
+        if (!item) throw new Error('Missing price: ' + code);
+        prices.push({ code, name, buy: amount(raw ? item.Alis : item.buy), sell: amount(raw ? item.Satis : item.sell) });
+      } catch (error) {
+        if (!optional) throw error;
+      }
+    }
     const calc = {};
     for (const [karat, code] of Object.entries(karatCodes)) {
       const item = byCode.get(code);
