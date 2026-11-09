@@ -54,7 +54,7 @@ const upstream = (body: unknown, ozan: Ozan = 'down', ok = true, status = 200) =
 };
 const ozanGold = (alis = '6632.38', satis = '6662.31') => ({ data: { USDTRY: { code: 'USD /TL', alis: '50.180', satis: '50.290' }, ALTIN: { code: 'HAS ALTIN /TL', alis, satis }, '995HAS': { code: '995 HAS', alis: '6599.22', satis: '6628.99' } } });
 const ozanSarrafiye = (over: Record<string, [string, string]> = {}) => {
-  const base: Record<string, [string, string]> = { 'Y. Çeyrek': ['10814.62', '10903.98'], 'Y. Yarım': ['21637.87', '21795.29'], 'Y. Ata Lira': ['43972.50', '44588.04'], 'E. Çeyrek': ['10711.67', '10807.91'], ...over };
+  const base: Record<string, [string, string]> = { 'Y. Çeyrek': ['10814.62', '10903.98'], 'Y. Yarım': ['21637.87', '21795.29'], 'Y. Ata Lira': ['43972.50', '44588.04'], 'E. Çeyrek': ['10711.67', '10807.91'], 'E. Yarım': ['21307.76', '21465.70'], 'E. Ata Lira': ['43972.50', '44283.80'], ...over };
   return { data: Object.fromEntries(Object.entries(base).map(([code, [alis, satis]], i) => [`stl${i + 1}`, { code, alis, satis }])) };
 };
 // Altınkaynak'ın o günkü gerçek değerlerine yakın besleme: ikinci kaynakla çapraz kontrol bunlara bakar.
@@ -154,8 +154,8 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     // alış 995 milyem: 6632,38 × 0,995 = 6599,2181 → 6599,22 (kaynağın kendi "995 HAS" satırıyla aynı); satış 6662,31 × 1,003 → 6682,30
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.599,22', sell: '6.682,30' });
     expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67', sell: '10.807,91' }); // ESKİ çeyrek (E.); yeni çeyrek (10.814,62) kullanılmaz
-    expect(find(r, 'PY')).toMatchObject({ buy: '21.637,87', sell: '21.795,29' });
-    expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.588,04' });
+    expect(find(r, 'PY')).toMatchObject({ buy: '21.307,76', sell: '21.465,70' }); // eski yarım; yeni yarım (21.637,87) kullanılmaz
+    expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.283,80' }); // eski ata; yeni ata satışı (44.588,04) kullanılmaz
     expect(find(r, 'PB')).toMatchObject({ buy: '5.683', sell: '6.105' }); // 22 ayar ilk kaynakta kalır
     expect(find(r, 'P18')).toMatchObject({ buy: '4.298', sell: '5.020' });
     expect(r.body.prices.map((p: any) => p.code)).toEqual(['PGA', 'PC', 'PY', 'PA', 'PB', 'P18', 'P14']);
@@ -202,13 +202,15 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     }
   });
 
-  it('çeyrek yalnızca ESKİ seriden alınır; eski satır yoksa yeni seriye değil ilk kaynağa dönülür', async () => {
-    const withoutOld = ozanSarrafiye();
-    delete (withoutOld.data as Record<string, unknown>).stl4; // 'E. Çeyrek' satırı (4. sıra)
-    upstream(market(), { gold: ozanGold(), sarrafiye: withoutOld });
-    const r = await call();
-    expect(find(r, 'PC')).toMatchObject({ buy: '10.677', sell: '11.195' });
-    expect(find(r, 'PY')).toMatchObject({ buy: '21.637,87', sell: '21.795,29' }); // yarım yeni seriden gelmeye devam eder
+  it('çeyrek, yarım ve ata yalnızca ESKİ seriden alınır; eski satır yoksa yeni seriye değil ilk kaynağa dönülür', async () => {
+    // helper sırası: stl4 = E. Çeyrek, stl5 = E. Yarım, stl6 = E. Ata Lira
+    for (const [row, code, expected] of [['stl4', 'PC', { buy: '10.677', sell: '11.195' }], ['stl5', 'PY', { buy: '21.262', sell: '22.390' }], ['stl6', 'PA', { buy: '43.678', sell: '47.110' }]] as const) {
+      const without = ozanSarrafiye();
+      delete (without.data as Record<string, unknown>)[row];
+      upstream(market(), { gold: ozanGold(), sarrafiye: without });
+      const r = await call();
+      expect(find(r, code), code).toMatchObject(expected); // yeni seri satırı durduğu hâlde kullanılmaz
+    }
   });
 
   it('ilk kaynakla uyuşmayan (aşırı sapan) değer kullanılmaz; diğer kalemler etkilenmez', async () => {

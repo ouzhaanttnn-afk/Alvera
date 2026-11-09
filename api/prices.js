@@ -122,8 +122,8 @@ export async function fetchOzan() {
   for (const result of [gold, sarrafiye]) if (result.status === 'rejected') console.error('[prices] ikinci kaynak', result.reason?.message);
   const has = gold.status === 'fulfilled' ? ozanRow(gold.value, 'HAS ALTIN /TL') : null;
   const table = sarrafiye.status === 'fulfilled' ? sarrafiye.value : null;
-  // Çeyrek ESKİ seriden (E.), yarım ve ata YENİ seriden (Y.) alınır.
-  return { has, sarrafiye: { PC: ozanRow(table, 'E. Çeyrek'), PY: ozanRow(table, 'Y. Yarım'), PA: ozanRow(table, 'Y. Ata Lira') } };
+  // Çeyrek, yarım ve ata ESKİ seriden (E.) alınır; eski satır yoksa yeni seriye değil ilk kaynağa dönülür.
+  return { has, sarrafiye: { PC: ozanRow(table, 'E. Çeyrek'), PY: ozanRow(table, 'E. Yarım'), PA: ozanRow(table, 'E. Ata Lira') } };
 }
 
 async function fetchPrimary() {
