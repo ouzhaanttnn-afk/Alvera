@@ -153,7 +153,7 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     expect(r.status).toBe(200);
     // alış 995 milyem: 6632,38 × 0,995 = 6599,2181 → 6599,22 (kaynağın kendi "995 HAS" satırıyla aynı); satış 6662,31 × 1,003 → 6682,30
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.599,22', sell: '6.682,30' });
-    expect(find(r, 'PC')).toMatchObject({ buy: '10.814,62', sell: '10.903,98' });
+    expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67', sell: '10.807,91' }); // ESKİ çeyrek (E.); yeni çeyrek (10.814,62) kullanılmaz
     expect(find(r, 'PY')).toMatchObject({ buy: '21.637,87', sell: '21.795,29' });
     expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.588,04' });
     expect(find(r, 'PB')).toMatchObject({ buy: '5.683', sell: '6.105' }); // 22 ayar ilk kaynakta kalır
@@ -189,8 +189,8 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     const cases: [string, Ozan][] = [
       ['HTTP hatası', 'down'],
       ['has satırı yok', { gold: { data: {} }, sarrafiye: { data: {} } }],
-      ['bozuk sayı', { gold: ozanGold('yaklaşık 6600', '6.662,31'), sarrafiye: ozanSarrafiye({ 'Y. Çeyrek': ['-5', 'abc'] }) }],
-      ['alış satıştan büyük', { gold: ozanGold('6700.00', '6600.00'), sarrafiye: ozanSarrafiye({ 'Y. Çeyrek': ['11000.00', '10000.00'] }) }],
+      ['bozuk sayı', { gold: ozanGold('yaklaşık 6600', '6.662,31'), sarrafiye: ozanSarrafiye({ 'E. Çeyrek': ['-5', 'abc'] }) }],
+      ['alış satıştan büyük', { gold: ozanGold('6700.00', '6600.00'), sarrafiye: ozanSarrafiye({ 'E. Çeyrek': ['11000.00', '10000.00'] }) }],
       ['beklenmeyen biçim', { gold: 'html döndü', sarrafiye: null }],
     ];
     for (const [label, ozan] of cases) {
@@ -202,12 +202,21 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     }
   });
 
+  it('çeyrek yalnızca ESKİ seriden alınır; eski satır yoksa yeni seriye değil ilk kaynağa dönülür', async () => {
+    const withoutOld = ozanSarrafiye();
+    delete (withoutOld.data as Record<string, unknown>).stl4; // 'E. Çeyrek' satırı (4. sıra)
+    upstream(market(), { gold: ozanGold(), sarrafiye: withoutOld });
+    const r = await call();
+    expect(find(r, 'PC')).toMatchObject({ buy: '10.677', sell: '11.195' });
+    expect(find(r, 'PY')).toMatchObject({ buy: '21.637,87', sell: '21.795,29' }); // yarım yeni seriden gelmeye devam eder
+  });
+
   it('ilk kaynakla uyuşmayan (aşırı sapan) değer kullanılmaz; diğer kalemler etkilenmez', async () => {
     upstream(market(), { gold: ozanGold('9999.00', '9999.50'), sarrafiye: ozanSarrafiye() });
     let r = await call();
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.606', sell: '6.750' }); // has %50 sapıyor → ilk kaynak
-    expect(find(r, 'PC')).toMatchObject({ buy: '10.814,62' });              // sarrafiye geçerli → ikinci kaynak
-    upstream(market(), { gold: ozanGold(), sarrafiye: ozanSarrafiye({ 'Y. Çeyrek': ['1.00', '1.10'] }) });
+    expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67' });              // sarrafiye geçerli → ikinci kaynak (eski çeyrek)
+    upstream(market(), { gold: ozanGold(), sarrafiye: ozanSarrafiye({ 'E. Çeyrek': ['1.00', '1.10'] }) });
     r = await call();
     expect(find(r, 'PC')).toMatchObject({ buy: '10.677', sell: '11.195' }); // çeyrek sapıyor → ilk kaynak
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.599,22', sell: '6.682,30' });
