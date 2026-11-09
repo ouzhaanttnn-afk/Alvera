@@ -61,8 +61,9 @@ export function buildPayload(feed) {
 // Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
 const GRAM24_ALIS_PERMILLE = 995;
 const GRAM24_SATIS_PERMILLE = 1003;
-// 22 ayar bilezik: 920 milyem. Alış ve satış, kaynağın kendi has alış / has satış fiyatından ayrı ayrı hesaplanır.
-const BILEZIK22_PERMILLE = 920;
+// 22 ayar bilezik: alış 912 milyem (has alış × 0,912), satış 920 milyem (has satış × 0,920).
+const BILEZIK22_ALIS_PERMILLE = 912;
+const BILEZIK22_SATIS_PERMILLE = 920;
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
 const trFormat = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true });
@@ -101,8 +102,8 @@ export function applyOzan(payload, ozan) {
     used.push('PGA');
     const bilezik = find('PB');
     if (bilezik) {
-      bilezik.buy = formatCents(Math.round((ozan.has.buy * BILEZIK22_PERMILLE) / 1000));
-      bilezik.sell = formatCents(Math.round((ozan.has.sell * BILEZIK22_PERMILLE) / 1000));
+      bilezik.buy = formatCents(Math.round((ozan.has.buy * BILEZIK22_ALIS_PERMILLE) / 1000));
+      bilezik.sell = formatCents(Math.round((ozan.has.sell * BILEZIK22_SATIS_PERMILLE) / 1000));
       used.push('PB');
     }
     let hasEntry = find('HAS');
