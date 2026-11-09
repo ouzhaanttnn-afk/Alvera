@@ -112,7 +112,7 @@ button { font: inherit; }
 .intro-content .eyebrow { margin: 0 0 30px; }
 .intro .body-copy { max-width: 445px; margin: 35px 0 0 auto; }
 
-/* Altinkaynak market rates */
+/* Altın fiyat paneli */
 .rates { padding-top: 60px; padding-bottom: clamp(105px, 12vw, 190px); border-top: 1px solid var(--line); background: #173740; }
 .rates-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 49%); gap: clamp(50px, 8vw, 140px); align-items: end; margin-top: clamp(90px, 10vw, 150px); }
 .rates-intro .eyebrow { margin: 0 0 26px; }

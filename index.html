@@ -39,7 +39,7 @@
     <meta property="og:image" content="https://www.alverakuyumculuk.com/assets/alvera-og.png" />
     <script src="script.js?v=20261002-refinement" defer></script>
   <script src="navigation.js?v=20261003-interface" defer></script>
-  <script src="prices.js?v=20261101-calc" defer></script>
+  <script src="prices.js?v=20261109-fiyat" defer></script>
     <script src="stats.js?v=20261101-stats" defer></script>
     <script src="visitor.js?v=20261002-refinement" defer></script>
     <script src="interface.js?v=20261003-interface" defer></script>
@@ -151,7 +151,7 @@
             <p class="eyebrow">GÜNCEL PİYASA</p>
             <h2 class="display-title" id="rates-title">Güncel <em>altın fiyatları.</em></h2>
             <p class="body-copy">Gram, çeyrek, yarım ve diğer altın türlerinin alış ve satış değerlerini, son güncelleme bilgisiyle takip edin.</p>
-            <p class="rates-disclaimer">Gösterilen değerler piyasa referansıdır; kaynak: <a href="https://www.altinkaynak.com/" target="_blank" rel="noopener noreferrer">Altınkaynak<span class="sr-only"> (yeni sekmede açılır)</span></a>. Mağaza fiyatları farklı olabilir.</p>
+            <p class="rates-disclaimer">Gösterilen değerler bilgilendirme amaçlıdır ve anlık değişebilir. İşlem anındaki kesin fiyat için mağazamıza danışın.</p>
           </div>
           <div class="rates-panel">
             <div class="rates-panel-top"><span>GÜNCEL ALTIN FİYATLARI</span><span class="rates-pulse" aria-hidden="true"></span></div>
@@ -166,7 +166,7 @@
                 <label for="calc-grams">Gram<input id="calc-grams" type="text" inputmode="decimal" autocomplete="off" placeholder="Örn. 12,5" maxlength="10" /></label>
               </div>
               <div id="calc-result" class="rates-calc-result" role="status" aria-live="polite"></div>
-              <p class="rates-calc-note">Bu bir fiyat teklifi değildir. İşçilik, fire ve mağaza fiyatı farklıdır; kesin değer için mağazamıza danışın.</p>
+              <p class="rates-calc-note">Bu bir fiyat teklifi değildir. İşçilik ve fire ayrıca eklenebilir; kesin değer için mağazamıza danışın.</p>
               <button type="button" class="rates-calc-ask" id="calc-ask" disabled>Bu miktar için mağazaya sor</button>
             </form>
             <div class="rates-panel-bottom">
@@ -304,7 +304,7 @@
             </details>
             <details>
               <summary>Tablodaki altın fiyatları mağaza satış fiyatı mı? <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path class="question-plus" d="M12 5v14"/></svg></summary>
-              <div class="visitor-answer"><p>Tablodaki alış ve satış değerleri piyasa referansıdır; mağaza fiyatları farklılık gösterebilir. Ürün fiyatını mağazamızdan öğrenebilirsiniz.</p><a href="#fiyatlar">Altın fiyatlarına dön <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+              <div class="visitor-answer"><p>Tablodaki alış ve satış değerleri bilgilendirme amaçlıdır ve anlık değişebilir; işlem anındaki kesin fiyatı mağazamızdan öğrenebilirsiniz.</p><a href="#fiyatlar">Altın fiyatlarına dön <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
             </details>
             <details>
               <summary>Mağazanıza nasıl gelebilirim? <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path class="question-plus" d="M12 5v14"/></svg></summary>

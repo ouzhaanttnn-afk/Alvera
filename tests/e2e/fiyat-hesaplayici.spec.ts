@@ -26,7 +26,7 @@ async function open(page: Page, body: unknown, status = 200, rows = true) {
 }
 
 test.describe('Gram hesaplayıcı', () => {
-  test('piyasa referans değerini doğru ve kuruşa kadar hesaplar', async ({ page }) => {
+  test('alış ve satış değerini doğru ve kuruşa kadar hesaplar', async ({ page }) => {
     await open(page, payload());
     const result = page.locator('#calc-result');
     await page.selectOption('#calc-karat', '22');

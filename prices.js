@@ -87,7 +87,7 @@
   }
 
 
-  // ---- Gram hesaplayıcı: yalnızca piyasa referansı gösterir, fiyat teklifi değildir ----
+  // ---- Gram hesaplayıcı: bilgilendirme amaçlı değer gösterir, fiyat teklifi değildir ----
   const calcForm = document.querySelector('#rates-calc');
   const calcKarat = document.querySelector('#calc-karat');
   const calcGrams = document.querySelector('#calc-grams');
@@ -113,10 +113,10 @@
     const entry = current.calc[calcKarat.value];
     calcAsk.disabled = !milligrams;
     if (!milligrams) {
-      calcResult.replaceChildren(Object.assign(document.createElement('p'), { className: 'rates-calc-hint', textContent: calcGrams.value.trim() ? 'Gramı 12,5 gibi girin (en fazla 3 ondalık).' : 'Gram girin; piyasa referans değerini görün.' }));
+      calcResult.replaceChildren(Object.assign(document.createElement('p'), { className: 'rates-calc-hint', textContent: calcGrams.value.trim() ? 'Gramı 12,5 gibi girin (en fazla 3 ondalık).' : 'Gram girin; alış ve satış değerini görün.' }));
       return;
     }
-    const rows = [['Piyasa alış değeri', worth(milligrams, entry.buy)], ['Piyasa satış değeri', worth(milligrams, entry.sell)]].map(([label, amountValue]) => {
+    const rows = [['Alış değeri', worth(milligrams, entry.buy)], ['Satış değeri', worth(milligrams, entry.sell)]].map(([label, amountValue]) => {
       const wrap = document.createElement('div');
       const term = document.createElement('dt'); term.textContent = label;
       const detail = document.createElement('dd'); detail.textContent = formatter.format(amountValue) + ' ₺';
