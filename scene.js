@@ -24,9 +24,10 @@ async function createSculpture() {
     })
   ]);
   const compact = matchMedia('(max-width: 700px)').matches;
+  // Kenar yumuşatma açık kalır: kapatıldığında telefonda altın kenarları belirgin tırtıklı görünüyor (ekran görüntüsüyle denendi).
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: compact ? 'low-power' : 'high-performance' });
-  // Keep crisp retina edges without rendering unnecessary triple-density pixels.
-  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 2 : 2.25);
+  // Keep crisp edges without rendering unnecessary high-density pixels (phones are capped at 1.5x).
+  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 1.5 : 2.25);
   renderer.setPixelRatio(dpr);
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -63,7 +64,10 @@ async function createSculpture() {
   }
   refreshEnvironment();
 
-  const gold = new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .28, envMapIntensity: 1.12, clearcoat: .22, clearcoatRoughness: .28 });
+  // Telefonda kaplama katmanı (clearcoat) olmadan standart metal: görünüm çok yakın, piksel başına maliyet belirgin düşük.
+  const gold = compact
+    ? new THREE.MeshStandardMaterial({ color: '#e3be78', metalness: 1, roughness: .27, envMapIntensity: 1.18 })
+    : new THREE.MeshPhysicalMaterial({ color: '#e3be78', metalness: 1, roughness: .28, envMapIntensity: 1.12, clearcoat: .22, clearcoatRoughness: .28 });
   const goldEdge = new THREE.MeshStandardMaterial({ color: '#a56e28', metalness: 1, roughness: .29, envMapIntensity: 1.1 });
   const monogramDepth = .26;
 
@@ -261,9 +265,16 @@ async function createSculpture() {
   const hero = document.querySelector('.hero');
   const frameInterval = 1000 / (compact ? 30 : 60);
   const overlayActive = () => document.body.matches('.menu-open, .product-dialog-open, .search-open');
+  // Kaydırırken çizim durur: tarayıcının kaydırması ana iş parçacığını sahneyle paylaşmaz. Kaydırma bitince kaldığı yerden sürer.
+  let scrolling = false, scrollTimer = 0;
+  window.addEventListener('scroll', () => {
+    scrolling = true;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { scrolling = false; sync(); }, 180);
+  }, { passive: true });
   function draw(now = performance.now()) {
     frame = 0;
-    if (contextLost || overlayActive()) return;
+    if (contextLost || overlayActive() || scrolling) return;
     if (!paused && last && now - last < frameInterval - .8) {
       if (visible && !document.hidden) frame = requestAnimationFrame(draw);
       return;
@@ -295,13 +306,13 @@ async function createSculpture() {
   }
   function sync() {
     cancelAnimationFrame(frame); frame = 0; last = 0;
-    if (visible && !document.hidden && !contextLost && !overlayActive()) draw();
+    if (visible && !document.hidden && !contextLost && !overlayActive() && !scrolling) draw();
   }
   function resize() {
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
-    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 2 : 2.25);
-    const pixelBudget = compact ? 1100000 : 2200000;
+    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 1.5 : 2.25);
+    const pixelBudget = compact ? 650000 : 2200000;
     const nextDpr = Math.min(nativeRatio, Math.sqrt(pixelBudget / (width * height)));
     if (nextDpr !== dpr) {
       dpr = nextDpr;
