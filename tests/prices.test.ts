@@ -156,8 +156,8 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67', sell: '10.827,91' }); // ESKİ çeyrek; satışa +20 TL (E.); yeni çeyrek (10.814,62) kullanılmaz
     expect(find(r, 'PY')).toMatchObject({ buy: '21.307,76', sell: '21.465,70' }); // eski yarım; yeni yarım (21.637,87) kullanılmaz
     expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.283,80' }); // eski ata; yeni ata satışı (44.588,04) kullanılmaz
-    // 22 ayar bilezik: alış 912 milyem 6632,38 × 0,912 = 6048,7306 → 6048,73; satış 920 milyem 6662,31 × 0,920 = 6129,3252 → 6129,33
-    expect(find(r, 'PB')).toMatchObject({ buy: '6.048,73', sell: '6.129,33' });
+    // 22 ayar bilezik: alış 912 milyem 6632,38 × 0,912 = 6048,7306 → 6048,73; satış 922 milyem 6662,31 × 0,922 = 6142,6498 → 6142,65
+    expect(find(r, 'PB')).toMatchObject({ buy: '6.048,73', sell: '6.142,65' });
     expect(find(r, 'HAS')).toMatchObject({ name: 'Has Altın', buy: '6.632,38', sell: '6.662,31' }); // has kaynaktan aynen
     expect(find(r, 'P18')).toMatchObject({ buy: '4.298', sell: '5.020' });
     expect(r.body.prices.map((p: any) => p.code)).toEqual(['PGA', 'PC', 'PY', 'PA', 'PB', 'P18', 'P14', 'HAS']);
@@ -174,7 +174,7 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     gram = find(await call(), 'PGA');
     expect(gram.sell).toBe('101,15'); // 100,15 × 1,010 = 101,1515 → 101,15
     expect(gram.buy).toBe('99,60'); // 99,50 × 1,001 = 99,5995 → 99,60
-    expect(find(await call(), 'PB')).toMatchObject({ buy: '90,74', sell: '92,14' }); // 99,50 × 0,912 = 90,744 → 90,74; 100,15 × 0,920 = 92,138 → 92,14
+    expect(find(await call(), 'PB')).toMatchObject({ buy: '90,74', sell: '92,34' }); // 99,50 × 0,912 = 90,744 → 90,74; 100,15 × 0,922 = 92,3383 → 92,34
     upstream(goldFeed({ PGA: ['4,90', '5,10'] }), { gold: ozanGold('5.00', '5.00'), sarrafiye: ozanSarrafiye() });
     expect(find(await call(), 'PGA').buy).toBe('5,01'); // 500 × 1,001 = 500,5 → 501 (yarım kuruş yukarı)
   });

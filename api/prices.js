@@ -63,9 +63,9 @@ const GRAM24_ALIS_PERMILLE = 1001;
 const GRAM24_SATIS_PERMILLE = 1010;
 // Çeyrek: kaynağın güncel satış fiyatına 20 TL eklenir (alışa eklenmez).
 const CEYREK_ISCILIK_KURUS = 2000;
-// 22 ayar bilezik: alış 912 milyem (has alış × 0,912), satış 920 milyem (has satış × 0,920).
+// 22 ayar bilezik: alış 912 milyem (has alış × 0,912), satış 922 milyem (has satış × 0,922).
 const BILEZIK22_ALIS_PERMILLE = 912;
-const BILEZIK22_SATIS_PERMILLE = 920;
+const BILEZIK22_SATIS_PERMILLE = 922;
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
 const trFormat = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true });
