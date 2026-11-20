@@ -57,10 +57,12 @@ export function buildPayload(feed) {
 
 // ---- İkinci kaynak: has altın ve sarrafiye TL fiyatları (Ozan Döviz'in sayfasının kendi yüklediği veri adresleri) ----
 // "Has Altın" satırı kaynaktan aynen gösterilir (ileride kendi fiyat motoruna geçilecek).
-// 24 ayar gram: alış = 995 milyem (has alış × 0,995; kaynağın "995 HAS" satırıyla aynıdır), satış = has satış × 1,003.
+// 24 ayar gram: alış = 995 milyem (has alış × 0,995; kaynağın "995 HAS" satırıyla aynıdır), satış = has satış × 1,010.
 // Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
 const GRAM24_ALIS_PERMILLE = 995;
-const GRAM24_SATIS_PERMILLE = 1003;
+const GRAM24_SATIS_PERMILLE = 1010;
+// Çeyrek: kaynağın güncel satış fiyatına 30 TL işçilik eklenir (alışa eklenmez).
+const CEYREK_ISCILIK_KURUS = 3000;
 // 22 ayar bilezik: alış 912 milyem (has alış × 0,912), satış 920 milyem (has satış × 0,920).
 const BILEZIK22_ALIS_PERMILLE = 912;
 const BILEZIK22_SATIS_PERMILLE = 920;
@@ -119,7 +121,7 @@ export function applyOzan(payload, ozan) {
     const entry = find(code);
     if (!row || !entry || !near((row.buy + row.sell) / 2, entry, 0.08)) continue;
     entry.buy = formatCents(row.buy);
-    entry.sell = formatCents(row.sell);
+    entry.sell = formatCents(row.sell + (code === 'PC' ? CEYREK_ISCILIK_KURUS : 0));
     used.push(code);
   }
   return { payload: { ...payload, prices }, used };
