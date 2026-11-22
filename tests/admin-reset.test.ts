@@ -40,3 +40,17 @@ it('biçimi bozuk sıfırlama değeri yok sayılır', async () => {
   await expect(login('duz-metin-sifre')).rejects.toThrow('doğru değil');
   expect((await login('Sahibin-Kendi-Sifresi-9')).username).toBe('alvera');
 });
+
+it('kullanıcı adı büyük harfle veya boşlukla yazılsa da giriş olur; şifre büyük/küçük harfe duyarlı kalır', async () => {
+  expect((await login('Sahibin-Kendi-Sifresi-9', 'Alvera')).username).toBe('alvera');
+  expect((await login('Sahibin-Kendi-Sifresi-9', ' ALVERA ')).username).toBe('alvera');
+  await expect(login('sahibin-kendi-sifresi-9', 'alvera')).rejects.toThrow('doğru değil');
+  await expect(login('Sahibin-Kendi-Sifresi-9', 'baskasi')).rejects.toThrow('doğru değil');
+});
+
+it('yeni bir sıfırlama değeri kilitlenmiş girişi açar', async () => {
+  for (let i = 0; i < 8; i++) await expect(login('yanlis-' + i)).rejects.toThrow();
+  await expect(login('Sahibin-Kendi-Sifresi-9')).rejects.toThrow('Çok fazla');
+  process.env.ADMIN_PASSWORD_RESET = resetValue('Sahibin-Kendi-Sifresi-9', 'cd'.repeat(24));
+  expect((await login('Sahibin-Kendi-Sifresi-9')).username).toBe('alvera');
+});
