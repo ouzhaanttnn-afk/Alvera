@@ -42,23 +42,10 @@
         image.src = photo.url;
         image.alt = product.name;
         tile.querySelector('.category-action').textContent = 'Modelleri incele';
-        tile.href = '#koleksiyon';
+        // Ürünü olan kategori kendi sayfasına gider (/kategori/<anahtar>); ürünü olmayan mağazaya yönlendirmeye devam eder.
+        tile.href = '/kategori/' + key;
         tile.removeAttribute('target');
         tile.removeAttribute('rel');
-        tile.addEventListener('click', event => {
-          event.preventDefault();
-          filter = key;
-          query = '';
-          const tools = document.querySelector('.catalog-tools');
-          tools.querySelector('input').value = '';
-          tools.querySelectorAll('[data-category]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.category === key)));
-          document.querySelectorAll('[data-category-tile]').forEach(item => {
-            if (item === tile) item.setAttribute('aria-current', 'true');
-            else item.removeAttribute('aria-current');
-          });
-          render();
-          tools.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-        });
       } else {
         representative = true;
         tile.href = wa('Merhaba, ' + label + ' modelleri hakkında bilgi almak istiyorum.');

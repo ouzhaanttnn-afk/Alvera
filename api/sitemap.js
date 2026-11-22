@@ -8,5 +8,9 @@ export default async function handler(req, res) {
   const escape = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=3600');
-  return res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escape(url)}</loc>${changed ? `<lastmod>${changed}</lastmod>` : ''}</url></urlset>`);
+  // Yalnızca yayımlanmış ürünü olan kategori sayfaları listelenir (boş sayfa arama motoruna gönderilmez).
+  const base = url.replace(/\/$/, '');
+  const used = [...new Set((value?.products || []).filter((p) => p.visible && !p.archived).map((p) => p.category))].filter((key) => /^[a-z]+$/.test(key));
+  const pages = used.map((key) => `<url><loc>${escape(base + '/kategori/' + key)}</loc></url>`).join('');
+  return res.status(200).send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escape(url)}</loc>${changed ? `<lastmod>${changed}</lastmod>` : ''}</url>${pages}</urlset>`);
 }

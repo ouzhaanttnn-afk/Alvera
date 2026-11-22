@@ -14,7 +14,7 @@ const config: NextConfig = {
     '/api/masak/auth/[...path]': ['./legal/*'],
     '/api/masak/admin/[...path]': ['./assets/fonts/*', './public/brand/*', './legal/*'],
   },
-  async rewrites() { return { beforeFiles: [{ source: '/', destination: '/index.html' }, { source: '/admin', destination: '/admin.html' }, { source: '/sitemap.xml', destination: '/api/sitemap' }], afterFiles: [], fallback: [] }; },
+  async rewrites() { return { beforeFiles: [{ source: '/', destination: '/index.html' }, { source: '/admin', destination: '/admin.html' }, { source: '/kategori/:slug', destination: '/kategori.html' }, { source: '/sitemap.xml', destination: '/api/sitemap' }], afterFiles: [], fallback: [] }; },
   async headers() {
     return [
       {

@@ -64,8 +64,11 @@ test('Hediye kategorisine ürün gelince kutu fotoğrafa döner ve seçkiyi süz
   await expect(special.locator('.category-photo')).toHaveClass(/is-placeholder/);
   await expect(page.locator('[data-category="ozel"]')).toHaveCount(0); // boş kategori için filtre düğmesi çıkmaz
 
+  // Ürünü olan kutu kategori sayfasına gider; ürünü olmayan mağazaya yönlendirir.
+  await expect(gift).toHaveAttribute('href', '/kategori/hediye');
+  await expect(special).toHaveAttribute('href', /^https:\/\/wa\.me\//);
   await gift.click();
-  await expect(page.locator('[data-category="hediye"]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.gallery [data-product]')).toHaveCount(1);
-  await expect(gift).toHaveAttribute('aria-current', 'true');
+  await expect(page).toHaveURL(/\/kategori\/hediye$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hediye');
+  await expect(page.locator('[data-k-grid] [data-product]')).toHaveCount(1);
 });
