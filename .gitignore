@@ -15,6 +15,7 @@ tmp/
 *.tsbuildinfo
 public/index.html
 public/admin.html
+public/kategori.html
 public/*.css
 public/*.js
 public/*.txt
