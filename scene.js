@@ -23,11 +23,17 @@ async function createSculpture() {
       return response.json();
     })
   ]);
+  // Hafif mod: telefonlar, dokunmatik tabletler ve az çekirdekli/az bellekli cihazlar. Tablette masaüstü ayarları
+  // (2,25x piksel, 1000 parçacık, 60 kare) sahneyi ağırlaştırıyordu.
+  // compact: dar ekran (telefon) → sade malzeme ve geometri. lite: compact + tablet/zayıf cihaz → daha az piksel, parçacık ve kare.
+  // Tablette altın malzeme korunur; yalnızca çizim yükü azalır.
+  const weakDevice = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
   const compact = matchMedia('(max-width: 700px)').matches;
+  const lite = compact || matchMedia('(pointer: coarse)').matches || weakDevice;
   // Kenar yumuşatma açık kalır: kapatıldığında telefonda altın kenarları belirgin tırtıklı görünüyor (ekran görüntüsüyle denendi).
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: compact ? 'low-power' : 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: lite ? 'low-power' : 'high-performance' });
   // Keep crisp edges without rendering unnecessary high-density pixels (phones are capped at 1.5x).
-  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 1.5 : 2.25);
+  let dpr = Math.min(Math.max(devicePixelRatio || 1, 1), lite ? 1.5 : 2.25);
   renderer.setPixelRatio(dpr);
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -191,7 +197,7 @@ async function createSculpture() {
 
   let seed = 417;
   const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  const count = compact ? 420 : 1000;
+  const count = compact ? 420 : lite ? 600 : 1000;
   const positions = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const phases = new Float32Array(count);
@@ -252,7 +258,7 @@ async function createSculpture() {
   }
 
   const starPositions = [];
-  for (let i = 0; i < (compact ? 50 : 80); i++) starPositions.push((random() - .5) * 9, (random() - .5) * 7, -1 - random() * 3);
+  for (let i = 0; i < (lite ? 50 : 80); i++) starPositions.push((random() - .5) * 9, (random() - .5) * 7, -1 - random() * 3);
   const stars = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3)), new THREE.PointsMaterial({ color: '#d9caa2', size: .014, transparent: true, opacity: .48, depthWrite: false }));
   world.add(stars);
 
@@ -263,7 +269,30 @@ async function createSculpture() {
   const pointer = { x: 0, y: 0 };
   const target = { x: 0, y: 0 };
   const hero = document.querySelector('.hero');
-  const frameInterval = 1000 / (compact ? 30 : 60);
+  let frameInterval = 1000 / (lite ? 30 : 60);
+  // Kendini ayarlama: cihaz hedef kare hızına yetişemiyorsa önce çözünürlük, sonra kare hızı düşer; yine yetişemiyorsa
+  // sahne tek karede durur ("3D dönüşü başlat" ile elle yeniden açılabilir). Elle açıldıktan sonra bir daha müdahale etmez.
+  const governor = { warmup: 5, samples: [], level: 0, okRounds: 0, settled: false };
+  let dprScale = 1;
+  function govern(interval) {
+    if (governor.settled || paused) return;
+    if (governor.warmup > 0) { governor.warmup--; return; }
+    governor.samples.push(interval);
+    // Karar, kare sayısına değil süreye bağlıdır: yavaş cihazda da ~1,5 sn içinde ayarlanır.
+    const measured = governor.samples.reduce((sum, value) => sum + value, 0);
+    if (governor.samples.length < 8 || (measured < 1500 && governor.samples.length < 40)) return;
+    const sorted = governor.samples.sort((a, b) => a - b);
+    const typical = sorted[Math.floor(sorted.length / 2)];
+    governor.samples = [];
+    if (typical <= frameInterval * 1.35) { if (++governor.okRounds >= 2) governor.settled = true; return; }
+    governor.okRounds = 0;
+    // Hedefin 3 katından yavaşsa ara kademeler denenmez, doğrudan durağan görünüme geçilir.
+    governor.level = typical > frameInterval * 3 ? 3 : governor.level + 1;
+    if (governor.level === 1) { dprScale = .7; resize(); }
+    else if (governor.level === 2) { frameInterval = 1000 / 20; }
+    else { governor.settled = true; paused = true; updateButton(); stage.dataset.quality = 'static'; }
+    stage.dataset.qualityLevel = String(governor.level);
+  }
   const overlayActive = () => document.body.matches('.menu-open, .product-dialog-open, .search-open');
   // Kaydırırken çizim durur: tarayıcının kaydırması ana iş parçacığını sahneyle paylaşmaz. Kaydırma bitince kaldığı yerden sürer.
   let scrolling = false, scrollTimer = 0;
@@ -279,6 +308,7 @@ async function createSculpture() {
       if (visible && !document.hidden) frame = requestAnimationFrame(draw);
       return;
     }
+    if (last) govern(now - last);
     const dt = last ? Math.min((now - last) / 1000, .05) : 0;
     last = now;
     if (!paused) time += dt;
@@ -311,9 +341,9 @@ async function createSculpture() {
   function resize() {
     const { width, height } = stage.getBoundingClientRect();
     if (!width || !height) return;
-    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1), compact ? 1.5 : 2.25);
-    const pixelBudget = compact ? 650000 : 2200000;
-    const nextDpr = Math.min(nativeRatio, Math.sqrt(pixelBudget / (width * height)));
+    const nativeRatio = Math.min(Math.max(devicePixelRatio || 1, 1), lite ? 1.5 : 2.25);
+    const pixelBudget = compact ? 650000 : lite ? 1000000 : 2200000;
+    const nextDpr = Math.max(1, Math.min(nativeRatio, Math.sqrt(pixelBudget / (width * height))) * dprScale);
     if (nextDpr !== dpr) {
       dpr = nextDpr;
       renderer.setPixelRatio(dpr);
@@ -330,7 +360,7 @@ async function createSculpture() {
     motionButton.setAttribute('aria-pressed', String(paused));
     motionButton.textContent = paused ? '3D dönüşü başlat' : '3D dönüşü durdur';
   }
-  motionButton.addEventListener('click', () => { paused = !paused; updateButton(); sync(); });
+  motionButton.addEventListener('click', () => { paused = !paused; governor.settled = true; updateButton(); sync(); });
   reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; target.x = target.y = 0; pointer.x = pointer.y = 0; updateButton(); sync(); });
   hero.addEventListener('pointermove', event => {
     if (paused || event.pointerType === 'touch') return;

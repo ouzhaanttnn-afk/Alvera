@@ -43,3 +43,14 @@
 @media (min-width: 701px) and (max-height: 860px) {
   .hero .hero-meta { position: relative; inset: auto; grid-column: 1 / -1; width: auto; margin: 28px 0; }
 }
+
+/* ---------- Dokunmatik cihazlarda (telefon, tablet) hafif cam ----------
+   Arka plandaki renk lekeleri sürekli kayınca, üstündeki her bulanık cam yüzey her karede yeniden bulanıklaştırılıyordu.
+   Tablette ölçüm: lekeler duruk + 12 px bulanıklık ile kaydırma ~126 → ~177 kare/3 sn; boşta 44 → 61 fps. */
+@media (pointer: coarse) {
+  .liquid-backdrop span { animation: none !important; }
+  :is(.site-header, .site-header.is-scrolled, .rates .rates-panel, .visitor-request, .visit .visit-note, .approach .approach-step, .visitor-question-list, .masak-entry, .contact-dock, .hero-meta, .category-tile .category-label) {
+    -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+    backdrop-filter: blur(12px) saturate(160%) !important;
+  }
+}
