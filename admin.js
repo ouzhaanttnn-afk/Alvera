@@ -15,13 +15,14 @@
   function setData(result) { data = result; renderProducts(); renderMedia(); $('#save-state').textContent = 'Kaydedildi · ' + (data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) : 'Kalıcı depolama bağlı'); }
   async function start(active) { csrf = active.csrf; try { localStorage.setItem('alvera.owner', '1'); } catch { /* Depolama kapalı olabilir. */ } data = await api('catalog'); $('#login-screen').hidden = true; $('#workspace').hidden = false; $('#environment-note').textContent = active.environment === 'preview' ? 'Önizleme · ayrı katalog' : active.environment === 'local' ? 'Yerel geliştirme · ayrı katalog' : 'Canlı mağaza'; setData(data); fillSettings(); }
   function view(name) {
-    if (dirty && !confirm('Kaydedilmemiş mağaza bilgileri var. Bu değişikliklerden vazgeçmek istiyor musunuz?')) return;
+    if (dirty && !confirm('Kaydedilmemiş değişiklikler var. Bu değişikliklerden vazgeçmek istiyor musunuz?')) return;
     dirty = false;
     document.querySelectorAll('.view').forEach(el => { el.hidden = el.id !== 'view-' + name; });
     document.querySelectorAll('[data-view]').forEach(el => { if (el.dataset.view === name) el.setAttribute('aria-current','page'); else el.removeAttribute('aria-current'); });
-    $('#view-kicker').textContent = {products:'SEÇKİ',media:'FOTOĞRAFLAR',stats:'ZİYARETLER',settings:'MAĞAZA BİLGİLERİ',security:'GÜVENLİK VE YEDEK'}[name];
+    $('#view-kicker').textContent = {products:'SEÇKİ',media:'FOTOĞRAFLAR',stats:'ZİYARETLER',settings:'MAĞAZA BİLGİLERİ',prices:'FİYAT AYARLARI',security:'GÜVENLİK VE YEDEK'}[name];
     if (name === 'settings') fillSettings();
     if (name === 'stats') loadStats();
+    if (name === 'prices') loadPrices();
   }
   const number = value => Number(value || 0).toLocaleString('tr-TR');
   async function loadStats() {
@@ -194,6 +195,71 @@
   $('#backup-import').addEventListener('change',async event=>{const file=event.target.files[0];if(!file)return;try{if(file.size>2000000)throw new Error('Yedek dosyası çok büyük.');const backup=JSON.parse(await file.text());if(backup.schema!==1||!Array.isArray(backup.products)||!Array.isArray(backup.media))throw new Error('Geçerli bir Alvera yedeği seçin.');pendingBackup=backup;$('#import-summary').textContent=`${backup.products.length} ürün ve ${backup.media.length} fotoğraf bağlantısı mevcut kataloğun yerini alacak.`;$('#import-preview').hidden=false;}catch(error){notice(error.message,true);}finally{event.target.value='';}});
   $('#import-cancel').addEventListener('click',()=>{pendingBackup=null;$('#import-preview').hidden=true;});
   $('#import-apply').addEventListener('click',async()=>{if(!pendingBackup)return;try{setData(await api('import',{revision:data.revision,backup:pendingBackup}));pendingBackup=null;$('#import-preview').hidden=true;fillSettings();notice('Yedek geri yüklendi.');}catch(error){notice(error.message,true);}});
+  // ---- Fiyat ayarları: milyemler ve işçilik farkları; önizleme sunucudaki formülün aynısıyla hesaplanır ----
+  const MILLI = ['gram24Buy','gram24Sell','bilezik22Buy','bilezik22Sell'], EXTRA = ['ceyrekSellExtra','yarimSellExtra','ataSellExtra'];
+  let priceInfo = null;
+  const tl = kurus => (kurus / 100).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺';
+  const kurusText = kurus => (kurus % 100 ? (kurus / 100).toFixed(2).replace('.', ',') : String(kurus / 100));
+  function readPriceForm() {
+    const form = $('#prices-form'), rules = {};
+    for (const key of MILLI) { const raw = form.elements[key].value.trim(); if (!/^\d{3,4}$/.test(raw)) return null; rules[key] = Number(raw); }
+    for (const key of EXTRA) { const raw = form.elements[key].value.trim(); const m = /^(\d{1,5})(?:[.,](\d{1,2}))?$/.exec(raw); if (!m) return null; rules[key] = Number(m[1]) * 100 + Number((m[2] || '').padEnd(2, '0')); }
+    return rules;
+  }
+  function priceRows(rules) {
+    const src = priceInfo?.source; if (!src) return [];
+    const rows = [];
+    if (src.has) {
+      rows.push(['Has Altın', src.has.buy, src.has.sell]);
+      rows.push(['Gram Altın (24 ayar)', Math.round(src.has.buy * rules.gram24Buy / 1000), Math.round(src.has.sell * rules.gram24Sell / 1000)]);
+      rows.push(['22 Ayar Bilezik', Math.round(src.has.buy * rules.bilezik22Buy / 1000), Math.round(src.has.sell * rules.bilezik22Sell / 1000)]);
+    }
+    for (const [code, name, key] of [['PC','Çeyrek Altın','ceyrekSellExtra'],['PY','Yarım Altın','yarimSellExtra'],['PA','Ata Cumhuriyet','ataSellExtra']]) { const row = src.sarrafiye?.[code]; if (row) rows.push([name, row.buy, row.sell + rules[key]]); }
+    return rows;
+  }
+  function renderPricePreview() {
+    if (!priceInfo) return;
+    const next = readPriceForm(), now = priceRows(priceInfo.rules), fresh = next ? priceRows(next) : [];
+    $('#prices-error').textContent = next ? '' : 'Milyemler 3–4 haneli tam sayı, işçilik farkları TL olarak girilmeli (ör. 20 veya 20,50).';
+    $('#prices-preview').replaceChildren(...now.map((row, i) => {
+      const tr = document.createElement('tr'); const th = document.createElement('th'); th.scope = 'row'; th.textContent = row[0]; tr.append(th);
+      [row[1], row[2], fresh[i]?.[1], fresh[i]?.[2]].forEach((value, col) => {
+        const td = document.createElement('td'); td.textContent = value === undefined ? '—' : tl(value);
+        // Telefonda "şu an" sütunları gizlenir; değişen yeni değerin altında eskisi küçük yazılır.
+        const old = col > 1 ? row[col - 1] : undefined;
+        if (old !== undefined && value !== undefined && value !== old) { const was = document.createElement('small'); was.className = 'was'; was.textContent = 'şu an ' + tl(old); td.append(was); }
+        tr.append(td);
+      });
+      if (fresh[i] && (fresh[i][1] !== row[1] || fresh[i][2] !== row[2])) tr.classList.add('changed');
+      return tr;
+    }));
+    $('#prices-source-note').textContent = priceInfo.source?.has ? 'Kaynağın şu anki fiyatlarıyla hesaplandı. Değişen satırlar vurgulanır.' : 'Kaynak fiyatlarına şu an ulaşılamadı; önizleme gösterilemiyor. Ayarları yine de kaydedebilirsiniz.';
+  }
+  function fillPrices() {
+    const form = $('#prices-form');
+    for (const key of MILLI) form.elements[key].value = priceInfo.rules[key];
+    for (const key of EXTRA) form.elements[key].value = kurusText(priceInfo.rules[key]);
+    $('#prices-undo').disabled = !priceInfo.previous;
+    $('#prices-meta').textContent = priceInfo.updatedAt ? 'Son değişiklik: ' + new Date(priceInfo.updatedAt).toLocaleString('tr-TR', {dateStyle:'short', timeStyle:'short'}) + (priceInfo.updatedBy ? ' · ' + priceInfo.updatedBy : '') : 'Henüz panelden değiştirilmedi; başlangıç ayarları kullanılıyor.';
+    renderPricePreview();
+  }
+  async function loadPrices() {
+    $('#prices-source-note').textContent = 'Kaynak fiyatları alınıyor…';
+    try { priceInfo = await api('prices'); dirty = false; fillPrices(); } catch (error) { notice(error.message || 'Fiyat ayarları alınamadı.', true); }
+  }
+  $('#prices-form').addEventListener('input', () => { dirty = true; renderPricePreview(); });
+  $('#prices-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const rules = readPriceForm(); if (!rules) { renderPricePreview(); return; }
+    const button = event.currentTarget.querySelector('button[type=submit]'); button.disabled = true;
+    try { const saved = await api('prices', {rules}); priceInfo = {...priceInfo, ...saved}; dirty = false; fillPrices(); notice('Fiyat ayarları kaydedildi. Sitede en geç 1 dakika içinde görünür.'); }
+    catch (error) { $('#prices-error').textContent = error.message; } finally { button.disabled = false; }
+  });
+  $('#prices-undo').addEventListener('click', async () => {
+    if (!priceInfo?.previous || !confirm('Bir önceki fiyat ayarlarına dönülsün mü?')) return;
+    try { const saved = await api('prices-undo', {}); priceInfo = {...priceInfo, ...saved}; dirty = false; fillPrices(); notice('Önceki ayarlara dönüldü. Sitede en geç 1 dakika içinde görünür.'); }
+    catch (error) { notice(error.message, true); }
+  });
   window.addEventListener('beforeunload',event=>{if(dirty||editing||uploading){event.preventDefault();event.returnValue='';}});
   api('session').then(start).catch(error=>{if(!error.message.includes('giriş'))$('#login-error').textContent=error.message.includes('Oturumunuz')?'':error.message;});
 })();

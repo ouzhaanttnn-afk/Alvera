@@ -14,6 +14,15 @@
   const formatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const dateFormatter = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Istanbul' });
   const refreshButton = document.querySelector('.rates-refresh');
+  // Sayfa açık ve görünürken fiyatlar bu aralıkla kendiliğinden yenilenir (Yenile'ye basmak gerekmez).
+  const LIVE_INTERVAL = 15 * 1000;
+  const timeFormatter = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/Istanbul' });
+  let lastLiveAt = 0;
+  let shown = new Map();
+  const clock = document.createElement('span');
+  clock.className = 'rates-clock';
+  clock.setAttribute('aria-hidden', 'true');
+  status.after(clock);
   let current = null;
   let busy = false;
   let connection = 'loading';
@@ -75,17 +84,25 @@
   }
 
   function showPrices(data) {
+    const before = shown;
+    shown = new Map(data.prices.map(item => [item.code, [item.buy, item.sell]]));
     const rows = data.prices.map(item => {
       const row = document.createElement('tr');
       const label = document.createElement('th');
       label.scope = 'row';
       label.textContent = item.name;
       row.append(label);
-      for (const value of [item.buy, item.sell]) {
+      [item.buy, item.sell].forEach((value, index) => {
         const cell = document.createElement('td');
         cell.textContent = formatter.format(value) + ' ₺';
+        // Önceki gösterime göre değişen fiyat kısa süre yeşil (arttı) ya da kırmızı (düştü) yanar.
+        const old = before.get(item.code)?.[index];
+        if (old !== undefined && old !== value) {
+          cell.classList.add(value > old ? 'rate-up' : 'rate-down');
+          cell.dataset.change = value > old ? 'arttı' : 'düştü';
+        }
         row.append(cell);
-      }
+      });
       return row;
     });
     body.replaceChildren(...rows);
@@ -168,9 +185,11 @@
       else if (behind && connection === 'online') message = 'Kaynağa şu an ulaşılamıyor · Son alınan veri: ' + date;
       else if (connection === 'cache') message = 'Kaydedilmiş veri · ' + date + ' · Güncellik doğrulanıyor';
       else if (old) message = 'Gecikmeli veri · ' + date;
-      else message = 'Son güncelleme: ' + date;
+      else message = 'Canlı · otomatik yenilenir';
     }
     if (status.textContent !== message) status.textContent = message;
+    // Saat ayrı ve duyurulmayan bir alanda: ekran okuyucu her yenilemede okumaz.
+    clock.textContent = state === 'live' && lastLiveAt ? 'Son kontrol ' + timeFormatter.format(new Date(lastLiveAt)) : '';
   }
 
   async function request(url, timeout) {
@@ -201,6 +220,7 @@
           if (current && data.timestamp < current.timestamp) throw new Error('Older feed rejected');
           current = data;
           connection = 'online';
+          lastLiveAt = Date.now();
           showPrices(data);
           try { localStorage.setItem(storageKey, JSON.stringify({ version: 1, data })); } catch { /* Storage may be unavailable. */ }
           received = true;
@@ -228,7 +248,7 @@
   updateStatus();
   refresh();
   refreshButton?.addEventListener('click', refresh);
-  window.setInterval(() => { if (!document.hidden) refresh(); }, 5 * 60 * 1000);
+  window.setInterval(() => { if (!document.hidden) refresh(); }, LIVE_INTERVAL);
   window.setInterval(() => { if (!document.hidden) updateStatus(); }, 60 * 1000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateStatus(); refresh(); } });
   window.addEventListener('online', refresh);

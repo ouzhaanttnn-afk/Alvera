@@ -2,6 +2,8 @@ import { catalog, defaults, updateCatalog, validProduct, validSettings, text } f
 import { json, session, login, logout, changePassword, sameOrigin } from '../lib/security.js';
 import { available, readDocument, savePhoto, httpError } from '../lib/storage.js';
 import { summary } from '../lib/stats.js';
+import { DEFAULT_RULES, RULE_LIMITS, readRulesDocument, saveRules, undoRules } from '../lib/price-rules.js';
+import { fetchOzan } from './prices.js';
 
 export default async function handler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
@@ -15,6 +17,11 @@ export default async function handler(req, res) {
     if (action === 'session' && req.method === 'GET') return json(res, 200, { username: active.username, csrf: active.csrf, storage: available(), environment: process.env.VERCEL_ENV || 'local' });
     if (action === 'catalog' && req.method === 'GET') return json(res, 200, await catalog());
     if (action === 'stats' && req.method === 'GET') return json(res, 200, summary(available() ? (await readDocument('stats.json'))?.value : null));
+    // Fiyat ayarları: kayıtlı ayarlar + önizleme için kaynağın o anki has ve sarrafiye fiyatları (kuruş).
+    if (action === 'prices' && req.method === 'GET') {
+      const [stored, source] = await Promise.all([readRulesDocument(), fetchOzan().catch(() => null)]);
+      return json(res, 200, { ...stored, defaults: DEFAULT_RULES, limits: RULE_LIMITS, source });
+    }
     if (action === 'export' && req.method === 'GET') { res.setHeader('Content-Disposition', 'attachment; filename="alvera-katalog-yedegi.json"'); return json(res, 200, await catalog()); }
     if (req.method !== 'POST') throw httpError(405, 'Bu işlem POST gerektirir.');
     sameOrigin(req);
@@ -61,6 +68,8 @@ export default async function handler(req, res) {
       if (!Array.isArray(body.ids) || body.ids.length !== value.products.length || new Set(body.ids).size !== value.products.length || body.ids.some(id => !value.products.some(p => p.id === id))) throw httpError(400, 'Ürün sırası geçersiz.');
       body.ids.forEach((id, order) => { value.products.find(p => p.id === id).order = order; });
     }));
+    if (action === 'prices') return json(res, 200, await saveRules(body.rules, active.username));
+    if (action === 'prices-undo') return json(res, 200, await undoRules(active.username));
     if (action === 'settings') return json(res, 200, await updateCatalog(body.revision, value => { value.settings = validSettings(body.settings || {}, value.settings, value.media); }));
     if (action === 'import') return json(res, 200, await updateCatalog(body.revision, value => {
       const backup = body.backup;

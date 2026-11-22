@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="/assets/admin/apple-touch-icon.png" />
   <meta name="mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-title" content="Alvera Yönetim" /><meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="stylesheet" href="/fonts.css?v=20261101-order" />
-  <link rel="stylesheet" href="/admin.css?v=20261101-visits" /><link rel="stylesheet" href="/champagne.css?v=20261001" /><script src="/admin.js?v=20261101-visits" defer></script>
+  <link rel="stylesheet" href="/admin.css?v=20261122-fiyat" /><link rel="stylesheet" href="/champagne.css?v=20261001" /><script src="/admin.js?v=20261122-fiyat" defer></script>
 </head>
 <body>
   <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
@@ -22,7 +22,7 @@
   </main>
   <div id="workspace" class="workspace" hidden>
     <aside class="sidebar"><a href="/" target="_blank" rel="noopener" class="sidebar-brand"><img src="/assets/alvera-logo.png" alt="Alvera Kuyumculuk" width="1010" height="360" /></a><span class="eyebrow">MAĞAZA YÖNETİMİ</span>
-      <nav aria-label="Yönetim bölümleri"><button data-view="products" aria-current="page">Seçki <span id="nav-count">0</span></button><button data-view="media">Fotoğraflar</button><button data-view="stats">Ziyaretler</button><button data-view="settings">Mağaza bilgileri</button><button data-view="security">Güvenlik ve yedek</button></nav>
+      <nav aria-label="Yönetim bölümleri"><button data-view="products" aria-current="page">Seçki <span id="nav-count">0</span></button><button data-view="media">Fotoğraflar</button><button data-view="stats">Ziyaretler</button><button data-view="prices">Fiyat ayarları</button><button data-view="settings">Mağaza bilgileri</button><button data-view="security">Güvenlik ve yedek</button></nav>
       <div class="sidebar-bottom"><a href="/" target="_blank" rel="noopener">Siteyi aç <span aria-hidden="true">↗</span></a><button id="logout">Güvenli çıkış</button><small id="environment-note"></small></div>
     </aside>
     <main class="admin-main">
@@ -37,6 +37,16 @@
         <div class="stats" id="stats-summary" aria-live="polite"><div><strong data-stat="views7">0</strong><span>sayfa açılışı · son 7 gün</span></div><div><strong data-stat="views30">0</strong><span>sayfa açılışı · son 30 gün</span></div><div><strong data-stat="whatsapp30">0</strong><span>WhatsApp tıklaması · 30 gün</span></div><div><strong data-stat="call30">0</strong><span>arama tıklaması · 30 gün</span></div></div>
         <div class="panel"><h2>Günlük döküm</h2><div class="table-scroll"><table class="stats-table"><caption class="sr-only">Son 14 günün sayfa açılışı ve tıklama sayıları</caption><thead><tr><th scope="col">Gün</th><th scope="col">Sayfa açılışı</th><th scope="col">WhatsApp</th><th scope="col">Arama</th><th scope="col">Yol tarifi</th><th scope="col">Instagram</th><th scope="col">Hesaplayıcı</th></tr></thead><tbody id="stats-body"></tbody></table></div><p id="stats-empty" class="empty-copy" hidden>Henüz kayıt yok. Sayaç, yayına alındıktan sonraki ziyaretlerden başlar.</p></div>
         <p class="help">Bu sayılar kişi değil <strong>sayfa açılışı</strong> sayar: aynı kişi sayfayı yeniden açarsa tekrar sayılır. &quot;Tıklama&quot;, bağlantıya basıldığını gösterir; mesajın gönderildiği veya aramanın yapıldığı anlamına gelmez. Robotlar, bu cihazdan (yönetime giriş yaptığınız tarayıcıdan) yapılan açılışlar ve tarayıcısında &quot;izlenmek istemiyorum&quot; tercihi açık olanlar sayılmaz. Kayıtlar 90 gün tutulur.</p>
+      </section>
+      <section id="view-prices" class="view" hidden><div class="page-heading"><div><h1>Fiyat ayarları.</h1><p>Sitedeki altın fiyatları bu ayarlarla hesaplanır. Kaydettiğinizde sitede en geç 1 dakika içinde görünür.</p></div></div>
+        <form id="prices-form" class="settings-form" novalidate>
+          <fieldset><legend>24 ayar gram altın</legend><p class="help">Has altın fiyatı × milyem ÷ 1000. Örnek: 1010 yazarsanız fiyat = has × 1,010.</p><div class="field-grid"><label>Alış milyemi<input name="gram24Buy" inputmode="numeric" required maxlength="4" /></label><label>Satış milyemi<input name="gram24Sell" inputmode="numeric" required maxlength="4" /></label></div></fieldset>
+          <fieldset><legend>22 ayar bilezik</legend><p class="help">Has altın fiyatı × milyem ÷ 1000. Örnek: 922 yazarsanız fiyat = has × 0,922.</p><div class="field-grid"><label>Alış milyemi<input name="bilezik22Buy" inputmode="numeric" required maxlength="4" /></label><label>Satış milyemi<input name="bilezik22Sell" inputmode="numeric" required maxlength="4" /></label></div></fieldset>
+          <fieldset><legend>Sarrafiye işçilik farkı</legend><p class="help">Kaynağın güncel satış fiyatına eklenir (TL). Alış fiyatı değişmez. İstemiyorsanız 0 yazın.</p><div class="field-grid"><label>Çeyrek (TL)<input name="ceyrekSellExtra" inputmode="decimal" required maxlength="8" /></label><label>Yarım (TL)<input name="yarimSellExtra" inputmode="decimal" required maxlength="8" /></label><label>Ata (TL)<input name="ataSellExtra" inputmode="decimal" required maxlength="8" /></label></div></fieldset>
+          <fieldset><legend>Önizleme</legend><p class="help" id="prices-source-note">Kaynak fiyatları alınıyor…</p><div class="table-scroll"><table class="stats-table prices-preview"><caption class="sr-only">Şu anki ve yeni ayarla fiyatlar</caption><thead><tr><th scope="col">Ürün</th><th scope="col">Şu an alış</th><th scope="col">Şu an satış</th><th scope="col">Yeni alış</th><th scope="col">Yeni satış</th></tr></thead><tbody id="prices-preview"></tbody></table></div><p class="help" id="prices-meta"></p></fieldset>
+          <p id="prices-error" class="form-error" role="alert"></p>
+          <div class="sticky-save"><button type="button" id="prices-undo" class="quiet" disabled>Önceki ayara dön</button><button type="submit" class="primary">Fiyat ayarlarını kaydet</button></div>
+        </form>
       </section>
       <section id="view-settings" class="view" hidden><div class="page-heading"><div><h1>Mağazanın bilgileri.</h1><p>Kaydettiğiniz bilgiler sitedeki ilgili bağlantıları da günceller.</p></div></div>
         <form id="settings-form" class="settings-form"><fieldset><legend>Ulaşım ve iletişim</legend><div class="field-grid"><label>Telefon<input name="phone" required maxlength="24" /></label><label>WhatsApp (ülke koduyla)<input name="whatsapp" required inputmode="tel" maxlength="18" /></label><label class="span-two">Adres<input name="address" required maxlength="300" /></label><label class="span-two">Google Haritalar bağlantısı<input name="mapsUrl" type="url" required maxlength="300" /></label><label>Instagram kullanıcı adı<input name="instagram" required maxlength="30" /></label><label>Çalışma saatleri<input name="hours" maxlength="300" placeholder="Bilmiyorsanız boş bırakın" /></label></div></fieldset>

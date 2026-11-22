@@ -89,3 +89,14 @@ body.motion-ready .rates .reveal { opacity: 1; transform: none; animation: none;
 .rates-calc-ask:hover:not(:disabled) { background: rgba(255, 255, 255, .8); }
 .rates-calc-ask:disabled { opacity: .5; cursor: not-allowed; }
 .rates-calc-ask:focus-visible { outline: 2px solid #794c2b; outline-offset: 3px; }
+/* Canlı yenileme: değişen fiyat kısa süre renklenir */
+#rates-body td { transition: color .6s ease, background-color .6s ease; border-radius: 6px; }
+#rates-body td.rate-up { animation: rate-up 2.4s ease-out; }
+#rates-body td.rate-down { animation: rate-down 2.4s ease-out; }
+#rates-body td.rate-up::after { content: " ▲"; color: #1f7a45; font-size: .72em; }
+#rates-body td.rate-down::after { content: " ▼"; color: #b03a2e; font-size: .72em; }
+@keyframes rate-up { 0%, 35% { background-color: rgba(46, 160, 90, .18); color: #1f7a45; } 100% { background-color: transparent; } }
+@keyframes rate-down { 0%, 35% { background-color: rgba(200, 60, 50, .16); color: #b03a2e; } 100% { background-color: transparent; } }
+@media (prefers-reduced-motion: reduce) { #rates-body td.rate-up, #rates-body td.rate-down { animation: none; } }
+.rates-clock { font-size: 12px; color: #6f5a45; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rates-clock:empty { display: none; }

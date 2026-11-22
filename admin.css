@@ -10,3 +10,12 @@
 .stats-table thead th{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
 .stats-table th:first-child,.stats-table td:first-child{text-align:left;font-weight:600}
 .stats-table tbody tr:first-child th,.stats-table tbody tr:first-child td{background:rgba(177,139,70,.09)}
+.prices-preview tbody tr.changed th,.prices-preview tbody tr.changed td{background:rgba(177,139,70,.16)}
+.prices-preview tbody tr:first-child th,.prices-preview tbody tr:first-child td{background:none}
+.prices-preview tbody tr.changed:first-child th,.prices-preview tbody tr.changed:first-child td{background:rgba(177,139,70,.16)}
+#view-prices .sticky-save{justify-content:flex-end;gap:12px}
+#view-prices fieldset{min-width:0}
+#view-prices .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){.prices-preview{min-width:520px;font-size:13px}.prices-preview th,.prices-preview td{padding:9px 8px;white-space:nowrap}}
+.prices-preview small.was{display:none}
+@media (max-width:640px){.prices-preview{min-width:0}.prices-preview th:nth-child(2),.prices-preview th:nth-child(3),.prices-preview td:nth-child(2),.prices-preview td:nth-child(3){display:none}.prices-preview th:first-child{white-space:normal}.prices-preview small.was{display:block;font-size:11px;font-weight:500;color:var(--muted)}}

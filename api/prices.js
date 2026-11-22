@@ -1,4 +1,5 @@
 import { available, mutateDocument, readDocument } from '../lib/storage.js';
+import { DEFAULT_RULES, loadRules } from '../lib/price-rules.js';
 
 const SOURCE = 'https://static.altinkaynak.com/public/Gold';
 const PRODUCTS = [
@@ -56,16 +57,12 @@ export function buildPayload(feed) {
 }
 
 // ---- İkinci kaynak: has altın ve sarrafiye TL fiyatları (Ozan Döviz'in sayfasının kendi yüklediği veri adresleri) ----
-// "Has Altın" satırı kaynaktan aynen gösterilir (ileride kendi fiyat motoruna geçilecek).
-// 24 ayar gram: alış = has alış × 1,001, satış = has satış × 1,010.
+// "Has Altın" satırı kaynaktan aynen gösterilir.
+// Fiyat motoru ayarları (milyemler ve işçilik farkları) yönetim panelinden değişir: lib/price-rules.js.
+// 24 ayar gram: has × gram24Buy/1000 ve has × gram24Sell/1000; 22 ayar bilezik: has × bilezik22Buy/Sell/1000.
+// Çeyrek/yarım/ata: kaynağın güncel fiyatı, satışa işçilik farkı eklenir (alışa eklenmez).
 // Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
-const GRAM24_ALIS_PERMILLE = 1001;
-const GRAM24_SATIS_PERMILLE = 1010;
-// Çeyrek: kaynağın güncel satış fiyatına 20 TL eklenir (alışa eklenmez).
-const CEYREK_ISCILIK_KURUS = 2000;
-// 22 ayar bilezik: alış 912 milyem (has alış × 0,912), satış 922 milyem (has satış × 0,922).
-const BILEZIK22_ALIS_PERMILLE = 912;
-const BILEZIK22_SATIS_PERMILLE = 922;
+const SELL_EXTRA = { PC: 'ceyrekSellExtra', PY: 'yarimSellExtra', PA: 'ataSellExtra' };
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
 const trFormat = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true });
@@ -93,19 +90,19 @@ const mid = (entry) => (parsePrice(entry.buy) + parsePrice(entry.sell)) / 2;
 const near = (centsMid, entry, tolerance) => Math.abs(centsMid / 100 / mid(entry) - 1) <= tolerance;
 
 // İkinci kaynağın değerlerini, ilk kaynakla çapraz kontrolden geçenler için üzerine yazar. Geçmeyen kalem ilk kaynakta kalır.
-export function applyOzan(payload, ozan) {
+export function applyOzan(payload, ozan, rules = DEFAULT_RULES) {
   const prices = payload.prices.map((entry) => ({ ...entry }));
   const find = (code) => prices.find((entry) => entry.code === code);
   const used = [];
   const gram = find('PGA');
   if (ozan?.has && gram && near((ozan.has.buy + ozan.has.sell) / 2, gram, 0.04)) {
-    gram.buy = formatCents(Math.round((ozan.has.buy * GRAM24_ALIS_PERMILLE) / 1000));
-    gram.sell = formatCents(Math.round((ozan.has.sell * GRAM24_SATIS_PERMILLE) / 1000));
+    gram.buy = formatCents(Math.round((ozan.has.buy * rules.gram24Buy) / 1000));
+    gram.sell = formatCents(Math.round((ozan.has.sell * rules.gram24Sell) / 1000));
     used.push('PGA');
     const bilezik = find('PB');
     if (bilezik) {
-      bilezik.buy = formatCents(Math.round((ozan.has.buy * BILEZIK22_ALIS_PERMILLE) / 1000));
-      bilezik.sell = formatCents(Math.round((ozan.has.sell * BILEZIK22_SATIS_PERMILLE) / 1000));
+      bilezik.buy = formatCents(Math.round((ozan.has.buy * rules.bilezik22Buy) / 1000));
+      bilezik.sell = formatCents(Math.round((ozan.has.sell * rules.bilezik22Sell) / 1000));
       used.push('PB');
     }
     let hasEntry = find('HAS');
@@ -121,7 +118,7 @@ export function applyOzan(payload, ozan) {
     const entry = find(code);
     if (!row || !entry || !near((row.buy + row.sell) / 2, entry, 0.08)) continue;
     entry.buy = formatCents(row.buy);
-    entry.sell = formatCents(row.sell + (code === 'PC' ? CEYREK_ISCILIK_KURUS : 0));
+    entry.sell = formatCents(row.sell + (SELL_EXTRA[code] ? rules[SELL_EXTRA[code]] : 0));
     used.push(code);
   }
   return { payload: { ...payload, prices }, used };
@@ -158,8 +155,14 @@ async function fetchPrimary() {
   return buildPayload(await upstream.json());
 }
 
+// Yedek en fazla 10 dakikada bir yazılır: fiyatlar sık yenilense de depolama işlemi sınırı aşılmaz.
+const SNAPSHOT_EVERY = 10 * 60 * 1000;
+let lastSnapshotAt = 0;
+// Testler arasında sayaç sıfırlanır.
+export function resetSnapshotThrottle() { lastSnapshotAt = 0; }
 async function saveSnapshot(payload) {
-  if (!available()) return;
+  if (!available() || Date.now() - lastSnapshotAt < SNAPSHOT_EVERY) return;
+  lastSnapshotAt = Date.now();
   try {
     await mutateDocument(SNAPSHOT, {}, (value) => {
       for (const key of Object.keys(value)) delete value[key];
@@ -190,10 +193,11 @@ export default async function handler(request, response) {
   }
 
   try {
-    const [primary, ozan] = await Promise.all([fetchPrimary(), fetchOzan().catch(() => null)]);
-    const payload = ozan ? applyOzan(primary, ozan).payload : primary;
+    const [primary, ozan, rules] = await Promise.all([fetchPrimary(), fetchOzan().catch(() => null), loadRules()]);
+    const payload = ozan ? applyOzan(primary, ozan, rules).payload : primary;
     await saveSnapshot(payload);
-    response.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+    // Sayfa fiyatları 15 saniyede bir ister; sunucu önbelleği bunu 10 saniyede bir kaynağa yansıtır.
+    response.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=10');
     return response.status(200).json(payload);
   } catch (error) {
     console.error('[prices]', error?.message);

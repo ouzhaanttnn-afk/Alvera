@@ -67,7 +67,13 @@ beforeAll(async () => {
   handler = mod.default;
   parsePrice = mod.parsePrice;
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(async () => {
+  vi.unstubAllGlobals();
+  // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
+  (await import('../api/prices.js')).resetSnapshotThrottle();
+  // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
+  (await import('../lib/price-rules.js')).resetRulesCache();
+});
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
 describe('Fiyat biçimleri', () => {
@@ -261,5 +267,57 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     expect(r.body.stale).toBe(true);
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.639,01', sell: '6.728,93' });
     expect(r.body).not.toHaveProperty('source');
+  });
+});
+
+describe('Panelden değişen fiyat ayarları', () => {
+  // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
+  const rulesModule = () => import('../lib/price-rules.js');
+  const custom = { gram24Buy: 1003, gram24Sell: 1015, bilezik22Buy: 915, bilezik22Sell: 925, ceyrekSellExtra: 3000, yarimSellExtra: 1500, ataSellExtra: 0 };
+
+  it('kaydedilen milyem ve işçilik farkları fiyatlara uygulanır; geri alınca eskiye döner', async () => {
+    const { saveRules, undoRules, readRulesDocument, DEFAULT_RULES } = await rulesModule();
+    await saveRules(custom, 'test');
+    upstream(market(), { gold: ozanGold(), sarrafiye: ozanSarrafiye() });
+    const r = await call();
+    expect(find(r, 'PGA')).toMatchObject({ buy: '6.652,28', sell: '6.762,24' });
+    expect(find(r, 'PB')).toMatchObject({ buy: '6.068,63', sell: '6.162,64' });
+    expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67', sell: '10.837,91' });
+    expect(find(r, 'PY')).toMatchObject({ buy: '21.307,76', sell: '21.480,70' });
+    expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.283,80' });
+    expect(find(r, 'HAS')).toMatchObject({ buy: '6.632,38', sell: '6.662,31' });
+    expect(r.headers['cache-control']).toContain('s-maxage=10');
+
+    const back = await undoRules('test');
+    expect(back.rules).toEqual(DEFAULT_RULES);
+    expect(back.previous).toEqual(custom);
+    expect((await readRulesDocument()).updatedBy).toBe('test');
+  });
+
+  it('aralık dışı, ondalıklı veya satışı alıştan küçük ayar kaydedilmez', async () => {
+    const { saveRules, validRules, DEFAULT_RULES } = await rulesModule();
+    for (const bad of [
+      { ...DEFAULT_RULES, gram24Sell: 10100 },
+      { ...DEFAULT_RULES, gram24Buy: 1001.5 },
+      { ...DEFAULT_RULES, gram24Buy: 1020, gram24Sell: 1010 },
+      { ...DEFAULT_RULES, bilezik22Buy: 930, bilezik22Sell: 920 },
+      { ...DEFAULT_RULES, ceyrekSellExtra: -100 },
+      { ...DEFAULT_RULES, ataSellExtra: '0' },
+      { ...DEFAULT_RULES, yarimSellExtra: undefined },
+    ]) {
+      expect(() => validRules(bad), JSON.stringify(bad)).toThrow();
+      await expect(saveRules(bad, 'test')).rejects.toThrow();
+    }
+    expect(validRules({ ...DEFAULT_RULES })).toEqual(DEFAULT_RULES);
+  });
+
+  it('ayar belgesi bozuksa fiyatlar varsayılan ayarlarla hesaplanır', async () => {
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync(join(dir, 'price-rules.json'), JSON.stringify({ rules: { gram24Buy: 'bozuk' } }));
+    upstream(market(), { gold: ozanGold(), sarrafiye: ozanSarrafiye() });
+    const r = await call();
+    // Varsayılan: 24 ayar ×1,001 / ×1,010, çeyrek satış +20 TL.
+    expect(find(r, 'PGA')).toMatchObject({ buy: '6.639,01', sell: '6.728,93' });
+    expect(find(r, 'PC')).toMatchObject({ sell: '10.827,91' });
   });
 });
