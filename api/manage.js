@@ -88,6 +88,6 @@ export default async function handler(req, res) {
   } catch (error) {
     const status = error.status || (error instanceof SyntaxError ? 400 : 503);
     if (status === 503) console.error('[manage]', req.query.action, error?.name, error?.message);
-    return json(res, status, { error: error.status ? error.message : status === 400 ? 'İstek verisi geçersiz.' : 'İşlem tamamlanamadı. Biraz sonra yeniden deneyin.', ...(status === 503 && error?.name ? { code: String(error.name).slice(0, 60) } : {}) });
+    return json(res, status, { error: error.status ? error.message : status === 400 ? 'İstek verisi geçersiz.' : 'İşlem tamamlanamadı. Biraz sonra yeniden deneyin.', ...(status === 503 && error?.name ? { code: String(error.name).slice(0, 60), detail: String(error?.message || '').replace(/[A-Za-z0-9_\-]{24,}/g, '…').slice(0, 160) } : {}) });
   }
 }
