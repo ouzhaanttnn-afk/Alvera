@@ -54,3 +54,11 @@ it('yeni bir sıfırlama değeri kilitlenmiş girişi açar', async () => {
   process.env.ADMIN_PASSWORD_RESET = resetValue('Sahibin-Kendi-Sifresi-9', 'cd'.repeat(24));
   expect((await login('Sahibin-Kendi-Sifresi-9')).username).toBe('alvera');
 });
+
+it('zayıf sürüm etiketi koşullu yazma için güçlü etikete çevrilir', async () => {
+  // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
+  const { strongEtag } = await import('../lib/storage.js');
+  expect(strongEtag('W/"66afe0b5"')).toBe('"66afe0b5"');
+  expect(strongEtag('"66afe0b5"')).toBe('"66afe0b5"');
+  expect(strongEtag(undefined)).toBe(undefined);
+});

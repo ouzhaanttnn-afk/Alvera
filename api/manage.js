@@ -1,6 +1,6 @@
 import { catalog, defaults, updateCatalog, validProduct, validSettings, text } from '../lib/catalog.js';
 import { json, session, login, logout, changePassword, sameOrigin } from '../lib/security.js';
-import { available, readDocument, savePhoto, httpError, etagProbe } from '../lib/storage.js';
+import { available, readDocument, savePhoto, httpError } from '../lib/storage.js';
 import { summary } from '../lib/stats.js';
 import { DEFAULT_RULES, RULE_LIMITS, readRulesDocument, saveRules, undoRules } from '../lib/price-rules.js';
 import { fetchOzan } from './prices.js';
@@ -88,8 +88,6 @@ export default async function handler(req, res) {
   } catch (error) {
     const status = error.status || (error instanceof SyntaxError ? 400 : 503);
     if (status === 503) console.error('[manage]', req.query.action, error?.name, error?.message);
-    let probe = null;
-    if (/ETag mismatch/.test(error?.message || '')) { try { probe = await etagProbe('security.json'); } catch (e) { probe = { hata: String(e?.message).slice(0, 120) }; } }
-    return json(res, status, { error: error.status ? error.message : status === 400 ? 'İstek verisi geçersiz.' : 'İşlem tamamlanamadı. Biraz sonra yeniden deneyin.', ...(status === 503 && error?.name ? { code: String(error.name).slice(0, 60), detail: String(error?.message || '').replace(/[A-Za-z0-9_\-]{24,}/g, '…').slice(0, 160), probe } : {}) });
+    return json(res, status, { error: error.status ? error.message : status === 400 ? 'İstek verisi geçersiz.' : 'İşlem tamamlanamadı. Biraz sonra yeniden deneyin.' });
   }
 }
