@@ -196,7 +196,7 @@
   $('#import-cancel').addEventListener('click',()=>{pendingBackup=null;$('#import-preview').hidden=true;});
   $('#import-apply').addEventListener('click',async()=>{if(!pendingBackup)return;try{setData(await api('import',{revision:data.revision,backup:pendingBackup}));pendingBackup=null;$('#import-preview').hidden=true;fillSettings();notice('Yedek geri yüklendi.');}catch(error){notice(error.message,true);}});
   // ---- Fiyat ayarları: milyemler ve işçilik farkları; önizleme sunucudaki formülün aynısıyla hesaplanır ----
-  const MILLI = ['gram24Buy','gram24Sell','bilezik22Buy','bilezik22Sell'], EXTRA = ['ceyrekSellExtra','yarimSellExtra','ataSellExtra'];
+  const MILLI = ['gram24Buy','gram24Sell','bilezik22Buy','bilezik22Sell'], EXTRA = ['ceyrekSellExtra','yarimSellExtra','teklikSellExtra','ataSellExtra'];
   let priceInfo = null;
   const tl = kurus => (kurus / 100).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺';
   const kurusText = kurus => (kurus % 100 ? (kurus / 100).toFixed(2).replace('.', ',') : String(kurus / 100));
@@ -214,7 +214,7 @@
       rows.push(['Gram Altın (24 ayar)', Math.round(src.has.buy * rules.gram24Buy / 1000), Math.round(src.has.sell * rules.gram24Sell / 1000)]);
       rows.push(['22 Ayar Bilezik', Math.round(src.has.buy * rules.bilezik22Buy / 1000), Math.round(src.has.sell * rules.bilezik22Sell / 1000)]);
     }
-    for (const [code, name, key] of [['PC','Çeyrek Altın','ceyrekSellExtra'],['PY','Yarım Altın','yarimSellExtra'],['PA','Ata Cumhuriyet','ataSellExtra']]) { const row = src.sarrafiye?.[code]; if (row) rows.push([name, row.buy, row.sell + rules[key]]); }
+    for (const [code, name, key] of [['PC','Çeyrek Altın','ceyrekSellExtra'],['PY','Yarım Altın','yarimSellExtra'],['PT','Teklik Altın','teklikSellExtra'],['PA','Ata Cumhuriyet','ataSellExtra']]) { const row = src.sarrafiye?.[code]; if (row) rows.push([name, row.buy, row.sell + rules[key]]); }
     return rows;
   }
   function renderPricePreview() {

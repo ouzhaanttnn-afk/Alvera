@@ -54,11 +54,11 @@ const upstream = (body: unknown, ozan: Ozan = 'down', ok = true, status = 200) =
 };
 const ozanGold = (alis = '6632.38', satis = '6662.31') => ({ data: { USDTRY: { code: 'USD /TL', alis: '50.180', satis: '50.290' }, ALTIN: { code: 'HAS ALTIN /TL', alis, satis }, '995HAS': { code: '995 HAS', alis: '6599.22', satis: '6628.99' } } });
 const ozanSarrafiye = (over: Record<string, [string, string]> = {}) => {
-  const base: Record<string, [string, string]> = { 'Y. Çeyrek': ['10814.62', '10903.98'], 'Y. Yarım': ['21637.87', '21795.29'], 'Y. Ata Lira': ['43972.50', '44588.04'], 'E. Çeyrek': ['10711.67', '10807.91'], 'E. Yarım': ['21307.76', '21465.70'], 'E. Ata Lira': ['43972.50', '44283.80'], ...over };
+  const base: Record<string, [string, string]> = { 'Y. Çeyrek': ['10814.62', '10903.98'], 'Y. Yarım': ['21637.87', '21795.29'], 'Y. Ata Lira': ['43972.50', '44588.04'], 'E. Çeyrek': ['10711.67', '10807.91'], 'E. Yarım': ['21307.76', '21465.70'], 'E. Ata Lira': ['43972.50', '44283.80'], 'Y. Teklik': ['39537.10', '40231.01'], 'E. Teklik': ['39537.10', '40164.17'], ...over };
   return { data: Object.fromEntries(Object.entries(base).map(([code, [alis, satis]], i) => [`stl${i + 1}`, { code, alis, satis }])) };
 };
 // Altınkaynak'ın o günkü gerçek değerlerine yakın besleme: ikinci kaynakla çapraz kontrol bunlara bakar.
-const market = () => goldFeed({ PGA: ['6.606', '6.750'], PC: ['10.677', '11.195'], PY: ['21.262', '22.390'], PA: ['43.678', '47.110'] });
+const market = () => goldFeed({ PGA: ['6.606', '6.750'], PC: ['10.677', '11.195'], PY: ['21.262', '22.390'], PA: ['43.678', '47.110'], PT: ['38.928', '41.115'] });
 const find = (r: Res, code: string) => r.body.prices.find((p: any) => p.code === code);
 
 beforeAll(async () => {
@@ -166,7 +166,7 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
     expect(find(r, 'PB')).toMatchObject({ buy: '6.048,73', sell: '6.142,65' });
     expect(find(r, 'HAS')).toMatchObject({ name: 'Has Altın', buy: '6.632,38', sell: '6.662,31' }); // has kaynaktan aynen
     expect(find(r, 'P18')).toMatchObject({ buy: '4.298', sell: '5.020' });
-    expect(r.body.prices.map((p: any) => p.code)).toEqual(['PGA', 'PC', 'PY', 'PA', 'PB', 'P18', 'P14', 'HAS']);
+    expect(r.body.prices.map((p: any) => p.code)).toEqual(['PGA', 'PC', 'PY', 'PA', 'PB', 'PT', 'P18', 'P14', 'HAS']);
     expect(r.body).not.toHaveProperty('source');
     expect(JSON.stringify(r.body)).not.toMatch(/altınkaynak|ozan/i);
   });
@@ -273,7 +273,7 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
 describe('Panelden değişen fiyat ayarları', () => {
   // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
   const rulesModule = () => import('../lib/price-rules.js');
-  const custom = { gram24Buy: 1003, gram24Sell: 1015, bilezik22Buy: 915, bilezik22Sell: 925, ceyrekSellExtra: 3000, yarimSellExtra: 1500, ataSellExtra: 0 };
+  const custom = { gram24Buy: 1003, gram24Sell: 1015, bilezik22Buy: 915, bilezik22Sell: 925, ceyrekSellExtra: 3000, yarimSellExtra: 1500, teklikSellExtra: 5000, ataSellExtra: 0 };
 
   it('kaydedilen milyem ve işçilik farkları fiyatlara uygulanır; geri alınca eskiye döner', async () => {
     const { saveRules, undoRules, readRulesDocument, DEFAULT_RULES } = await rulesModule();
@@ -285,6 +285,8 @@ describe('Panelden değişen fiyat ayarları', () => {
     expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67', sell: '10.837,91' });
     expect(find(r, 'PY')).toMatchObject({ buy: '21.307,76', sell: '21.480,70' });
     expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.283,80' });
+    // Teklik: eski seri (E. Teklik), satışa 50 TL işçilik.
+    expect(find(r, 'PT')).toMatchObject({ name: 'Teklik Altın', buy: '39.537,10', sell: '40.214,17' });
     expect(find(r, 'HAS')).toMatchObject({ buy: '6.632,38', sell: '6.662,31' });
     expect(r.headers['cache-control']).toContain('s-maxage=10');
 
@@ -319,5 +321,34 @@ describe('Panelden değişen fiyat ayarları', () => {
     // Varsayılan: 24 ayar ×1,001 / ×1,010, çeyrek satış +20 TL.
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.639,01', sell: '6.728,93' });
     expect(find(r, 'PC')).toMatchObject({ sell: '10.827,91' });
+  });
+});
+
+describe('Teklik altın', () => {
+  it('ilk kaynakta teklik yoksa yalnızca o satır düşer; diğer fiyatlar gelir', async () => {
+    upstream(goldFeed());
+    const r = await call();
+    expect(r.status).toBe(200);
+    expect(find(r, 'PT')).toBeUndefined();
+    expect(find(r, 'PGA')).toBeDefined();
+  });
+
+  it('ikinci kaynak yokken teklik ilk kaynaktan aynen gelir', async () => {
+    upstream(market());
+    const r = await call();
+    expect(find(r, 'PT')).toMatchObject({ buy: '38.928', sell: '41.115' });
+  });
+
+  it('teklik alanı olmayan eski kayıtta diğer ayarlar korunur, teklik 0 TL olur', async () => {
+    const { writeFileSync } = await import('node:fs');
+    // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
+    const { readRulesDocument } = await import('../lib/price-rules.js');
+    writeFileSync(join(dir, 'price-rules.json'), JSON.stringify({ rules: { gram24Buy: 1000, gram24Sell: 1008, bilezik22Buy: 912, bilezik22Sell: 922, ceyrekSellExtra: 6500, yarimSellExtra: 7500, ataSellExtra: 0 } }));
+    const stored = await readRulesDocument();
+    expect(stored.rules).toMatchObject({ gram24Buy: 1000, gram24Sell: 1008, ceyrekSellExtra: 6500, yarimSellExtra: 7500, teklikSellExtra: 0 });
+    upstream(market(), { gold: ozanGold(), sarrafiye: ozanSarrafiye() });
+    const r = await call();
+    expect(find(r, 'PGA')).toMatchObject({ buy: '6.632,38' });
+    expect(find(r, 'PT')).toMatchObject({ sell: '40.164,17' });
   });
 });

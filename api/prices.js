@@ -9,6 +9,8 @@ const PRODUCTS = [
   ['PA', 'Ata Cumhuriyet'],
   ['PB', '22 Ayar Bilezik']
 ];
+// Tabloda gösterilir ama kaynakta yoksa yalnızca bu satır düşer (fiyat servisi çökmez).
+const OPTIONAL = [['PT', 'Teklik Altın']];
 // Tabloda gösterilmez; yalnızca gram hesaplayıcı için gram başına ayar fiyatlarıdır.
 const EXTRA = [
   ['P18', '18 Ayar Altın'],
@@ -47,13 +49,14 @@ export function buildPayload(feed) {
     return { code, name, buy: String(entry.Alis), sell: String(entry.Satis) };
   };
   const prices = PRODUCTS.map(read);
+  const optional = OPTIONAL.flatMap((item) => { try { return [read(item)]; } catch { return []; } });
   let extra = [];
   try { extra = EXTRA.map(read); } catch { /* Hesaplayıcının 14/18 ayar satırları yoksa yalnızca onlar gizlenir. */ }
   // "Has Altın" satırı: ilk kaynakta varsa yedek olarak alınır; hiçbir kaynakta yoksa tabloda gösterilmez.
   let has = [];
   try { has = [{ ...read(['HH_T', 'Has Altın']), code: 'HAS' }]; } catch { /* Has satırı yoksa gösterilmez. */ }
   const source_updated_at = sourceTimestamp(feed.find((item) => item?.Kod === 'PGA')?.GuncellenmeZamani);
-  return { source_updated_at, prices: [...prices, ...extra, ...has] };
+  return { source_updated_at, prices: [...prices, ...optional, ...extra, ...has] };
 }
 
 // ---- İkinci kaynak: has altın ve sarrafiye TL fiyatları (Ozan Döviz'in sayfasının kendi yüklediği veri adresleri) ----
@@ -62,7 +65,7 @@ export function buildPayload(feed) {
 // 24 ayar gram: has × gram24Buy/1000 ve has × gram24Sell/1000; 22 ayar bilezik: has × bilezik22Buy/Sell/1000.
 // Çeyrek/yarım/ata: kaynağın güncel fiyatı, satışa işçilik farkı eklenir (alışa eklenmez).
 // Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
-const SELL_EXTRA = { PC: 'ceyrekSellExtra', PY: 'yarimSellExtra', PA: 'ataSellExtra' };
+const SELL_EXTRA = { PC: 'ceyrekSellExtra', PY: 'yarimSellExtra', PT: 'teklikSellExtra', PA: 'ataSellExtra' };
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
 const trFormat = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true });
@@ -142,8 +145,8 @@ export async function fetchOzan() {
   for (const result of [gold, sarrafiye]) if (result.status === 'rejected') console.error('[prices] ikinci kaynak', result.reason?.message);
   const has = gold.status === 'fulfilled' ? ozanRow(gold.value, 'HAS ALTIN /TL') : null;
   const table = sarrafiye.status === 'fulfilled' ? sarrafiye.value : null;
-  // Çeyrek, yarım ve ata ESKİ seriden (E.) alınır; eski satır yoksa yeni seriye değil ilk kaynağa dönülür.
-  return { has, sarrafiye: { PC: ozanRow(table, 'E. Çeyrek'), PY: ozanRow(table, 'E. Yarım'), PA: ozanRow(table, 'E. Ata Lira') } };
+  // Çeyrek, yarım, teklik ve ata ESKİ seriden (E.) alınır; eski satır yoksa yeni seriye değil ilk kaynağa dönülür.
+  return { has, sarrafiye: { PC: ozanRow(table, 'E. Çeyrek'), PY: ozanRow(table, 'E. Yarım'), PT: ozanRow(table, 'E. Teklik'), PA: ozanRow(table, 'E. Ata Lira') } };
 }
 
 async function fetchPrimary() {

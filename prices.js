@@ -6,7 +6,7 @@
   if (!panel || !body || !status) return;
 
   // Üçüncü değer true ise satır isteğe bağlıdır: veri yoksa tabloda gösterilmez, hata sayılmaz.
-  const products = [['HAS', 'Has Altın', true], ['PGA', 'Gram Altın'], ['PC', 'Çeyrek Altın'], ['PY', 'Yarım Altın'], ['PA', 'Ata Cumhuriyet'], ['PB', '22 Ayar Bilezik']];
+  const products = [['HAS', 'Has Altın', true], ['PGA', 'Gram Altın'], ['PC', 'Çeyrek Altın'], ['PY', 'Yarım Altın'], ['PT', 'Teklik Altın', true], ['PA', 'Ata Cumhuriyet'], ['PB', '22 Ayar Bilezik']];
   const endpoints = ['/api/prices'];
   const karatCodes = { 24: 'PGA', 22: 'PB', 18: 'P18', 14: 'P14' };
   const storageKey = 'alvera.gold.last-good.v1';
