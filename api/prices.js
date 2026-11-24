@@ -66,6 +66,8 @@ export function buildPayload(feed) {
 // Çeyrek/yarım/ata: kaynağın güncel fiyatı, satışa işçilik farkı eklenir (alışa eklenmez).
 // Tam sayı kuruşla ve yarım kuruş yukarı yuvarlanarak hesaplanır.
 const SELL_EXTRA = { PC: 'ceyrekSellExtra', PY: 'yarimSellExtra', PT: 'teklikSellExtra', PA: 'ataSellExtra' };
+// Alış farkı: alışa eklenir (eksi değer düşürür). Alış satışı geçecekse o ürünün alış farkı uygulanmaz.
+const BUY_EXTRA = { PC: 'ceyrekBuyExtra', PY: 'yarimBuyExtra', PT: 'teklikBuyExtra', PA: 'ataBuyExtra' };
 const OZAN = 'https://ozandoviz.com/';
 const OZAN_NUMBER = /^\d{1,7}(?:\.\d{1,2})?$/;
 const trFormat = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true });
@@ -120,8 +122,10 @@ export function applyOzan(payload, ozan, rules = DEFAULT_RULES) {
   for (const [code, row] of Object.entries(ozan?.sarrafiye || {})) {
     const entry = find(code);
     if (!row || !entry || !near((row.buy + row.sell) / 2, entry, 0.08)) continue;
-    entry.buy = formatCents(row.buy);
-    entry.sell = formatCents(row.sell + (SELL_EXTRA[code] ? rules[SELL_EXTRA[code]] : 0));
+    const sell = row.sell + (SELL_EXTRA[code] ? rules[SELL_EXTRA[code]] || 0 : 0);
+    const adjusted = row.buy + (BUY_EXTRA[code] ? rules[BUY_EXTRA[code]] || 0 : 0);
+    entry.buy = formatCents(adjusted > 0 && adjusted <= sell ? adjusted : row.buy);
+    entry.sell = formatCents(sell);
     used.push(code);
   }
   return { payload: { ...payload, prices }, used };

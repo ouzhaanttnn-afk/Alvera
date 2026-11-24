@@ -80,6 +80,7 @@ test.describe('Yönetim: fiyat ayarları', () => {
     await expect(form.locator('[name=bilezik22Buy]')).toHaveValue('912');
     await expect(form.locator('[name=bilezik22Sell]')).toHaveValue('922');
     await expect(form.locator('[name=ceyrekSellExtra]')).toHaveValue('20');
+    await expect(form.locator('[name=ceyrekBuyExtra]')).toHaveValue('0');
     await expect(form.locator('[name=yarimSellExtra]')).toHaveValue('0');
     await expect(page.locator('#prices-undo')).toBeDisabled();
     // Önizleme ya kaynağın o anki fiyatlarını ya da "ulaşılamadı" notunu gösterir; asla boş kalmaz.
@@ -92,6 +93,7 @@ test.describe('Yönetim: fiyat ayarları', () => {
 
     await form.locator('[name=gram24Sell]').fill('1012');
     await form.locator('[name=ceyrekSellExtra]').fill('25,50');
+    await form.locator('[name=ceyrekBuyExtra]').fill('-15');
     await page.getByRole('button', { name: 'Fiyat ayarlarını kaydet' }).click();
     await expect(page.locator('#notice')).toContainText('Fiyat ayarları kaydedildi');
     await expect(page.locator('#prices-meta')).toContainText('alvera');
@@ -102,6 +104,7 @@ test.describe('Yönetim: fiyat ayarları', () => {
     await page.getByRole('button', { name: 'Fiyat ayarları' }).click();
     await expect(form.locator('[name=gram24Sell]')).toHaveValue('1012');
     await expect(form.locator('[name=ceyrekSellExtra]')).toHaveValue('25,50');
+    await expect(form.locator('[name=ceyrekBuyExtra]')).toHaveValue('-15');
 
     await page.getByRole('button', { name: 'Önceki ayara dön' }).click();
     await expect(page.locator('#notice')).toContainText('Önceki ayarlara dönüldü');

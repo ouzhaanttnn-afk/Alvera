@@ -273,7 +273,7 @@ describe('İkinci kaynak: has altın ve sarrafiye', () => {
 describe('Panelden değişen fiyat ayarları', () => {
   // @ts-ignore tip bildirimi olmayan düz JavaScript modülü
   const rulesModule = () => import('../lib/price-rules.js');
-  const custom = { gram24Buy: 1003, gram24Sell: 1015, bilezik22Buy: 915, bilezik22Sell: 925, ceyrekSellExtra: 3000, yarimSellExtra: 1500, teklikSellExtra: 5000, ataSellExtra: 0 };
+  const custom = { gram24Buy: 1003, gram24Sell: 1015, bilezik22Buy: 915, bilezik22Sell: 925, ceyrekSellExtra: 3000, yarimSellExtra: 1500, teklikSellExtra: 5000, ataSellExtra: 0, ceyrekBuyExtra: -2500, yarimBuyExtra: 1000, teklikBuyExtra: 0, ataBuyExtra: 400000 };
 
   it('kaydedilen milyem ve işçilik farkları fiyatlara uygulanır; geri alınca eskiye döner', async () => {
     const { saveRules, undoRules, readRulesDocument, DEFAULT_RULES } = await rulesModule();
@@ -282,8 +282,9 @@ describe('Panelden değişen fiyat ayarları', () => {
     const r = await call();
     expect(find(r, 'PGA')).toMatchObject({ buy: '6.652,28', sell: '6.762,24' });
     expect(find(r, 'PB')).toMatchObject({ buy: '6.068,63', sell: '6.162,64' });
-    expect(find(r, 'PC')).toMatchObject({ buy: '10.711,67', sell: '10.837,91' });
-    expect(find(r, 'PY')).toMatchObject({ buy: '21.307,76', sell: '21.480,70' });
+    // Alış farkı: çeyrek -25 TL, yarım +10 TL; atada +4.000 TL alışı satışın üstüne çıkaracağı için uygulanmaz.
+    expect(find(r, 'PC')).toMatchObject({ buy: '10.686,67', sell: '10.837,91' });
+    expect(find(r, 'PY')).toMatchObject({ buy: '21.317,76', sell: '21.480,70' });
     expect(find(r, 'PA')).toMatchObject({ buy: '43.972,50', sell: '44.283,80' });
     // Teklik: eski seri (E. Teklik), satışa 50 TL işçilik.
     expect(find(r, 'PT')).toMatchObject({ name: 'Teklik Altın', buy: '39.537,10', sell: '40.214,17' });
@@ -304,6 +305,8 @@ describe('Panelden değişen fiyat ayarları', () => {
       { ...DEFAULT_RULES, gram24Buy: 1020, gram24Sell: 1010 },
       { ...DEFAULT_RULES, bilezik22Buy: 930, bilezik22Sell: 920 },
       { ...DEFAULT_RULES, ceyrekSellExtra: -100 },
+      { ...DEFAULT_RULES, ceyrekBuyExtra: -100001 },
+      { ...DEFAULT_RULES, ataBuyExtra: 2.5 },
       { ...DEFAULT_RULES, ataSellExtra: '0' },
       { ...DEFAULT_RULES, yarimSellExtra: undefined },
     ]) {
