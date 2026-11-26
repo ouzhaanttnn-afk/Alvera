@@ -262,7 +262,9 @@ async function createSculpture() {
   const stars = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3)), new THREE.PointsMaterial({ color: '#d9caa2', size: .014, transparent: true, opacity: .48, depthWrite: false }));
   world.add(stars);
 
-  let paused = reducedMotion.matches;
+  // Logo varsayılan olarak durağandır (tek kare çizilir): sürekli dönmesi cihazları yavaşlatıyordu.
+  // Ziyaretçi "3D dönüşü başlat" düğmesiyle döndürebilir.
+  let paused = true;
   let visible = true;
   let contextLost = false;
   let frame = 0, last = 0, time = 0;
@@ -361,7 +363,7 @@ async function createSculpture() {
     motionButton.textContent = paused ? '3D dönüşü başlat' : '3D dönüşü durdur';
   }
   motionButton.addEventListener('click', () => { paused = !paused; governor.settled = true; updateButton(); sync(); });
-  reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; target.x = target.y = 0; pointer.x = pointer.y = 0; updateButton(); sync(); });
+  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) paused = true; target.x = target.y = 0; pointer.x = pointer.y = 0; updateButton(); sync(); });
   hero.addEventListener('pointermove', event => {
     if (paused || event.pointerType === 'touch') return;
     const rect = hero.getBoundingClientRect();
